@@ -34,10 +34,8 @@ app.use('/', router)
 // server error handler
 app.use((error, req, res, next) => {
   if (!error.statusCode) error.statusCode = 500
-
-  console.error(error)
-
-  res.send('Server error')
+  // console.error(error)
+  res.send(error)
 })
 
 // app graceful stop
