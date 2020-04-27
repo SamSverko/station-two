@@ -1,7 +1,10 @@
 {
-  "name": "station-two",
+  "name": "station-two-client",
   "version": "0.1.0",
+  "description": "Client side of application.",
   "private": true,
+  "author": "Sam Sverko",
+  "license": "MIT",
   "eslintConfig": {
     "extends": "react-app"
   },
