@@ -19,3 +19,27 @@ Random notes on things.
 ## MongoDB Atlas
 
 `$filter` aggregation pipeline operator is not available on the free tier.
+
+Working `$filter` example:
+```javascript
+req.app.db.collection(req.params.collection).aggregate([
+  {
+    $match: { triviaId: req.params.triviaId }
+  },
+  {
+    $filter: {
+      input: '$responses',
+      as: 'response',
+      cond: {
+        $elemMatch: { '$$response.roundNumber': req.query.roundNumber }
+      }
+    }
+  }
+  ]).toArray((error, response) => {
+    if (error) {
+      res.send(error)
+    } else {
+      res.send(response)
+    }
+  })
+```

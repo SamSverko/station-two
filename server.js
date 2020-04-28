@@ -6,8 +6,6 @@ const bodyParser = require('body-parser')
 require('dotenv').config()
 const HOST = process.env.APP_HOST || 'localhost'
 const PORT = process.env.APP_PORT || 4000
-const DB_NAME = process.env.DB_NAME
-const DB_URL = process.env.DB_URL
 const express = require('express')
 const app = express()
 const helmet = require('helmet')
@@ -30,7 +28,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 // database connection
-MongoClient.connect(DB_URL, {
+MongoClient.connect(process.env.DB_URL, {
   poolSize: 25,
   useUnifiedTopology: true,
   wtimeout: 2500
@@ -40,7 +38,7 @@ MongoClient.connect(DB_URL, {
     process.exit(1)
   })
   .then(async client => {
-    app.db = client.db(DB_NAME)
+    app.db = client.db(process.env.DB_NAME)
   })
 
 // routes
