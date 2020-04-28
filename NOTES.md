@@ -43,3 +43,7 @@ req.app.db.collection(req.params.collection).aggregate([
     }
   })
 ```
+
+## DB Schema
+
+- Player names are limited to between 3 and 10 (inclusive) alphanumeric characters `/^[a-z0-9]+$/i`.

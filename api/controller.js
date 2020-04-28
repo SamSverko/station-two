@@ -55,6 +55,17 @@ module.exports = {
               })
               document = filteredReponses
             }
+            // responses only for that player
+            if (typeof req.query.name !== 'undefined') {
+              const arrayToSearch = (typeof req.query.roundNumber !== 'undefined' || typeof req.query.questionNumber !== 'undefined') ? document : document.responses
+              const filteredReponses = []
+              arrayToSearch.forEach((response) => {
+                if (response.name === req.query.name) {
+                  filteredReponses.push(response)
+                }
+              })
+              document = filteredReponses
+            }
           }
           res.send(document)
         }

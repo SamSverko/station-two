@@ -20,7 +20,8 @@ router.get(`/api/v${API_VERSION}/:collection/:triviaId`, [
   param('triviaId').isString().trim().escape().isLength({ min: 4, max: 4 }),
   query('roundNumber').trim().escape().toInt().not().isIn([NaN]).optional(),
   query('questionNumber').trim().escape().toInt().not().isIn([NaN]).optional(),
-  query('tieBreaker').trim().escape().isIn([true]).optional()
+  query('tieBreaker').trim().escape().isIn([true]).optional(),
+  query('name').isString().trim().escape().matches(/^[a-z0-9]+$/, 'i').isLength({ min: 3, max: 10 }).optional()
 ], (req, res, next) => {
   console.log(`${req.method} request for ${req.url}.`)
 
