@@ -6,6 +6,8 @@ const bodyParser = require('body-parser')
 require('dotenv').config()
 const HOST = process.env.APP_HOST || 'localhost'
 const PORT = process.env.APP_PORT || 4000
+const DB_NAME = process.env.DB_NAME
+const DB_URL = process.env.DB_URL
 const express = require('express')
 const app = express()
 const helmet = require('helmet')
@@ -13,8 +15,7 @@ const cors = require('cors')
 // const http = require('http').createServer(app)
 // const io = require('socket.io')(http, { pingTimeout: 10000, pingInterval: 5000 })
 const compression = require('compression')
-// const MongoClient = require('mongodb').MongoClient
-// const dbUrl = process.env.DB_URI
+const MongoClient = require('mongodb').MongoClient
 
 // local files
 const router = require(path.join(__dirname, './api/routes'))
@@ -27,6 +28,20 @@ app.use(cors())
 app.use(compression())
 app.use(express.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+
+// database connection
+MongoClient.connect(DB_URL, {
+  poolSize: 25,
+  useUnifiedTopology: true,
+  wtimeout: 2500
+})
+  .catch(error => {
+    console.log(error.stack)
+    process.exit(1)
+  })
+  .then(async client => {
+    app.db = client.db(DB_NAME)
+  })
 
 // routes
 app.use('/', router)

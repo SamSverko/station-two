@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/SamSverko/station-two#readme",
   "scripts": {
-		"dev-restart": "pm2 restart ecosystem.config.js --onlys tation-two-dev",
+		"dev-restart": "pm2 restart ecosystem.config.js --only station-two-dev",
 		"dev-start": "pm2 start ecosystem.config.js --only station-two-dev --watch",
 		"dev-stop": "pm2 stop ecosystem.config.js --only station-two-dev",
 		"restart": "pm2 restart ecosystem.config.js --only station-two",

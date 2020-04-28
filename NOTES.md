@@ -15,3 +15,7 @@ Random notes on things.
   "details": "This can be anything including a number, string, object, or array."
 }
 ```
+
+## MongoDB Atlas
+
+`$filter` aggregation pipeline operator is not available on the free tier.

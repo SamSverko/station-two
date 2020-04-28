@@ -1,8 +1,9 @@
 // dependencies
 require('dotenv').config()
+const API_VERSION = process.env.API_VERSION || 1
 const express = require('express')
 const router = express.Router()
-const { param, validationResult } = require('express-validator')
+const { param, query, validationResult } = require('express-validator')
 
 // local files
 const apiController = require('./controller')
@@ -14,14 +15,16 @@ router.get('/', (req, res) => {
   res.send('Welcome to the API')
 })
 
-router.get('/api/trivia/:triviaId', [
-  param('triviaId').isLength({ min: 4, max: 4 })
+router.get(`/api/v${API_VERSION}/:collection/:triviaId`, [
+  param('collection').isString().trim().escape().isIn([process.env.DB_COLLECTION_TRIVIA, process.env.DB_COLLECTION_LOBBY]),
+  param('triviaId').isString().trim().escape().isLength({ min: 4, max: 4 }),
+  query('round').trim().escape().toInt().not().isIn([NaN]).optional()
 ], (req, res, next) => {
   console.log(`${req.method} request for ${req.url}.`)
 
   try {
     validationResult(req).throw()
-    res.send(req.params)
+    apiController.getDocument(req, res, next)
   } catch (validationError) {
     const error = new Error()
     error.statusCode = 422
