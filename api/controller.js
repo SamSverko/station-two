@@ -18,7 +18,37 @@ module.exports = {
           error.details = `No document was found using code ${req.params.triviaId}`
           next(error)
         } else {
-          res.send(result)
+          let document = result
+          if (req.params.collection === process.env.DB_COLLECTION_TRIVIA) {
+          } else if (req.params.collection === process.env.DB_COLLECTION_LOBBIES) {
+            // return either: specified responses from specified round || all responses from specified round || specified responses from all rounds
+            if (typeof req.query.roundNumber !== 'undefined' && typeof req.query.questionNumber !== 'undefined') {
+              const filteredReponses = []
+              document.responses.forEach((response) => {
+                if (response.roundNumber === req.query.roundNumber && response.questionNumber === req.query.questionNumber) {
+                  filteredReponses.push(response)
+                }
+              })
+              document = filteredReponses
+            } else if (typeof req.query.roundNumber !== 'undefined') {
+              const filteredReponses = []
+              document.responses.forEach((response) => {
+                if (response.roundNumber === req.query.roundNumber) {
+                  filteredReponses.push(response)
+                }
+              })
+              document = filteredReponses
+            } else if (typeof req.query.questionNumber !== 'undefined') {
+              const filteredReponses = []
+              document.responses.forEach((response) => {
+                if (response.questionNumber === req.query.questionNumber) {
+                  filteredReponses.push(response)
+                }
+              })
+              document = filteredReponses
+            }
+          }
+          res.send(document)
         }
       })
   }
