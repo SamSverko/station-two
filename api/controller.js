@@ -2,16 +2,23 @@
 require('dotenv').config()
 const DB_COLLECTION_TRIVIA = process.env.DB_COLLECTION_TRIVIA
 const DB_COLLECTION_LOBBIES = process.env.DB_COLLECTION_LOBBIES
+const fetch = require('fetch').fetchUrl
 
 // local files
 const utils = require('./utils')
 
 module.exports = {
   joinLobby: async (req, res, next) => {
-    if (!req.body.isHost) {
-      utils.handleValidationError(next, 401, 'Lobby is not available to join.', req.method, req.url, 'The host has not yet entered the lobby, meaning you cannot.')
-      // res.send('Lobby not ready.')
-    }
+    // if (!req.body.isHost) {
+    //   utils.handleServerError(next, 401, 'Lobby is not available to join.', req.method, req.url, 'The host has not yet entered the lobby, meaning you cannot.')
+    //   res.send('Lobby not ready.')
+    // }
+    fetch(`http://localhost:4000/api/v1/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}`, (error, meta, body) => {
+      if (error) {
+        utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId} .`)
+      }
+      res.send(JSON.parse(body))
+    })
   },
   insertTriviaAndLobby: async (req, res, next) => {
     // retrieve all existing triviaIds
@@ -28,7 +35,7 @@ module.exports = {
       })
       .toArray((error, documents) => {
         if (error) {
-          utils.handleValidationError(next, 502, 'Database query failed.', req.method, req.url, '\'insertTriviaAndLobby() find\' query failed.')
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'insertTriviaAndLobby() find\' query failed.')
         } else {
           const existingTriviaIds = []
           documents.forEach((document) => {
@@ -54,7 +61,7 @@ module.exports = {
             },
             (error, triviaResult) => {
               if (error) {
-                utils.handleValidationError(next, 502, 'Database query failed.', req.method, req.url, `'insertTriviaAndLobby() insertOne trivia' query failed for triviaId: ${newTriviaId} .`)
+                utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'insertTriviaAndLobby() insertOne trivia' query failed for triviaId: ${newTriviaId} .`)
               } else {
                 // insert associated lobby document
                 req.app.db.collection(DB_COLLECTION_LOBBIES).insertOne(
@@ -67,7 +74,7 @@ module.exports = {
                   },
                   (error, lobbiesResult) => {
                     if (error) {
-                      utils.handleValidationError(next, 502, 'Database query failed.', req.method, req.url, `'insertTriviaAndLobby() insertOne lobby' query failed for triviaId: ${newTriviaId} .`)
+                      utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'insertTriviaAndLobby() insertOne lobby' query failed for triviaId: ${newTriviaId} .`)
                     } else {
                       // return created trivia and lobby documents
                       res.send([triviaResult.ops[0], lobbiesResult.ops[0]])
@@ -86,9 +93,9 @@ module.exports = {
       { projection: { _id: 0, createdAt: 0 } },
       (error, result) => {
         if (error) {
-          utils.handleValidationError(next, 502, 'Database query failed.', req.method, req.url, `'getDocument() findOne' query failed for triviaId: ${req.params.triviaId} .`)
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'getDocument() findOne' query failed for triviaId: ${req.params.triviaId} .`)
         } else if (!result) {
-          utils.handleValidationError(next, 404, 'Document not found.', req.method, req.url, `No document was found using code: ${req.params.triviaId}`)
+          utils.handleServerError(next, 404, 'Document not found.', req.method, req.url, `No document was found using code: ${req.params.triviaId}`)
         } else {
           let document = result
           if (req.params.collection === DB_COLLECTION_TRIVIA) {

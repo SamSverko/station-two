@@ -1,5 +1,5 @@
 module.exports = {
-  handleValidationError: (next, statusCode, title, method, location, details) => {
+  handleServerError: (next, statusCode, title, method, location, details) => {
     const error = new Error()
     error.statusCode = statusCode
     error.title = title
