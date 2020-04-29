@@ -26,6 +26,7 @@ router.get(`/api/v${API_VERSION}/:collection/:triviaId`, [
   query('questionNumber').trim().escape().toInt().not().isIn([NaN]).optional(),
   query('tieBreaker').trim().escape().isIn([true]).optional(),
   query('name').isString().trim().escape().matches(/^[a-z0-9]+$/, 'i').isLength({ min: 3, max: 10 }).optional(),
+  query('uniqueId').isString().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }).optional(),
   query('playersOnly').trim().escape().isIn([true]).optional()
 ], (req, res, next) => {
   console.log(`${req.method} request for ${req.url}.`)
@@ -52,8 +53,8 @@ router.post(`/api/v${API_VERSION}/${DB_COLLECTION_TRIVIA}/new`, [
   }
 })
 
-// join lobby
-router.post(`/api/v${API_VERSION}/${DB_COLLECTION_LOBBIES}/join`, [
+// join/leave lobby
+router.post(`/api/v${API_VERSION}/${DB_COLLECTION_LOBBIES}/:action`, [
   body('triviaId').isString().trim().escape().isLength({ min: 4, max: 4 }),
   body('name').isString().trim().escape().matches(/^[a-z0-9]+$/, 'i').isLength({ min: 3, max: 10 }),
   body('uniqueId').isString().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }),
@@ -63,7 +64,11 @@ router.post(`/api/v${API_VERSION}/${DB_COLLECTION_LOBBIES}/join`, [
 
   try {
     validationResult(req).throw()
-    apiController.joinLobby(req, res, next)
+    if (req.params.action === 'join') {
+      apiController.joinLobby(req, res, next)
+    } else if (req.params.action === 'leave') {
+      apiController.leaveLobby(req, res, next)
+    }
   } catch (validationError) {
     utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
   }

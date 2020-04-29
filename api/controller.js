@@ -20,8 +20,8 @@ module.exports = {
           {
             $addToSet: {
               players: {
-                name: req.body.name,
-                uniqueId: req.body.uniqueId
+                name: req.body.name.toLowerCase(),
+                uniqueId: req.body.uniqueId.toLowerCase()
               }
             }
           },
@@ -155,11 +155,11 @@ module.exports = {
               document = filteredReponses
             }
             // responses only for that player
-            if (typeof req.query.name !== 'undefined') {
+            if (typeof req.query.name !== 'undefined' && typeof req.query.uniqueId !== 'undefined') {
               const arrayToSearch = (typeof req.query.roundNumber !== 'undefined' || typeof req.query.questionNumber !== 'undefined') ? document : document.responses
               const filteredReponses = []
               arrayToSearch.forEach((response) => {
-                if (response.name === req.query.name) {
+                if (response.name === req.query.name && response.uniqueId === req.query.uniqueId) {
                   filteredReponses.push(response)
                 }
               })
@@ -169,5 +169,25 @@ module.exports = {
           res.send(document)
         }
       })
+  },
+  leaveLobby: async (req, res, next) => {
+    req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
+      { triviaId: req.body.triviaId },
+      {
+        $pull: {
+          players: {
+            name: req.body.name.toLowerCase(),
+            uniqueId: req.body.uniqueId.toLowerCase()
+          }
+        }
+      },
+      (error, result) => {
+        if (error) {
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'leaveLobby() updateOne\' query failed.')
+        } else {
+          res.send(200)
+        }
+      }
+    )
   }
 }
