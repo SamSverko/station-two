@@ -9,17 +9,13 @@ const utils = require('./utils')
 
 module.exports = {
   joinLobby: async (req, res, next) => {
-    // if (!req.body.isHost) {
-    //   utils.handleServerError(next, 401, 'Lobby is not available to join.', req.method, req.url, 'The host has not yet entered the lobby, meaning you cannot.')
-    //   res.send('Lobby not ready.')
-    // }
-    fetch(`http://localhost:4000/api/v1/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}?lobbyOnly=true`, (error, meta, body) => {
+    fetch(`http://localhost:4000/api/v1/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}?playersOnly=true`, (error, meta, body) => {
       if (error) {
         utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId} .`)
       }
       const lobby = JSON.parse(body)
       if (req.body.isHost || lobby.length > 0) {
-        req.app.db.collection(DB_COLLECTION_LOBBIES).findOneAndUpdate(
+        req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
           { triviaId: req.body.triviaId },
           {
             $addToSet: {
@@ -31,7 +27,7 @@ module.exports = {
           },
           (error, result) => {
             if (error) {
-              utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() findOneAndUpdate\' query failed.')
+              utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() updateOne\' query failed.')
             } else {
               res.send(200)
             }
