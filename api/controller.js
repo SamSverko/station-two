@@ -13,11 +13,33 @@ module.exports = {
     //   utils.handleServerError(next, 401, 'Lobby is not available to join.', req.method, req.url, 'The host has not yet entered the lobby, meaning you cannot.')
     //   res.send('Lobby not ready.')
     // }
-    fetch(`http://localhost:4000/api/v1/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}`, (error, meta, body) => {
+    fetch(`http://localhost:4000/api/v1/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}?lobbyOnly=true`, (error, meta, body) => {
       if (error) {
         utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId} .`)
       }
-      res.send(JSON.parse(body))
+      const lobby = JSON.parse(body)
+      if (req.body.isHost || lobby.length > 0) {
+        req.app.db.collection(DB_COLLECTION_LOBBIES).findOneAndUpdate(
+          { triviaId: req.body.triviaId },
+          {
+            $addToSet: {
+              players: {
+                name: req.body.name,
+                uniqueId: req.body.uniqueId
+              }
+            }
+          },
+          (error, result) => {
+            if (error) {
+              utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() findOneAndUpdate\' query failed.')
+            } else {
+              res.send(200)
+            }
+          }
+        )
+      } else {
+        utils.handleServerError(next, 401, 'Lobby is not available to join.', req.method, req.url, 'The host has not yet entered the lobby, meaning you cannot.')
+      }
     })
   },
   insertTriviaAndLobby: async (req, res, next) => {
@@ -101,7 +123,9 @@ module.exports = {
           if (req.params.collection === DB_COLLECTION_TRIVIA) {
           } else if (req.params.collection === DB_COLLECTION_LOBBIES) {
             // tieBreaker responses || specified responses from specified round || all responses from specified round || specified responses from all rounds
-            if (typeof req.query.tieBreaker !== 'undefined') {
+            if (typeof req.query.playersOnly !== 'undefined') {
+              document = result.players
+            } else if (typeof req.query.tieBreaker !== 'undefined') {
               const filteredReponses = []
               document.responses.forEach((response) => {
                 if (response.roundType === 'tieBreaker') {

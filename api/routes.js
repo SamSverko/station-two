@@ -25,7 +25,8 @@ router.get(`/api/v${API_VERSION}/:collection/:triviaId`, [
   query('roundNumber').trim().escape().toInt().not().isIn([NaN]).optional(),
   query('questionNumber').trim().escape().toInt().not().isIn([NaN]).optional(),
   query('tieBreaker').trim().escape().isIn([true]).optional(),
-  query('name').isString().trim().escape().matches(/^[a-z0-9]+$/, 'i').isLength({ min: 3, max: 10 }).optional()
+  query('name').isString().trim().escape().matches(/^[a-z0-9]+$/, 'i').isLength({ min: 3, max: 10 }).optional(),
+  query('playersOnly').trim().escape().isIn([true]).optional()
 ], (req, res, next) => {
   console.log(`${req.method} request for ${req.url}.`)
 
@@ -33,7 +34,7 @@ router.get(`/api/v${API_VERSION}/:collection/:triviaId`, [
     validationResult(req).throw()
     apiController.getDocument(req, res, next)
   } catch (validationError) {
-    utils.handleValidationError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
   }
 })
 
@@ -47,7 +48,7 @@ router.post(`/api/v${API_VERSION}/${DB_COLLECTION_TRIVIA}/new`, [
     validationResult(req).throw()
     apiController.insertTriviaAndLobby(req, res, next)
   } catch (validationError) {
-    utils.handleValidationError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
   }
 })
 
@@ -64,7 +65,7 @@ router.post(`/api/v${API_VERSION}/${DB_COLLECTION_LOBBIES}/join`, [
     validationResult(req).throw()
     apiController.joinLobby(req, res, next)
   } catch (validationError) {
-    utils.handleValidationError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
   }
 })
 
