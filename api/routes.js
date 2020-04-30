@@ -13,7 +13,7 @@ const utils = require('./utils')
 
 // express-validator parameters
 const validateData = {
-  action: check('action').isString().isIn(['join', 'leave', 'markQuestion', 'markTieBreaker']),
+  action: check('action').isString().isIn(['joinLobby', 'leaveLobby', 'markQuestion', 'markTieBreaker']),
   collection: check('collection').isString().isIn([DB_COLLECTION_TRIVIA, DB_COLLECTION_LOBBIES]),
   isHost: check('isHost').trim().escape().isIn([true]),
   name: check('name').isString().trim().escape().matches(/^[a-z0-9]+$/, 'i').isLength({ min: 3, max: 10 }),
@@ -86,14 +86,14 @@ router.post(`/api/v${API_VERSION}/:collection/:action`, [
   try {
     validationResult(req).throw()
     if (
-      req.params.action === 'join' &&
+      req.params.action === 'joinLobby' &&
       req.params.collection === DB_COLLECTION_LOBBIES &&
       typeof req.body.name !== 'undefined' &&
       typeof req.body.uniqueId !== 'undefined'
     ) {
       apiController.joinLobby(req, res, next)
     } else if (
-      req.params.action === 'leave' &&
+      req.params.action === 'leaveLobby' &&
       req.params.collection === DB_COLLECTION_LOBBIES &&
       typeof req.body.name !== 'undefined' &&
       typeof req.body.uniqueId !== 'undefined'
