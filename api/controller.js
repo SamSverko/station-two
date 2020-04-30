@@ -221,6 +221,37 @@ module.exports = {
       }
     )
   },
+  removeRound: async (req, res, next) => {
+    req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
+      { triviaId: req.body.triviaId },
+      {
+        $unset: {
+          [`rounds.${req.body.roundNumber}`]: 1
+        }
+      },
+      (error, result) => {
+        if (error) {
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'removeRound() updateOne $unset\' query failed.')
+        } else {
+          req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
+            { triviaId: req.body.triviaId },
+            {
+              $pull: {
+                rounds: null
+              }
+            },
+            (error, result) => {
+              if (error) {
+                utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'removeRound() updateOne $pull\' query failed.')
+              } else {
+                res.sendStatus(200)
+              }
+            }
+          )
+        }
+      }
+    )
+  },
   submitResponse: async (req, res, next) => {
     // we must use two db queries (delete existing response if exists, then insert response) because aggregate methods aren't available in MongoDB Atlas free tier
     const responseToPull = {
