@@ -13,14 +13,14 @@ const utils = require('./utils')
 
 // express-validator parameters
 const validateData = {
-  action: check('action').isString().isIn(['join', 'leave', 'markResponse']),
+  action: check('action').isString().isIn(['join', 'leave', 'markQuestion', 'markTieBreaker']),
   collection: check('collection').isString().isIn([DB_COLLECTION_TRIVIA, DB_COLLECTION_LOBBIES]),
   isHost: check('isHost').trim().escape().isIn([true]),
   name: check('name').isString().trim().escape().matches(/^[a-z0-9]+$/, 'i').isLength({ min: 3, max: 10 }),
   playersOnly: check('playersOnly').trim().escape().isIn([true]),
   questionNumber: check('questionNumber').trim().escape().toInt().isInt({ min: 0, max: 19 }),
   roundNumber: check('roundNumber').trim().escape().toInt().isInt({ min: 0, max: 9 }),
-  score: check('score').trim().escape().toInt().isInt({ min: 1, max: 10 }),
+  score: check('score').trim().escape().toFloat().isFloat({ min: 0, max: 10 }),
   tieBreaker: check('tieBreaker').trim().escape().isIn([true]),
   triviaId: check('triviaId').isString().trim().escape().isLength({ min: 4, max: 4 }),
   uniqueId: check('uniqueId').isString().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 })
@@ -78,18 +78,42 @@ router.post(`/api/v${API_VERSION}/:collection/:action`, [
   validateData.isHost.optional(),
   validateData.roundNumber.optional(),
   validateData.questionNumber.optional(),
+  validateData.tieBreaker.optional(),
   validateData.score.optional()
 ], (req, res, next) => {
   console.log(`${req.method} request for ${req.url}.`)
 
   try {
     validationResult(req).throw()
-    if (req.params.action === 'join' && req.params.collection === DB_COLLECTION_LOBBIES && typeof req.body.name !== 'undefined' && typeof req.body.uniqueId !== 'undefined') {
+    if (
+      req.params.action === 'join' &&
+      req.params.collection === DB_COLLECTION_LOBBIES &&
+      typeof req.body.name !== 'undefined' &&
+      typeof req.body.uniqueId !== 'undefined'
+    ) {
       apiController.joinLobby(req, res, next)
-    } else if (req.params.action === 'leave' && req.params.collection === DB_COLLECTION_LOBBIES && typeof req.body.name !== 'undefined' && typeof req.body.uniqueId !== 'undefined') {
+    } else if (
+      req.params.action === 'leave' &&
+      req.params.collection === DB_COLLECTION_LOBBIES &&
+      typeof req.body.name !== 'undefined' &&
+      typeof req.body.uniqueId !== 'undefined'
+    ) {
       apiController.leaveLobby(req, res, next)
-    } else if (req.params.action === 'markResponse') {
-      res.send('mark response')
+    } else if (
+      req.params.action === 'markQuestion' &&
+      req.params.collection === DB_COLLECTION_LOBBIES &&
+      (typeof req.body.name !== 'undefined' && typeof req.body.uniqueId !== 'undefined') &&
+      (typeof req.body.roundNumber !== 'undefined' && typeof req.body.questionNumber !== 'undefined') &&
+      typeof req.body.score !== 'undefined'
+    ) {
+      apiController.markQuestionTieBreaker(req, res, next)
+    } else if (
+      req.params.action === 'markTieBreaker' &&
+      req.params.collection === DB_COLLECTION_LOBBIES &&
+      (typeof req.body.name !== 'undefined' && typeof req.body.uniqueId !== 'undefined') &&
+      typeof req.body.score !== 'undefined'
+    ) {
+      apiController.markQuestionTieBreaker(req, res, next)
     } else {
       utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Sufficient data to validate was not provided.')
     }

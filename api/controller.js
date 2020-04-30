@@ -16,7 +16,7 @@ module.exports = {
       const lobby = JSON.parse(body)
       if (req.body.isHost || lobby.length > 0) {
         req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
-          { triviaId: req.body.triviaId },
+          { triviaId: req.body.triviaId.toLowerCase() },
           {
             $addToSet: {
               players: {
@@ -29,7 +29,7 @@ module.exports = {
             if (error) {
               utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() updateOne\' query failed.')
             } else {
-              res.send(200)
+              res.sendStatus(200)
             }
           }
         )
@@ -107,7 +107,7 @@ module.exports = {
   },
   getDocument: async (req, res, next) => {
     req.app.db.collection(req.params.collection).findOne(
-      { triviaId: req.params.triviaId },
+      { triviaId: req.params.triviaId.toLowerCase() },
       { projection: { _id: 0, createdAt: 0 } },
       (error, result) => {
         if (error) {
@@ -170,9 +170,40 @@ module.exports = {
         }
       })
   },
+  markQuestionTieBreaker: async (req, res, next) => {
+    const filter = {
+      triviaId: req.body.triviaId.toLowerCase(),
+      responses: {
+        $elemMatch: {
+          name: req.body.name.toLowerCase(),
+          uniqueId: req.body.uniqueId.toLowerCase()
+        }
+      }
+    }
+    if (req.params.action === 'markQuestion') {
+      filter.responses.$elemMatch.roundNumber = req.body.roundNumber
+      filter.responses.$elemMatch.questionNumber = req.body.questionNumber
+    } else if (req.params.action === 'markTieBreaker') {
+      filter.responses.$elemMatch.roundType = 'tieBreaker'
+    }
+    console.log(filter)
+    req.app.db.collection(req.params.collection).updateOne(
+      filter,
+      {
+        $set: { 'responses.$.score': req.body.score }
+      },
+      (error, result) => {
+        if (error) {
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'markQuestion() updateOne\' query failed.')
+        } else {
+          res.sendStatus(200)
+        }
+      }
+    )
+  },
   leaveLobby: async (req, res, next) => {
     req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $pull: {
           players: {
@@ -185,29 +216,9 @@ module.exports = {
         if (error) {
           utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'leaveLobby() updateOne\' query failed.')
         } else {
-          res.send(200)
+          res.sendStatus(200)
         }
       }
     )
-  },
-  updateDocument: async (req, res, next) => {
-    // const filter = {
-    //   triviaId: req.params.triviaId
-    // }
-    // const update = {
-
-    // }
-    // req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
-    //   filter,
-    //   update,
-    //   (error, result) => {
-    //     if (error) {
-    //       utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'updateDocument() updateOne\' query failed.')
-    //     } else {
-    //       res.send(200)
-    //     }
-    //   }
-    // )
-    res.send(req.body)
   }
 }
