@@ -25,7 +25,7 @@ const validateData = {
   score: check('score').trim().escape().toFloat().isFloat({ min: 0, max: 10 }),
   tieBreaker: check('tieBreaker').trim().escape().isIn([true]),
   triviaId: check('triviaId').isString().trim().escape().isLength({ min: 4, max: 4 }),
-  uniqueId: check('uniqueId').isString().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }),
+  uniqueId: check('uniqueId').isString().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 })
 }
 
 // routes
