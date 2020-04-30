@@ -50,3 +50,4 @@ req.app.db.collection(req.params.collection).aggregate([
 - Player names are limited to between 3 and 10 (inclusive) alphanumeric characters `/^[a-z0-9]+$/i`.
 - trivias are limited to 10 rounds.
 - rounds are limited to 20 questions.
+- scores can be floats between 0.0 and 10.0.

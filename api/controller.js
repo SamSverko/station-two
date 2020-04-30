@@ -189,5 +189,25 @@ module.exports = {
         }
       }
     )
+  },
+  updateDocument: async (req, res, next) => {
+    // const filter = {
+    //   triviaId: req.params.triviaId
+    // }
+    // const update = {
+
+    // }
+    // req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
+    //   filter,
+    //   update,
+    //   (error, result) => {
+    //     if (error) {
+    //       utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'updateDocument() updateOne\' query failed.')
+    //     } else {
+    //       res.send(200)
+    //     }
+    //   }
+    // )
+    res.send(req.body)
   }
 }
