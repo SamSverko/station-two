@@ -106,6 +106,7 @@ module.exports = {
       })
   },
   getDocument: async (req, res, next) => {
+    // we must return entire document from db here, then filter on the server because aggregate methods aren't available in MongoDB Atlas free tier
     req.app.db.collection(req.params.collection).findOne(
       { triviaId: req.params.triviaId.toLowerCase() },
       { projection: { _id: 0, createdAt: 0 } },
@@ -186,7 +187,6 @@ module.exports = {
     } else if (req.params.action === 'markTieBreaker') {
       filter.responses.$elemMatch.roundType = 'tieBreaker'
     }
-    console.log(filter)
     req.app.db.collection(req.params.collection).updateOne(
       filter,
       {
@@ -217,6 +217,44 @@ module.exports = {
           utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'leaveLobby() updateOne\' query failed.')
         } else {
           res.sendStatus(200)
+        }
+      }
+    )
+  },
+  submitResponse: async (req, res, next) => {
+    // we must use two db queries (delete existing response if exists, then insert response) because aggregate methods aren't available in MongoDB Atlas free tier
+    const responseToPull = {
+      name: req.body.name.toLowerCase(),
+      uniqueId: req.body.uniqueId.toLowerCase()
+    }
+    if (req.body.roundType === 'tieBreaker') {
+      responseToPull.roundType = 'tieBreaker'
+    } else {
+      responseToPull.roundNumber = req.body.roundNumber
+      responseToPull.questionNumber = req.body.questionNumber
+    }
+    req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
+      { triviaId: req.body.triviaId },
+      {
+        $pull: { responses: responseToPull }
+      },
+      (error, result) => {
+        if (error) {
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'submitResponse() updateOne $pull\' query failed.')
+        } else {
+          const responseToAdd = responseToPull
+          responseToAdd.response = (req.body.roundType === 'tieBreaker' || req.body.roundType === 'multipleChoice') ? parseInt(req.body.playerResponse) : req.body.playerResponse
+          req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
+            { triviaId: req.body.triviaId },
+            { $addToSet: { responses: responseToAdd } },
+            (error, result) => {
+              if (error) {
+                utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'submitResponse() updateOne $addToSe\' query failed.')
+              } else {
+                res.sendStatus(200)
+              }
+            }
+          )
         }
       }
     )

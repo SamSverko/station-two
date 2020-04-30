@@ -13,17 +13,19 @@ const utils = require('./utils')
 
 // express-validator parameters
 const validateData = {
-  action: check('action').isString().isIn(['joinLobby', 'leaveLobby', 'markQuestion', 'markTieBreaker']),
+  action: check('action').isString().isIn(['joinLobby', 'leaveLobby', 'markQuestion', 'markTieBreaker', 'submitResponse']),
   collection: check('collection').isString().isIn([DB_COLLECTION_TRIVIA, DB_COLLECTION_LOBBIES]),
   isHost: check('isHost').trim().escape().isIn([true]),
   name: check('name').isString().trim().escape().matches(/^[a-z0-9]+$/, 'i').isLength({ min: 3, max: 10 }),
+  playerResponse: check('playerResponse').isString().trim().escape(),
   playersOnly: check('playersOnly').trim().escape().isIn([true]),
   questionNumber: check('questionNumber').trim().escape().toInt().isInt({ min: 0, max: 19 }),
   roundNumber: check('roundNumber').trim().escape().toInt().isInt({ min: 0, max: 9 }),
+  roundType: check('roundType').isString().isIn(['multipleChoice', 'lightning', 'picture', 'tieBreaker']),
   score: check('score').trim().escape().toFloat().isFloat({ min: 0, max: 10 }),
   tieBreaker: check('tieBreaker').trim().escape().isIn([true]),
   triviaId: check('triviaId').isString().trim().escape().isLength({ min: 4, max: 4 }),
-  uniqueId: check('uniqueId').isString().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 })
+  uniqueId: check('uniqueId').isString().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }),
 }
 
 // routes
@@ -79,7 +81,9 @@ router.post(`/api/v${API_VERSION}/:collection/:action`, [
   validateData.roundNumber.optional(),
   validateData.questionNumber.optional(),
   validateData.tieBreaker.optional(),
-  validateData.score.optional()
+  validateData.score.optional(),
+  validateData.roundType.optional(),
+  validateData.playerResponse.optional()
 ], (req, res, next) => {
   console.log(`${req.method} request for ${req.url}.`)
 
@@ -114,6 +118,14 @@ router.post(`/api/v${API_VERSION}/:collection/:action`, [
       typeof req.body.score !== 'undefined'
     ) {
       apiController.markQuestionTieBreaker(req, res, next)
+    } else if (
+      req.params.action === 'submitResponse' &&
+      req.params.collection === DB_COLLECTION_LOBBIES &&
+      (typeof req.body.name !== 'undefined' && typeof req.body.uniqueId !== 'undefined') &&
+      (typeof req.body.roundNumber !== 'undefined' && typeof req.body.questionNumber !== 'undefined') &&
+      (((req.body.roundType === 'multipleChoice' || req.body.roundType === 'tieBreaker') && parseInt(req.body.playerResponse)) || (req.body.roundType !== 'multipleChoice' && req.body.roundType !== 'tieBreaker'))
+    ) {
+      apiController.submitResponse(req, res, next)
     } else {
       utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Sufficient data to validate was not provided.')
     }
