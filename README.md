@@ -1,6 +1,6 @@
 # station-two
 
-Create and host your own trivia 🎉
+Create and host your own trivia 🎉 (in the works, coming soon!)
 
 ---
 
