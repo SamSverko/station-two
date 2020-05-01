@@ -13,7 +13,7 @@ const utils = require('./utils')
 
 // express-validator parameters
 const validateData = {
-  action: check('action').isString().isIn(['joinLobby', 'leaveLobby', 'markQuestion', 'markTieBreaker', 'submitResponse', 'removeRound']),
+  action: check('action').isString().isIn(['joinLobby', 'leaveLobby', 'markQuestion', 'markTieBreaker', 'submitResponse', 'removeRound', 'addRound']),
   collection: check('collection').isString().isIn([DB_COLLECTION_TRIVIA, DB_COLLECTION_LOBBIES]),
   isHost: check('isHost').trim().escape().isIn([true]),
   name: check('name').isString().trim().escape().matches(/^[a-z0-9]+$/, 'i').isLength({ min: 3, max: 10 }),
@@ -132,6 +132,12 @@ router.post(`/api/v${API_VERSION}/:collection/:action`, [
       (!isNaN(req.body.roundNumber))
     ) {
       apiController.removeRound(req, res, next)
+    } else if (
+      req.params.action === 'addRound' &&
+      typeof req.body.roundType !== 'undefined'
+    ) {
+      // TODO: Handle add round
+      res.send('addRound')
     } else {
       utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Sufficient data to validate was not provided.')
     }
