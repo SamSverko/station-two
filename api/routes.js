@@ -20,9 +20,11 @@ const validateData = {
   playerResponse: check('playerResponse').isString().trim().escape(),
   playersOnly: check('playersOnly').trim().escape().isIn([true]),
   questionNumber: check('questionNumber').trim().escape().toInt().isInt({ min: 0, max: 19 }),
+  roundPointValue: check('roundPointValue').trim().escape().toFloat().isFloat({ min: 0.5, max: 10.0 }),
   roundNumber: check('roundNumber').trim().escape().toInt().isInt({ min: 0, max: 9 }),
+  roundTheme: check('roundTheme').isString().trim().escape(),
   roundType: check('roundType').isString().isIn(['multipleChoice', 'lightning', 'picture', 'tieBreaker']),
-  score: check('score').trim().escape().toFloat().isFloat({ min: 0, max: 10 }),
+  score: check('score').trim().escape().toFloat().isFloat({ min: 0, max: 10.0 }),
   tieBreaker: check('tieBreaker').trim().escape().isIn([true]),
   triviaId: check('triviaId').isString().trim().escape().isLength({ min: 4, max: 4 }),
   uniqueId: check('uniqueId').isString().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 })
@@ -83,7 +85,9 @@ router.post(`/api/v${API_VERSION}/:collection/:action`, [
   validateData.tieBreaker.optional(),
   validateData.score.optional(),
   validateData.roundType.optional(),
-  validateData.playerResponse.optional()
+  validateData.playerResponse.optional(),
+  validateData.roundTheme.optional(),
+  validateData.roundPointValue.optional()
 ], (req, res, next) => {
   console.log(`${req.method} request for ${req.url}.`)
 
@@ -134,10 +138,10 @@ router.post(`/api/v${API_VERSION}/:collection/:action`, [
       apiController.removeRound(req, res, next)
     } else if (
       req.params.action === 'addRound' &&
-      typeof req.body.roundType !== 'undefined'
+      typeof req.body.roundType !== 'undefined' &&
+      typeof req.body.roundTheme !== 'undefined'
     ) {
-      // TODO: Handle add round
-      res.send('addRound')
+      apiController.addRound(req, res, next)
     } else {
       utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Sufficient data to validate was not provided.')
     }

@@ -8,6 +8,9 @@ const fetch = require('fetch').fetchUrl
 const utils = require('./utils')
 
 module.exports = {
+  addRound: async (req, res, next) => {
+    res.send(req.body)
+  },
   joinLobby: async (req, res, next) => {
     fetch(`http://localhost:4000/api/v1/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}?playersOnly=true`, (error, meta, body) => {
       if (error) {
