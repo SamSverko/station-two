@@ -13,26 +13,27 @@ const utils = require('./utils')
 
 // express-validator parameters
 const validateData = {
-  action: check('action').isString().isIn(['joinLobby', 'leaveLobby', 'markQuestion', 'markTieBreaker', 'submitResponse', 'removeRound', 'addRound']),
-  collection: check('collection').isString().isIn([DB_COLLECTION_TRIVIA, DB_COLLECTION_LOBBIES]),
-  isHost: check('isHost').trim().escape().isBoolean().toBoolean(),
-  name: body('name').isString().trim().escape().isLength({ min: 3, max: 10 }),
-  nameOptional: body('name').isString().trim().escape().isLength({ min: 3, max: 10 }).optional(),
-  playerResponse: check('playerResponse').isString().trim().escape(),
-  playersOnlyOptional: check('playersOnly').trim().escape().isIn([true]).optional(),
-  questionNumberOptional: check('questionNumber').trim().escape().toInt().isInt({ min: 0, max: 19 }).optional(),
-  roundPointValue: check('roundPointValue').trim().escape().toFloat().isFloat({ min: 0.5, max: 10.0 }),
-  roundNumber: check('roundNumber').trim().escape().toInt().isInt({ min: 0, max: 9 }),
-  roundNumberOptional: check('roundNumber').trim().escape().toInt().isInt({ min: 0, max: 9 }).optional(),
-  roundQuestions: check('roundQuestions').isArray().notEmpty(),
-  roundQuestionsQuestion: check('roundQuestions.*.question').isString().notEmpty().trim().escape(),
-  roundTheme: check('roundTheme').isString().trim().escape(),
-  roundType: check('roundType').isString().isIn(['multipleChoice', 'lightning', 'picture', 'tieBreaker']),
-  score: check('score').trim().escape().toFloat().isFloat({ min: 0, max: 10.0 }),
-  tieBreakerOptional: check('tieBreaker').trim().escape().isIn([true]).optional(),
-  triviaId: check('triviaId').isString().trim().escape().isLength({ min: 4, max: 4 }),
-  uniqueId: check('uniqueId').isString().not().isEmpty().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }),
-  uniqueIdOptional: check('uniqueId').isString().not().isEmpty().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }).optional()
+  collection: check('collection', 'Value must be [trivia] or [lobbies]').isString().isIn([DB_COLLECTION_TRIVIA, DB_COLLECTION_LOBBIES]),
+  isHost: check('isHost', 'Value must be [true] or [false]').trim().escape().isBoolean().toBoolean(),
+  name: body('name', 'Value must be between 3 and 10 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().escape().isLength({ min: 3, max: 10 }),
+  nameOptional: body('name', 'Value must be between 3 and 10 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().escape().isLength({ min: 3, max: 10 }).optional(),
+  playerResponse: check('playerResponse', 'Value can be any length greater than 1 of all characters').isString().trim().escape(),
+  playersOnlyOptional: check('playersOnly', 'Value must be [true]').trim().escape().isIn([true]).optional(),
+  questionNumberOptional: check('questionNumber', 'Value must be between [0] and [19] (inclusive)').trim().escape().toInt().isInt({ min: 0, max: 19 }).optional(),
+  roundPointValueOptional: check('roundPointValue', 'Value must be between [0.5] and [10.0] (inclusive)').trim().escape().toFloat().isFloat({ min: 0.5, max: 10.0 }).optional(),
+  roundNumber: check('roundNumber', 'Value must be between [0] and [9] (inclusive)').trim().escape().toInt().isInt({ min: 0, max: 9 }),
+  roundNumberOptional: check('roundNumber', 'Value must be between [0] and [9] (inclusive)').trim().escape().toInt().isInt({ min: 0, max: 9 }).optional(),
+  roundQuestions: check('roundQuestions', 'Value must be an array with between [1] and [20] (inclusive) items').isArray().notEmpty().isLength({ min: 1, max: 20 }),
+  roundQuestionsOptions: check('roundQuestions.*.options', 'Value must be an array with exactly 4 items').isArray().notEmpty(),
+  roundQuestionsOptionsOption: check('roundQuestions.*.options.*', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape(),
+  roundQuestionsQuestion: check('roundQuestions.*.question', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape(),
+  roundThemeOptional: check('roundTheme', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape().optional(),
+  roundType: check('roundType', 'Value must be either [multipleChoice], [lightning], [picture], or [tieBreaker]').isString().isIn(['multipleChoice', 'lightning', 'picture', 'tieBreaker']),
+  score: check('score', 'Value must be between [0.0] and [10.0] (inclusive)').trim().escape().toFloat().isFloat({ min: 0, max: 10.0 }),
+  tieBreakerOptional: check('tieBreaker', 'Value must be [true]').trim().escape().isIn([true]).optional(),
+  triviaId: check('triviaId', 'Value must be 4 alphabetical characters [a-z]').isString().trim().escape().isLength({ min: 4, max: 4 }),
+  uniqueId: check('uniqueId', 'Value must be 36 alphabetical characters, including dashes [a-z-]').isString().not().isEmpty().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }),
+  uniqueIdOptional: check('uniqueId', 'Value must be 36 alphabetical characters, including dashes [a-z-]').isString().not().isEmpty().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }).optional()
 }
 
 // routes
@@ -58,20 +59,6 @@ router.get(`/api/v${API_VERSION}/getDocument/:collection/:triviaId`, [
   try {
     validationResult(req).throw()
     apiController.getDocument(req, res, next)
-  } catch (validationError) {
-    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
-  }
-})
-
-// create trivia & lobby
-router.post(`/api/v${API_VERSION}/createTrivia`, [
-  validateData.name
-], (req, res, next) => {
-  console.log(`${req.method} request for CREATE TRIVIA & LOBBY.`)
-
-  try {
-    validationResult(req).throw()
-    apiController.createTriviaAndLobby(req, res, next)
   } catch (validationError) {
     utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
   }
@@ -108,7 +95,58 @@ router.post(`/api/v${API_VERSION}/leaveLobby`, [
   }
 })
 
-// mark question
+// create trivia & lobby
+router.post(`/api/v${API_VERSION}/createTrivia`, [
+  validateData.name
+], (req, res, next) => {
+  console.log(`${req.method} request for CREATE TRIVIA & LOBBY.`)
+
+  try {
+    validationResult(req).throw()
+    apiController.createTriviaAndLobby(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
+// add multiple choice round
+router.post(`/api/v${API_VERSION}/addMultipleChoiceRound`, [
+  validateData.triviaId,
+  validateData.roundThemeOptional,
+  validateData.roundPointValueOptional,
+  validateData.roundQuestions,
+  validateData.roundQuestionsQuestion,
+  validateData.roundQuestionsOptions,
+  validateData.roundQuestionsOptionsOption
+], (req, res, next) => {
+  console.log(`${req.method} request for ADD ROUND.`)
+  try {
+    validationResult(req).throw()
+
+    req.body.roundTheme = (typeof req.body.roundTheme !== 'undefined') ? req.body.roundTheme : 'none'
+    req.body.roundPointValue = (typeof req.body.roundPointValue !== 'undefined') ? req.body.roundPointValue : 1
+
+    apiController.addMultipleChoiceRound(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
+// delete round
+router.post(`/api/v${API_VERSION}/deleteRound`, [
+  validateData.triviaId,
+  validateData.roundNumber
+], (req, res, next) => {
+  console.log(`${req.method} request for DELETE ROUND.`)
+  try {
+    validationResult(req).throw()
+    apiController.deleteRound(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
+// mark response
 router.post(`/api/v${API_VERSION}/markResponse`, [
   validateData.triviaId,
   validateData.name,
@@ -170,20 +208,6 @@ router.post(`/api/v${API_VERSION}/submitResponse`, [
         utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Validation error for \'roundNumber\' and/or \'questionNumber\' body values.')
       }
     }
-  } catch (validationError) {
-    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
-  }
-})
-
-// delete round
-router.post(`/api/v${API_VERSION}/deleteRound`, [
-  validateData.triviaId,
-  validateData.roundNumber
-], (req, res, next) => {
-  console.log(`${req.method} request for DELETE ROUND.`)
-  try {
-    validationResult(req).throw()
-    apiController.deleteRound(req, res, next)
   } catch (validationError) {
     utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
   }

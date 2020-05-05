@@ -8,7 +8,7 @@ const fetch = require('fetch').fetchUrl
 const utils = require('./utils')
 
 module.exports = {
-  addRound: async (req, res, next) => {
+  addMultipleChoiceRound: async (req, res, next) => {
     res.send(req.body)
   },
   createTriviaAndLobby: async (req, res, next) => {
