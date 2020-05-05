@@ -11,37 +11,7 @@ module.exports = {
   addRound: async (req, res, next) => {
     res.send(req.body)
   },
-  joinLobby: async (req, res, next) => {
-    fetch(`http://localhost:4000/api/v1/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}?playersOnly=true`, (error, meta, body) => {
-      if (error) {
-        utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId} .`)
-      }
-      const lobby = JSON.parse(body)
-      if (req.body.isHost || lobby.length > 0) {
-        req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
-          { triviaId: req.body.triviaId.toLowerCase() },
-          {
-            $addToSet: {
-              players: {
-                name: req.body.name.toLowerCase(),
-                uniqueId: req.body.uniqueId.toLowerCase()
-              }
-            }
-          },
-          (error, result) => {
-            if (error) {
-              utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() updateOne\' query failed.')
-            } else {
-              res.sendStatus(200)
-            }
-          }
-        )
-      } else {
-        utils.handleServerError(next, 401, 'Lobby is not available to join.', req.method, req.url, 'The host has not yet entered the lobby, meaning you cannot.')
-      }
-    })
-  },
-  insertTriviaAndLobby: async (req, res, next) => {
+  createTriviaAndLobby: async (req, res, next) => {
     // retrieve all existing triviaIds
     req.app.db.collection(DB_COLLECTION_TRIVIA).find(
       {},
@@ -56,7 +26,7 @@ module.exports = {
       })
       .toArray((error, documents) => {
         if (error) {
-          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'insertTriviaAndLobby() find\' query failed.')
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'createTriviaAndLobby() find\' query failed.')
         } else {
           const existingTriviaIds = []
           documents.forEach((document) => {
@@ -82,7 +52,7 @@ module.exports = {
             },
             (error, triviaResult) => {
               if (error) {
-                utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'insertTriviaAndLobby() insertOne trivia' query failed for triviaId: ${newTriviaId} .`)
+                utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'createTriviaAndLobby() insertOne trivia' query failed for triviaId: ${newTriviaId} .`)
               } else {
                 // insert associated lobby document
                 req.app.db.collection(DB_COLLECTION_LOBBIES).insertOne(
@@ -95,7 +65,7 @@ module.exports = {
                   },
                   (error, lobbiesResult) => {
                     if (error) {
-                      utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'insertTriviaAndLobby() insertOne lobby' query failed for triviaId: ${newTriviaId} .`)
+                      utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'createTriviaAndLobby() insertOne lobby' query failed for triviaId: ${newTriviaId} .`)
                     } else {
                       // return created trivia and lobby documents
                       res.send([triviaResult.ops[0], lobbiesResult.ops[0]])
@@ -107,6 +77,37 @@ module.exports = {
           )
         }
       })
+  },
+  joinLobby: async (req, res, next) => {
+    fetch(`http://localhost:4000/api/v1/getDocument/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}?playersOnly=true`, (error, meta, body) => {
+      if (error) {
+        utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId} .`)
+      }
+      const lobby = JSON.parse(body)
+      console.log(lobby)
+      if (req.body.isHost || lobby.length > 0) {
+        req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
+          { triviaId: req.body.triviaId.toLowerCase() },
+          {
+            $addToSet: {
+              players: {
+                name: req.body.name.toLowerCase(),
+                uniqueId: req.body.uniqueId.toLowerCase()
+              }
+            }
+          },
+          (error, result) => {
+            if (error) {
+              utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() updateOne\' query failed.')
+            } else {
+              res.sendStatus(200)
+            }
+          }
+        )
+      } else {
+        utils.handleServerError(next, 401, 'Lobby is not available to join.', req.method, req.url, 'The host has not yet entered the lobby, meaning you cannot.')
+      }
+    })
   },
   getDocument: async (req, res, next) => {
     // we must return entire document from db here, then filter on the server because aggregate methods aren't available in MongoDB Atlas free tier
