@@ -225,7 +225,7 @@ module.exports = {
       }
     )
   },
-  removeRound: async (req, res, next) => {
+  deleteRound: async (req, res, next) => {
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
       { triviaId: req.body.triviaId },
       {
@@ -235,7 +235,7 @@ module.exports = {
       },
       (error, result) => {
         if (error) {
-          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'removeRound() updateOne $unset\' query failed.')
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'deleteRound() updateOne $unset\' query failed.')
         } else {
           req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
             { triviaId: req.body.triviaId },
@@ -246,7 +246,7 @@ module.exports = {
             },
             (error, result) => {
               if (error) {
-                utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'removeRound() updateOne $pull\' query failed.')
+                utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'deleteRound() updateOne $pull\' query failed.')
               } else {
                 res.sendStatus(200)
               }

@@ -22,6 +22,7 @@ const validateData = {
   playersOnlyOptional: check('playersOnly').trim().escape().isIn([true]).optional(),
   questionNumberOptional: check('questionNumber').trim().escape().toInt().isInt({ min: 0, max: 19 }).optional(),
   roundPointValue: check('roundPointValue').trim().escape().toFloat().isFloat({ min: 0.5, max: 10.0 }),
+  roundNumber: check('roundNumber').trim().escape().toInt().isInt({ min: 0, max: 9 }),
   roundNumberOptional: check('roundNumber').trim().escape().toInt().isInt({ min: 0, max: 9 }).optional(),
   roundQuestions: check('roundQuestions').isArray().notEmpty(),
   roundQuestionsQuestion: check('roundQuestions.*.question').isString().notEmpty().trim().escape(),
@@ -144,6 +145,7 @@ router.post(`/api/v${API_VERSION}/submitResponse`, [
   validateData.roundNumberOptional,
   validateData.questionNumberOptional
 ], (req, res, next) => {
+  console.log(`${req.method} request for SUBMIT RESPONSE.`)
   try {
     validationResult(req).throw()
     if (req.body.roundType === 'tieBreaker') {
@@ -173,85 +175,19 @@ router.post(`/api/v${API_VERSION}/submitResponse`, [
   }
 })
 
-// router.post(`/api/v${API_VERSION}/:collection/:action`, [
-//   validateData.collection,
-//   validateData.action,
-//   validateData.triviaId,
-//   validateData.name.optional(),
-//   validateData.uniqueId.optional(),
-//   validateData.isHost.optional(),
-//   validateData.roundNumber.optional(),
-//   validateData.questionNumber.optional(),
-//   validateData.tieBreaker.optional(),
-//   validateData.score.optional(),
-//   validateData.roundType.optional(),
-//   validateData.playerResponse.optional(),
-//   validateData.roundTheme.optional(),
-//   validateData.roundPointValue.optional(),
-//   validateData.roundQuestions.optional(),
-//   validateData.roundQuestionsQuestion.optional()
-// ], (req, res, next) => {
-//   console.log(`${req.method} request for ${req.url}.`)
-
-//   try {
-//     validationResult(req).throw()
-//     if (
-//       req.params.action === 'joinLobby' &&
-//       req.params.collection === DB_COLLECTION_LOBBIES &&
-//       typeof req.body.name !== 'undefined' &&
-//       typeof req.body.uniqueId !== 'undefined'
-//     ) {
-//       apiController.joinLobby(req, res, next) // ===================== DONE =====================
-//     } else if (
-//       req.params.action === 'leaveLobby' &&
-//       req.params.collection === DB_COLLECTION_LOBBIES &&
-//       typeof req.body.name !== 'undefined' &&
-//       typeof req.body.uniqueId !== 'undefined'
-//     ) {
-//       apiController.leaveLobby(req, res, next) // ===================== DONE =====================
-//     } else if (
-//       req.params.action === 'markQuestion' &&
-//       req.params.collection === DB_COLLECTION_LOBBIES &&
-//       (typeof req.body.name !== 'undefined' && typeof req.body.uniqueId !== 'undefined') &&
-//       (typeof req.body.roundNumber !== 'undefined' && typeof req.body.questionNumber !== 'undefined') &&
-//       typeof req.body.score !== 'undefined'
-//     ) {
-//       apiController.markQuestionTieBreaker(req, res, next) // ===================== DONE =====================
-//     } else if (
-//       req.params.action === 'markTieBreaker' &&
-//       req.params.collection === DB_COLLECTION_LOBBIES &&
-//       (typeof req.body.name !== 'undefined' && typeof req.body.uniqueId !== 'undefined') &&
-//       typeof req.body.score !== 'undefined'
-//     ) {
-//       apiController.markQuestionTieBreaker(req, res, next) // ===================== DONE =====================
-//     } else if (
-//       req.params.action === 'submitResponse' &&
-//       req.params.collection === DB_COLLECTION_LOBBIES &&
-//       (typeof req.body.name !== 'undefined' && typeof req.body.uniqueId !== 'undefined') &&
-//       (typeof req.body.roundNumber !== 'undefined' && typeof req.body.questionNumber !== 'undefined') &&
-//       (((req.body.roundType === 'multipleChoice' || req.body.roundType === 'tieBreaker') && !isNaN(req.body.playerResponse)) || (req.body.roundType !== 'multipleChoice' && req.body.roundType !== 'tieBreaker'))
-//     ) {
-//       apiController.submitResponse(req, res, next) // ===================== DONE =====================
-//     } else if (
-//       req.params.action === 'removeRound' &&
-//       req.params.collection === DB_COLLECTION_TRIVIA &&
-//       (!isNaN(req.body.roundNumber))
-//     ) {
-//       apiController.removeRound(req, res, next)
-//     } else if (
-//       req.params.action === 'addRound' &&
-//       typeof req.body.roundType !== 'undefined' &&
-//       typeof req.body.roundTheme !== 'undefined' &&
-//       (typeof req.body.roundQuestions !== 'undefined' || typeof req.body.roundPictures !== 'undefined')
-//     ) {
-//       apiController.addRound(req, res, next)
-//     } else {
-//       utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Sufficient data to validate was not provided.')
-//     }
-//   } catch (validationError) {
-//     utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
-//   }
-// })
+// delete round
+router.post(`/api/v${API_VERSION}/deleteRound`, [
+  validateData.triviaId,
+  validateData.roundNumber
+], (req, res, next) => {
+  console.log(`${req.method} request for DELETE ROUND.`)
+  try {
+    validationResult(req).throw()
+    apiController.deleteRound(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
 
 // 404 handler
 router.get('*', (req, res) => {
