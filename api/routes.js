@@ -107,6 +107,72 @@ router.post(`/api/v${API_VERSION}/leaveLobby`, [
   }
 })
 
+// mark question
+router.post(`/api/v${API_VERSION}/markResponse`, [
+  validateData.triviaId,
+  validateData.name,
+  validateData.uniqueId,
+  validateData.roundType,
+  validateData.score,
+  validateData.roundNumberOptional,
+  validateData.questionNumberOptional
+], (req, res, next) => {
+  console.log(`${req.method} request for MARK RESPONSE.`)
+  try {
+    validationResult(req).throw()
+    if (req.body.roundType === 'tieBreaker') {
+      apiController.markQuestionTieBreaker(req, res, next)
+    } else {
+      if (typeof req.body.roundNumber !== 'undefined' && typeof req.body.questionNumber !== 'undefined') {
+        apiController.markQuestionTieBreaker(req, res, next)
+      } else {
+        utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Missing \'roundNumber\' and/or \'questionNumber\' body values.')
+      }
+    }
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
+// submit response
+router.post(`/api/v${API_VERSION}/submitResponse`, [
+  validateData.triviaId,
+  validateData.name,
+  validateData.uniqueId,
+  validateData.roundType,
+  validateData.playerResponse,
+  validateData.roundNumberOptional,
+  validateData.questionNumberOptional
+], (req, res, next) => {
+  try {
+    validationResult(req).throw()
+    if (req.body.roundType === 'tieBreaker') {
+      if (!isNaN(req.body.playerResponse)) {
+        req.body.playerResponse = parseInt(req.body.playerResponse)
+        apiController.submitResponse(req, res, next)
+      } else {
+        utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Incorrect playerResponse format.')
+      }
+    } else if (req.body.roundType === 'multipleChoice') {
+      const multipleChoiceValues = [0, 1, 2, 3]
+      req.body.playerResponse = parseInt(req.body.playerResponse)
+      if (multipleChoiceValues.includes(req.body.playerResponse) && typeof req.body.roundNumber !== 'undefined' && typeof req.body.questionNumber !== 'undefined') {
+        apiController.submitResponse(req, res, next)
+      } else {
+        utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Validation error for \'playerResponse\', \'roundNumber\', and/or \'questionNumber\' body values.')
+      }
+    } else {
+      if (req.body.roundNumber !== 'undefined' && typeof req.body.questionNumber !== 'undefined') {
+        apiController.submitResponse(req, res, next)
+      } else {
+        utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, 'Validation error for \'roundNumber\' and/or \'questionNumber\' body values.')
+      }
+    }
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
 // router.post(`/api/v${API_VERSION}/:collection/:action`, [
 //   validateData.collection,
 //   validateData.action,
@@ -150,14 +216,14 @@ router.post(`/api/v${API_VERSION}/leaveLobby`, [
 //       (typeof req.body.roundNumber !== 'undefined' && typeof req.body.questionNumber !== 'undefined') &&
 //       typeof req.body.score !== 'undefined'
 //     ) {
-//       apiController.markQuestionTieBreaker(req, res, next)
+//       apiController.markQuestionTieBreaker(req, res, next) // ===================== DONE =====================
 //     } else if (
 //       req.params.action === 'markTieBreaker' &&
 //       req.params.collection === DB_COLLECTION_LOBBIES &&
 //       (typeof req.body.name !== 'undefined' && typeof req.body.uniqueId !== 'undefined') &&
 //       typeof req.body.score !== 'undefined'
 //     ) {
-//       apiController.markQuestionTieBreaker(req, res, next)
+//       apiController.markQuestionTieBreaker(req, res, next) // ===================== DONE =====================
 //     } else if (
 //       req.params.action === 'submitResponse' &&
 //       req.params.collection === DB_COLLECTION_LOBBIES &&
@@ -165,7 +231,7 @@ router.post(`/api/v${API_VERSION}/leaveLobby`, [
 //       (typeof req.body.roundNumber !== 'undefined' && typeof req.body.questionNumber !== 'undefined') &&
 //       (((req.body.roundType === 'multipleChoice' || req.body.roundType === 'tieBreaker') && !isNaN(req.body.playerResponse)) || (req.body.roundType !== 'multipleChoice' && req.body.roundType !== 'tieBreaker'))
 //     ) {
-//       apiController.submitResponse(req, res, next)
+//       apiController.submitResponse(req, res, next) // ===================== DONE =====================
 //     } else if (
 //       req.params.action === 'removeRound' &&
 //       req.params.collection === DB_COLLECTION_TRIVIA &&

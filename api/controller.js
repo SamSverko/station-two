@@ -185,13 +185,13 @@ module.exports = {
         }
       }
     }
-    if (req.params.action === 'markQuestion') {
+    if (req.body.roundType === 'tieBreaker') {
+      filter.responses.$elemMatch.roundType = 'tieBreaker'
+    } else {
       filter.responses.$elemMatch.roundNumber = req.body.roundNumber
       filter.responses.$elemMatch.questionNumber = req.body.questionNumber
-    } else if (req.params.action === 'markTieBreaker') {
-      filter.responses.$elemMatch.roundType = 'tieBreaker'
     }
-    req.app.db.collection(req.params.collection).updateOne(
+    req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
       filter,
       {
         $set: { 'responses.$.score': req.body.score }
@@ -268,6 +268,7 @@ module.exports = {
       responseToPull.roundNumber = req.body.roundNumber
       responseToPull.questionNumber = req.body.questionNumber
     }
+    // delete existing response if exists
     req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
       { triviaId: req.body.triviaId },
       {
@@ -278,7 +279,8 @@ module.exports = {
           utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'submitResponse() updateOne $pull\' query failed.')
         } else {
           const responseToAdd = responseToPull
-          responseToAdd.response = (req.body.roundType === 'tieBreaker' || req.body.roundType === 'multipleChoice') ? parseInt(req.body.playerResponse) : req.body.playerResponse
+          responseToAdd.response = req.body.playerResponse
+          // insert response
           req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
             { triviaId: req.body.triviaId },
             { $addToSet: { responses: responseToAdd } },
