@@ -23,8 +23,10 @@ const validateData = {
   roundPointValueOptional: check('roundPointValue', 'Value must be between [0.5] and [10.0] (inclusive)').trim().escape().toFloat().isFloat({ min: 0.5, max: 10.0 }).optional(),
   roundNumber: check('roundNumber', 'Value must be between [0] and [9] (inclusive)').trim().escape().toInt().isInt({ min: 0, max: 9 }),
   roundNumberOptional: check('roundNumber', 'Value must be between [0] and [9] (inclusive)').trim().escape().toInt().isInt({ min: 0, max: 9 }).optional(),
+  roundPictures: check('roundPictures', 'Value must be an array with between [1] and [20] (inclusive) items').isArray().notEmpty().isLength({ min: 1, max: 20 }),
   roundQuestions: check('roundQuestions', 'Value must be an array with between [1] and [20] (inclusive) items').isArray().notEmpty().isLength({ min: 1, max: 20 }),
-  roundQuestionsOptions: check('roundQuestions.*.options', 'Value must be an array with exactly 4 items').isArray().notEmpty(),
+  roundQuestionsAnswer: check('roundQuestions.*.answer', 'Value must be between [0] and [3] inclusive').toInt().isInt({ min: 0, max: 3 }),
+  roundQuestionsOptions: check('roundQuestions.*.options', 'Value must be an array with 4 items').isArray().notEmpty(),
   roundQuestionsOptionsOption: check('roundQuestions.*.options.*', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape(),
   roundQuestionsQuestion: check('roundQuestions.*.question', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape(),
   roundThemeOptional: check('roundTheme', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape().optional(),
@@ -117,16 +119,51 @@ router.post(`/api/v${API_VERSION}/addMultipleChoiceRound`, [
   validateData.roundQuestions,
   validateData.roundQuestionsQuestion,
   validateData.roundQuestionsOptions,
-  validateData.roundQuestionsOptionsOption
+  validateData.roundQuestionsOptionsOption,
+  validateData.roundQuestionsAnswer
 ], (req, res, next) => {
-  console.log(`${req.method} request for ADD ROUND.`)
+  console.log(`${req.method} request for ADD MULTIPLE CHOICE ROUND.`)
   try {
     validationResult(req).throw()
 
     req.body.roundTheme = (typeof req.body.roundTheme !== 'undefined') ? req.body.roundTheme : 'none'
     req.body.roundPointValue = (typeof req.body.roundPointValue !== 'undefined') ? req.body.roundPointValue : 1
 
+    // validate [roundQuestions.*.options] length
+    req.body.roundQuestions.forEach((question) => {
+      if (question.options.length !== 4) {
+        utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, '[roundQuestions.*.options] must be an array with 4 items')
+      }
+    })
+
     apiController.addMultipleChoiceRound(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
+// add picture round
+router.post(`/api/v${API_VERSION}/addPictureRound`, [
+  validateData.triviaId,
+  validateData.roundThemeOptional,
+  validateData.roundPointValueOptional,
+  validateData.roundPictures
+], (req, res, next) => {
+  console.log(`${req.method} request for ADD MULTIPLE CHOICE ROUND.`)
+  try {
+    validationResult(req).throw()
+
+    req.body.roundTheme = (typeof req.body.roundTheme !== 'undefined') ? req.body.roundTheme : 'none'
+    req.body.roundPointValue = (typeof req.body.roundPointValue !== 'undefined') ? req.body.roundPointValue : 1
+
+    // validate [roundQuestions.*.options] length
+    // req.body.roundQuestions.forEach((question) => {
+    //   if (question.options.length !== 4) {
+    //     utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, '[roundQuestions.*.options] must be an array with 4 items')
+    //   }
+    // })
+
+    apiController.addPictureRound(req, res, next)
   } catch (validationError) {
     utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
   }
