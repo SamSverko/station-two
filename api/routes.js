@@ -38,6 +38,8 @@ const validateData = {
   roundType: check('roundType', 'Value must be either [multipleChoice], [lightning], [picture], or [tieBreaker]').isString().isIn(['multipleChoice', 'lightning', 'picture', 'tieBreaker']),
   score: check('score', 'Value must be between [0.0] and [10.0] (inclusive)').trim().escape().toFloat().isFloat({ min: 0, max: 10.0 }),
   tieBreakerOptional: check('tieBreaker', 'Value must be [true]').trim().escape().isIn([true]).optional(),
+  tieBreakerAnswer: check('tieBreakerAnswer', 'Value must be an integer of any amount').trim().escape().toInt().isInt(),
+  tieBreakerQuestion: check('tieBreakerQuestion', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape(),
   triviaId: check('triviaId', 'Value must be 4 alphabetical characters [a-z]').isString().trim().escape().isLength({ min: 4, max: 4 }),
   uniqueId: check('uniqueId', 'Value must be 36 alphabetical characters, including dashes [a-z-]').isString().not().isEmpty().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }),
   uniqueIdOptional: check('uniqueId', 'Value must be 36 alphabetical characters, including dashes [a-z-]').isString().not().isEmpty().trim().escape().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }).optional()
@@ -186,6 +188,22 @@ router.post(`/api/v${API_VERSION}/addPictureRound`, [
     req.body.roundPointValue = (typeof req.body.roundPointValue !== 'undefined') ? req.body.roundPointValue : 1
 
     apiController.addPictureRound(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
+// update tie breaker
+router.post(`/api/v${API_VERSION}/updateTieBreaker`, [
+  validateData.triviaId,
+  validateData.tieBreakerQuestion,
+  validateData.tieBreakerAnswer
+], (req, res, next) => {
+  console.log(`${req.method} request for TIE BREAKER.`)
+  try {
+    validationResult(req).throw()
+
+    apiController.updateTieBreaker(req, res, next)
   } catch (validationError) {
     utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
   }

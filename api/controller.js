@@ -77,6 +77,27 @@ module.exports = {
       }
     )
   },
+  updateTieBreaker: async (req, res, next) => {
+    const tieBreakerToInsert = {
+      question: req.body.tieBreakerQuestion,
+      answer: req.body.tieBreakerAnswer
+    }
+    req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
+      { triviaId: req.body.triviaId },
+      {
+        $set: {
+          tieBreaker: tieBreakerToInsert
+        }
+      },
+      (error, result) => {
+        if (error) {
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'updateTieBreaker() updateOne\' query failed.')
+        } else {
+          res.sendStatus(200)
+        }
+      }
+    )
+  },
   createTriviaAndLobby: async (req, res, next) => {
     // retrieve all existing triviaIds
     req.app.db.collection(DB_COLLECTION_TRIVIA).find(
