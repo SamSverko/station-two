@@ -17,15 +17,17 @@ const validateData = {
   isHost: check('isHost', 'Value must be [true] or [false]').trim().escape().isBoolean().toBoolean(),
   name: body('name', 'Value must be between 3 and 10 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().escape().isLength({ min: 3, max: 10 }),
   nameOptional: body('name', 'Value must be between 3 and 10 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().escape().isLength({ min: 3, max: 10 }).optional(),
-  playerResponse: check('playerResponse', 'Value can be any length greater than 1 of all characters').isString().trim().escape(),
+  playerResponse: check('playerResponse', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape(),
   playersOnlyOptional: check('playersOnly', 'Value must be [true]').trim().escape().isIn([true]).optional(),
   questionNumberOptional: check('questionNumber', 'Value must be between [0] and [19] (inclusive)').trim().escape().toInt().isInt({ min: 0, max: 19 }).optional(),
   roundPointValueOptional: check('roundPointValue', 'Value must be between [0.5] and [10.0] (inclusive)').trim().escape().toFloat().isFloat({ min: 0.5, max: 10.0 }).optional(),
   roundNumber: check('roundNumber', 'Value must be between [0] and [9] (inclusive)').trim().escape().toInt().isInt({ min: 0, max: 9 }),
   roundNumberOptional: check('roundNumber', 'Value must be between [0] and [9] (inclusive)').trim().escape().toInt().isInt({ min: 0, max: 9 }).optional(),
   roundPictures: check('roundPictures', 'Value must be an array with between [1] and [20] (inclusive) items').isArray().notEmpty().isLength({ min: 1, max: 20 }),
+  roundPicturesUrl: check('roundPictures.*.url', 'Value must be a valid [URL]').isString().notEmpty().trim(),
+  roundPicturesAnswer: check('roundPictures.*.answer', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape(),
   roundQuestions: check('roundQuestions', 'Value must be an array with between [1] and [20] (inclusive) items').isArray().notEmpty().isLength({ min: 1, max: 20 }),
-  roundQuestionsAnswer: check('roundQuestions.*.answer', 'Value must be between [0] and [3] inclusive').toInt().isInt({ min: 0, max: 3 }),
+  roundQuestionsAnswer: check('roundQuestions.*.answer', 'Value can be any length greater than 1 of all characters').toInt().isInt({ min: 0, max: 3 }),
   roundQuestionsOptions: check('roundQuestions.*.options', 'Value must be an array with 4 items').isArray().notEmpty(),
   roundQuestionsOptionsOption: check('roundQuestions.*.options.*', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape(),
   roundQuestionsQuestion: check('roundQuestions.*.question', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim().escape(),
@@ -147,7 +149,9 @@ router.post(`/api/v${API_VERSION}/addPictureRound`, [
   validateData.triviaId,
   validateData.roundThemeOptional,
   validateData.roundPointValueOptional,
-  validateData.roundPictures
+  validateData.roundPictures,
+  validateData.roundPicturesUrl,
+  validateData.roundPicturesAnswer
 ], (req, res, next) => {
   console.log(`${req.method} request for ADD MULTIPLE CHOICE ROUND.`)
   try {
@@ -155,13 +159,6 @@ router.post(`/api/v${API_VERSION}/addPictureRound`, [
 
     req.body.roundTheme = (typeof req.body.roundTheme !== 'undefined') ? req.body.roundTheme : 'none'
     req.body.roundPointValue = (typeof req.body.roundPointValue !== 'undefined') ? req.body.roundPointValue : 1
-
-    // validate [roundQuestions.*.options] length
-    // req.body.roundQuestions.forEach((question) => {
-    //   if (question.options.length !== 4) {
-    //     utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, '[roundQuestions.*.options] must be an array with 4 items')
-    //   }
-    // })
 
     apiController.addPictureRound(req, res, next)
   } catch (validationError) {

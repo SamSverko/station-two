@@ -32,7 +32,27 @@ module.exports = {
     )
   },
   addPictureRound: async (req, res, next) => {
-    res.send(req.body)
+    const roundToInsert = {
+      type: 'picture',
+      theme: req.body.roundTheme,
+      pointValue: req.body.roundPointValue,
+      questions: req.body.roundPictures
+    }
+    req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
+      { triviaId: req.body.triviaId },
+      {
+        $push: {
+          rounds: roundToInsert
+        }
+      },
+      (error, result) => {
+        if (error) {
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'addPictureRound() updateOne\' query failed.')
+        } else {
+          res.sendStatus(200)
+        }
+      }
+    )
   },
   createTriviaAndLobby: async (req, res, next) => {
     // retrieve all existing triviaIds
