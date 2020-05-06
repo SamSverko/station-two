@@ -209,6 +209,16 @@ module.exports = {
         } else {
           let document = result
           if (req.params.collection === DB_COLLECTION_TRIVIA) {
+            if (typeof req.query.roundNumber !== 'undefined' && typeof req.query.questionNumber !== 'undefined') {
+              if (document.rounds[req.query.roundNumber].type === 'picture') {
+                document = document.rounds[req.query.roundNumber].pictures[req.query.questionNumber]
+              } else {
+                document = document.rounds[req.query.roundNumber].questions[req.query.questionNumber]
+              }
+              delete document.answer
+            } else if (typeof req.query.roundNumber !== 'undefined') {
+              document = document.rounds[req.query.roundNumber]
+            }
           } else if (req.params.collection === DB_COLLECTION_LOBBIES) {
             // tieBreaker responses || specified responses from specified round || all responses from specified round || specified responses from all rounds
             if (typeof req.query.playersOnly !== 'undefined') {
