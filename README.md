@@ -105,6 +105,9 @@ Data is provided through REST API endpoints. View the [API Documentation](https:
 - [@testing-library/jest-dom](https://www.npmjs.com/package/@testing-library/jest-dom) - Custom jest matchers to test the state of the DOM.
 - [@testing-library/react](https://www.npmjs.com/package/@testing-library/react) - Simple and complete React DOM testing utilities that encourage good testing practices..
 - [@testing-library/user-event](https://www.npmjs.com/package/@testing-library/user-event) - Simulate user events for react-testing-library.
+- [bootstrap](https://www.npmjs.com/package/bootstrap) - The most popular front-end framework for developing responsive, mobile first projects on the web.
 - [react](https://www.npmjs.com/package/react) - React is a JavaScript library for building user interfaces.
+- [react-bootstrap](https://www.npmjs.com/package/react-bootstrap) - Bootstrap 4 components built with React.
 - [react-dom](https://www.npmjs.com/package/react-dom) - React package for working with the DOM.
+- [react-router-dom](https://www.npmjs.com/package/react-router-dom) - DOM bindings for React Router.
 - [react-scripts](https://www.npmjs.com/package/react-scripts) - https://www.npmjs.com/package/react-scripts.
