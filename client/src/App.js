@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import IndexView from './views/Index'
 import LobbyView from './views/Lobby'
 import TriviaBuilderView from './views/TriviaBuilder'
+import Error404 from './views/Error404'
 
 const routes = [
   {
@@ -39,15 +40,14 @@ function App () {
           }
         })
 
-        // display view
+        // display view, or if no view found, display 404 page
         return (
-          <div>
-            <Switch>
-              {routes.map((route, i) => (
-                <Route key={i} {...route} />
-              ))}
-            </Switch>
-          </div>
+          <Switch>
+            {routes.map((route, i) => (
+              <Route key={i} {...route} />
+            ))}
+            <Route component={Error404} />
+          </Switch>
         )
       }}
       />

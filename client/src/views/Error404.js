@@ -2,13 +2,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-function Lobby () {
+function Error404 () {
   return (
     <div>
-      <h1>Lobby page</h1>
+      <h1>404 page</h1>
       <Link to='/'>To Index</Link>
     </div>
   )
 }
 
-export default Lobby
+export default Error404
