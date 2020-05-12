@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 // views
 import IndexView from './views/Index'
 import LobbyView from './views/Lobby'
-import TriviaBuilderView from './views/TriviaBuilder'
+import BuilderView from './views/Builder'
 import Error404 from './views/Error404'
 
 const routes = [
@@ -22,9 +22,9 @@ const routes = [
     exact: true
   },
   {
-    title: 'Trivia Builder',
+    title: 'Builder',
     path: '/builder',
-    component: TriviaBuilderView,
+    component: BuilderView,
     exact: true
   }
 ]

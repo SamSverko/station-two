@@ -2,6 +2,12 @@
 import React, { useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
 
+const codeInputStyle = {
+  minWidth: '70px',
+  textTransform: 'uppercase',
+  width: '50%'
+}
+
 function IndexPlayerForm () {
   const [validated, setValidated] = useState(false)
 
@@ -34,11 +40,11 @@ function IndexPlayerForm () {
       <Form.Group className='text-left' controlId='formHostCode'>
         <Form.Label>Code</Form.Label>
         <Form.Control
-          className='text-uppercase w-25'
           maxLength='4'
           pattern='[A-Za-z]{4}'
           placeholder='ABCD'
           required
+          style={codeInputStyle}
           type='text'
         />
         <Form.Control.Feedback>Looks good!</Form.Control.Feedback>

@@ -2,6 +2,12 @@
 import React, { useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
 
+const codeInputStyle = {
+  minWidth: '70px',
+  textTransform: 'uppercase',
+  width: '50%'
+}
+
 function IndexHostForm () {
   const [validated, setValidated] = useState(false)
   const [name, setName] = useState(false)
@@ -13,8 +19,20 @@ function IndexHostForm () {
 
     if (event.currentTarget.checkValidity() !== false) {
       // POST form data to server and redirect
-      console.log(name)
-      console.log(code)
+      if (name && !code) {
+        const xhttp = new window.XMLHttpRequest()
+        xhttp.onreadystatechange = function () {
+          if (this.readyState === 4 && this.status === 200) {
+            const data = JSON.parse(this.response)
+            window.location = `/builder?triviaId=${data[0].triviaId}`
+          }
+        }
+        xhttp.open('POST', 'http://localhost:4000/api/v1/createTrivia')
+        xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+        xhttp.send(JSON.stringify({ name: name }))
+      } else {
+        window.location = `/builder?triviaId=${code}`
+      }
     }
     setValidated(true)
   }
@@ -42,11 +60,11 @@ function IndexHostForm () {
       <Form.Group className='text-left' controlId='formHostCode'>
         <Form.Label>Code</Form.Label>
         <Form.Control
-          className='text-uppercase w-25'
           maxLength='4'
           onChange={(event) => setCode(event.target.value)}
           pattern='[A-Za-z]{4}'
           placeholder='ABCD'
+          style={codeInputStyle}
           type='text'
         />
         <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
