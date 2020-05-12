@@ -111,3 +111,4 @@ Data is provided through REST API endpoints. View the [API Documentation](https:
 - [react-dom](https://www.npmjs.com/package/react-dom) - React package for working with the DOM.
 - [react-router-dom](https://www.npmjs.com/package/react-router-dom) - DOM bindings for React Router.
 - [react-scripts](https://www.npmjs.com/package/react-scripts) - https://www.npmjs.com/package/react-scripts.
+- [styled-components](https://www.npmjs.com/package/styled-components) - Visual primitives for the component age. Use the best bits of ES6 and CSS to style your apps without stress.

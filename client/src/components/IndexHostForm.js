@@ -41,7 +41,7 @@ const IndexHostForm = () => {
 
   return (
     <Form noValidate onSubmit={handleSubmit} validated={validated}>
-      <h2>Host trivia</h2>
+      <h2>Host Trivia</h2>
 
       <Form.Group className='text-left' controlId='formHostName'>
         <Form.Label>Name</Form.Label>

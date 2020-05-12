@@ -29,7 +29,7 @@ const IndexPlayerForm = () => {
 
   return (
     <Form noValidate onSubmit={handleSubmit} validated={validated}>
-      <h2>Play trivia</h2>
+      <h2>Play Trivia</h2>
       <Form.Group className='text-left' controlId='formHostName'>
         <Form.Label>Name</Form.Label>
         <Form.Control
