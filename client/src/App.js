@@ -2,7 +2,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { Container } from 'react-bootstrap'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 
 // views
 import IndexView from './views/Index'
@@ -11,6 +11,12 @@ import BuilderView from './views/Builder'
 import Error404 from './views/Error404'
 
 // styles
+const GlobalStyle = createGlobalStyle`
+  .card {
+    margin: 0 0 15px 0;
+  }
+`
+
 const PageStyle = styled(Container)`
   max-width: 400px;
   padding: 15px;
@@ -43,6 +49,7 @@ const App = () => {
   return (
     <Router>
       <PageStyle fluid>
+        <GlobalStyle />
         <Route render={(props) => {
           // update page title
           routes.forEach((route) => {

@@ -11,7 +11,6 @@ const Index = () => {
       <h1>Station Two Trivia&nbsp;<span aria-label='firetruck emoji' role='img'>🚒</span></h1>
       <hr />
       <HostForm />
-      <hr />
       <PlayerForm />
     </div>
   )
