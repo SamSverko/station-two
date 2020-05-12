@@ -1,16 +1,9 @@
 // dependencies
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
-import { Container } from 'react-bootstrap'
 
 // components
 import BuilderAddARound from '../components/BuilderAddARound'
-
-const pageStyle = {
-  maxWidth: '400px',
-  padding: '15px',
-  textAlign: 'center'
-}
 
 const Builder = () => {
   const history = useHistory()
@@ -42,7 +35,7 @@ const Builder = () => {
   }, [fetchTrivia, triviaId])
 
   return (
-    <Container fluid style={pageStyle}>
+    <div>
       <h1>Trivia Builder <span aria-label='building construction emoji' role='img'>🏗</span></h1>
       <hr />
       {trivia &&
@@ -52,7 +45,7 @@ const Builder = () => {
           </p>
           <BuilderAddARound />
         </>}
-    </Container>
+    </div>
   )
 }
 
