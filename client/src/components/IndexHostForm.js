@@ -1,5 +1,6 @@
 // dependencies
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import { Button, Form } from 'react-bootstrap'
 
 const codeInputStyle = {
@@ -8,7 +9,8 @@ const codeInputStyle = {
   width: '50%'
 }
 
-function IndexHostForm () {
+const IndexHostForm = () => {
+  const history = useHistory()
   const [validated, setValidated] = useState(false)
   const [name, setName] = useState(false)
   const [code, setCode] = useState(false)
@@ -24,14 +26,14 @@ function IndexHostForm () {
         xhttp.onreadystatechange = function () {
           if (this.readyState === 4 && this.status === 200) {
             const data = JSON.parse(this.response)
-            window.location = `/builder?triviaId=${data[0].triviaId}`
+            history.push(`/builder/${data[0].triviaId}`)
           }
         }
         xhttp.open('POST', 'http://localhost:4000/api/v1/createTrivia')
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify({ name: name }))
       } else {
-        window.location = `/builder?triviaId=${code}`
+        history.push(`/builder/${code}`)
       }
     }
     setValidated(true)
@@ -61,6 +63,7 @@ function IndexHostForm () {
         <Form.Label>Code</Form.Label>
         <Form.Control
           maxLength='4'
+          name='code'
           onChange={(event) => setCode(event.target.value)}
           pattern='[A-Za-z]{4}'
           placeholder='ABCD'

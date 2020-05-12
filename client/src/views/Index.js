@@ -12,7 +12,7 @@ const pageStyle = {
   textAlign: 'center'
 }
 
-function Index () {
+const Index = () => {
   return (
     <Container fluid style={pageStyle}>
       <h1>Station Two Trivia&nbsp;<span aria-label='firetruck emoji' role='img'>🚒</span></h1>

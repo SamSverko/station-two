@@ -17,19 +17,19 @@ const routes = [
   },
   {
     title: 'Lobby',
-    path: '/lobby',
+    path: '/lobby/:triviaId',
     component: LobbyView,
     exact: true
   },
   {
     title: 'Builder',
-    path: '/builder',
+    path: '/builder/:triviaId',
     component: BuilderView,
     exact: true
   }
 ]
 
-function App () {
+const App = () => {
   return (
     <Router>
       <Route render={(props) => {

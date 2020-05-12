@@ -1,5 +1,6 @@
 // dependencies
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import { Button, Form } from 'react-bootstrap'
 
 const codeInputStyle = {
@@ -8,15 +9,20 @@ const codeInputStyle = {
   width: '50%'
 }
 
-function IndexPlayerForm () {
+const IndexPlayerForm = () => {
+  const history = useHistory()
   const [validated, setValidated] = useState(false)
+  const [name, setName] = useState(false)
+  const [code, setCode] = useState(false)
 
   const handleSubmit = (event) => {
     event.preventDefault()
     event.stopPropagation()
 
     if (event.currentTarget.checkValidity() !== false) {
-      window.location.href = '/lobby'
+      if (name && code) {
+        history.push(`/lobby/${code}`)
+      }
     }
     setValidated(true)
   }
@@ -29,6 +35,8 @@ function IndexPlayerForm () {
         <Form.Control
           className='text-lowercase'
           maxLength='10'
+          name='name'
+          onChange={(event) => setName(event.target.value)}
           pattern='[A-Za-z0-9]{3,10}'
           placeholder='Name'
           required
@@ -41,6 +49,8 @@ function IndexPlayerForm () {
         <Form.Label>Code</Form.Label>
         <Form.Control
           maxLength='4'
+          name='code'
+          onChange={(event) => setCode(event.target.value)}
           pattern='[A-Za-z]{4}'
           placeholder='ABCD'
           required

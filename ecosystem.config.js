@@ -6,7 +6,7 @@ module.exports = {
     out_file: './logs/output.log',
     script: './server.js',
     watch: true,
-    ignore_watch: ['app/public', 'app/views', 'logs', 'node_modules']
+    ignore_watch: ['client', 'client/src', 'logs', 'node_modules']
   },
   {
     error_file: './logs/error.log',
