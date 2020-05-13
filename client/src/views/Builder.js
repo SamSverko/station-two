@@ -4,7 +4,11 @@ import { Link, useHistory, useParams } from 'react-router-dom'
 
 // components
 import Header from '../components/Header'
-import AddARound from '../components/AddARound'
+import RoundInfo from '../components/RoundInfo'
+import AddARound from '../components/Builder/AddARound'
+
+// components
+import ExistingRounds from '../components/Builder/ExistingRounds'
 
 const Builder = () => {
   const history = useHistory()
@@ -22,7 +26,7 @@ const Builder = () => {
       }).then((data) => {
         if (!data.statusCode) {
           setTrivia(data)
-          console.log(data)
+          // console.log(data)
         } else {
           history.push('/')
         }
@@ -41,9 +45,8 @@ const Builder = () => {
 
       {trivia &&
         <>
-          <p>
-            <b>Host:</b> {trivia.host} | <b>Code:</b> <span className='text-uppercase'>{trivia.triviaId}</span>
-          </p>
+          <RoundInfo code={trivia.triviaId} host={trivia.host} />
+          <ExistingRounds rounds={trivia.rounds} />
           <AddARound />
         </>}
 
