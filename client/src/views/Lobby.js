@@ -2,12 +2,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+// components
+import Header from '../components/Header'
+
 const Lobby = () => {
   return (
-    <div>
-      <h1>Lobby page</h1>
+    <>
+      <Header text='Lobby' emoji='🏟' emojiDescription='stadium' />
       <Link to='/'>To Index</Link>
-    </div>
+    </>
   )
 }
 

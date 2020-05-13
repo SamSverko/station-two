@@ -2,12 +2,16 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+// components
+import Header from '../components/Header'
+
 const Error404 = () => {
   return (
-    <div>
-      <h1>404 page</h1>
+    <>
+      <Header text='404' emoji='🔮' emojiDescription='crystal ball' />
+
       <Link to='/'>To Index</Link>
-    </div>
+    </>
   )
 }
 

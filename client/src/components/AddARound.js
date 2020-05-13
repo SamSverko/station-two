@@ -4,7 +4,7 @@ import { Button, Card } from 'react-bootstrap'
 import styled from 'styled-components'
 
 // styles
-const AddARoundRow = styled.div`
+const AddARoundSelectionRowStyle = styled.div`
   div {
     &:last-child {
       p {
@@ -18,13 +18,13 @@ const AddARoundRow = styled.div`
   }
 `
 
-const BuilderAddARound = () => {
+const AddARoundSelection = () => {
   return (
     <Card>
       <Card.Body>
         <Card.Title>Add A Round</Card.Title>
         <hr />
-        <AddARoundRow>
+        <AddARoundSelectionRowStyle>
           <div>
             <Button variant='primary'>Multiple Choice</Button>
             <p className='text-muted'>Players guess A, B, C, or D.</p>
@@ -39,10 +39,10 @@ const BuilderAddARound = () => {
             <Button variant='primary'>Lightning</Button>
             <p className='text-muted'>Players provide exact answer.</p>
           </div>
-        </AddARoundRow>
+        </AddARoundSelectionRowStyle>
       </Card.Body>
     </Card>
   )
 }
 
-export default BuilderAddARound
+export default AddARoundSelection

@@ -6,6 +6,10 @@ import styled, { createGlobalStyle } from 'styled-components'
 
 // views
 import IndexView from './views/Index'
+import PlayView from './views/Play'
+import HostView from './views/Host'
+import HostNewView from './views/HostNew'
+import HostExistingView from './views/HostExisting'
 import LobbyView from './views/Lobby'
 import BuilderView from './views/Builder'
 import Error404 from './views/Error404'
@@ -14,6 +18,12 @@ import Error404 from './views/Error404'
 const GlobalStyle = createGlobalStyle`
   .card {
     margin: 0 0 15px 0;
+  }
+  .two-selection-buttons {
+    font-size: 3em;
+    margin: 0 0 15px 0;
+    min-height: 25vh;
+    width: 100%;
   }
 `
 
@@ -29,6 +39,30 @@ const routes = [
     title: 'Home',
     path: '/',
     component: IndexView,
+    exact: true
+  },
+  {
+    title: 'Play',
+    path: '/play',
+    component: PlayView,
+    exact: true
+  },
+  {
+    title: 'Host',
+    path: '/host',
+    component: HostView,
+    exact: true
+  },
+  {
+    title: 'Host - New',
+    path: '/host/new',
+    component: HostNewView,
+    exact: true
+  },
+  {
+    title: 'Host - Existing',
+    path: '/host/existing',
+    component: HostExistingView,
     exact: true
   },
   {

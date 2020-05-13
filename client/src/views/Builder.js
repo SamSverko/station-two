@@ -1,9 +1,10 @@
 // dependencies
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 
 // components
-import BuilderAddARound from '../components/BuilderAddARound'
+import Header from '../components/Header'
+import AddARound from '../components/AddARound'
 
 const Builder = () => {
   const history = useHistory()
@@ -35,17 +36,19 @@ const Builder = () => {
   }, [fetchTrivia, triviaId])
 
   return (
-    <div>
-      <h1>Trivia Builder <span aria-label='building construction emoji' role='img'>🏗</span></h1>
-      <hr />
+    <>
+      <Header text='Trivia Builder' emoji='🏗' emojiDescription='building construction' />
+
       {trivia &&
         <>
           <p>
             <b>Host:</b> {trivia.host} | <b>Code:</b> <span className='text-uppercase'>{trivia.triviaId}</span>
           </p>
-          <BuilderAddARound />
+          <AddARound />
         </>}
-    </div>
+
+      <Link to='/'>Home</Link>
+    </>
   )
 }
 

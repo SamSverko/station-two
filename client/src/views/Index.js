@@ -1,18 +1,24 @@
 // dependencies
 import React from 'react'
+import { Link } from 'react-router-dom'
+import { Button } from 'react-bootstrap'
 
 // components
-import HostForm from '../components/IndexHostForm'
-import PlayerForm from '../components/IndexPlayerForm'
+import Header from '../components/Header'
 
 const Index = () => {
   return (
-    <div>
-      <h1>Station Two Trivia&nbsp;<span aria-label='firetruck emoji' role='img'>🚒</span></h1>
-      <hr />
-      <HostForm />
-      <PlayerForm />
-    </div>
+    <>
+      <Header text='Station Two Trivia' emoji='🚒' emojiDescription='firetruck' />
+
+      <Link to='/play'>
+        <Button className='two-selection-buttons'>Play <span aria-label='tada emoji' role='img'>🎉</span></Button>
+      </Link>
+
+      <Link to='/host'>
+        <Button className='two-selection-buttons' variant='danger'>Host <span aria-label='crown emoji' role='img'>👑</span></Button>
+      </Link>
+    </>
   )
 }
 
