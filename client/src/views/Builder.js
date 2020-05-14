@@ -7,6 +7,7 @@ import { Card } from 'react-bootstrap'
 import Header from '../components/Header'
 import TriviaInfo from '../components/TriviaInfo'
 import AddARound from '../components/Builder/AddARound'
+import TieBreaker from '../components/Builder/TieBreaker'
 
 // components
 import ExistingRounds from '../components/Builder/ExistingRounds'
@@ -55,6 +56,7 @@ const Builder = () => {
         <>
           <TriviaInfo code={trivia.triviaId} host={trivia.host} />
           <ExistingRounds rounds={trivia.rounds} />
+          <TieBreaker tieBreaker={trivia.tieBreaker} />
           <AddARound />
         </>}
 

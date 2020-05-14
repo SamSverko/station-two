@@ -35,8 +35,6 @@ const RoundStyle = styled.div`
 `
 
 const ExistingRounds = ({ rounds }) => {
-  console.log(rounds)
-
   const DisplayRoundsTitle = () => {
     let titleText = ''
     if (rounds.length > 1) {
@@ -46,7 +44,7 @@ const ExistingRounds = ({ rounds }) => {
     } else {
       titleText = 'No rounds of trivia'
     }
-    return <summary class='h5 mb-0'>{titleText}</summary>
+    return <summary className='h5 mb-0'>{titleText}</summary>
   }
 
   const DisplayRounds = () => {
