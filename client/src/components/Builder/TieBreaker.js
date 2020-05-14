@@ -37,46 +37,53 @@ const TieBreaker = ({ tieBreaker }) => {
   return (
     <Card>
       <Card.Body>
-        <Card.Title>Tie Breaker</Card.Title>
-        <p className='text-muted'>
-          Question must be number-based.<br />
+        <details>
+          <summary className='h5 mb-0'>Tie Breaker</summary>
+
+          <hr />
+
+          <p className='text-muted'>
+            Question must be number-based.<br />
           (e.g. "How tall is the CN tower in metres?")
-        </p>
+          </p>
 
-        <Form noValidate onSubmit={handleSubmit} validated={validated}>
+          <Form noValidate onSubmit={handleSubmit} validated={validated}>
 
-          <Form.Group className='text-left' controlId='formQuestion'>
-            <Form.Label>Question</Form.Label>
-            <Form.Control
-              name='question'
-              onChange={(event) => setQuestion(event.target.value)}
-              placeholder='Question'
-              required
-              type='text'
-            />
-            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-            <Form.Control.Feedback type='invalid'><b>Question</b> must be filled out.</Form.Control.Feedback>
-          </Form.Group>
+            <Form.Group className='text-left' controlId='formQuestion'>
+              <Form.Label>Question</Form.Label>
+              <Form.Control
+                name='question'
+                onChange={(event) => setQuestion(event.target.value)}
+                placeholder='Question'
+                required
+                type='text'
+              />
+              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><b>Question</b> must be filled out.</Form.Control.Feedback>
+            </Form.Group>
 
-          <Form.Group className='text-left' controlId='formAnswer'>
-            <Form.Label>Answer</Form.Label>
-            <Form.Control
-              name='answer'
-              onChange={(event) => setAnswer(event.target.value)}
-              placeholder='Answer'
-              required
-              type='number'
-            />
-            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-            <Form.Control.Feedback type='invalid'><b>Answer</b> must be a number.</Form.Control.Feedback>
-          </Form.Group>
+            <Form.Group className='text-left' controlId='formAnswer'>
+              <Form.Label>Answer</Form.Label>
+              <Form.Control
+                name='answer'
+                onChange={(event) => setAnswer(event.target.value)}
+                placeholder='Answer'
+                required
+                type='number'
+              />
+              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><b>Answer</b> must be a number.</Form.Control.Feedback>
+            </Form.Group>
 
-          {!tieBreaker.question &&
-            <Button type='submit' variant='primary'>Save Tie Breaker</Button>}
+            {!tieBreaker.question && (
+              <Button type='submit' variant='primary'>Save Tie Breaker</Button>
+            )}
 
-          {tieBreaker.question &&
-            <Button type='submit' variant='primary'>Update Tie Breaker</Button>}
-        </Form>
+            {tieBreaker.question && (
+              <Button type='submit' variant='primary'>Update Tie Breaker</Button>
+            )}
+          </Form>
+        </details>
       </Card.Body>
     </Card>
   )

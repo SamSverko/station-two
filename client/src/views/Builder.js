@@ -45,20 +45,22 @@ const Builder = () => {
     <>
       <Header text='Trivia Builder' emoji='🏗' emojiDescription='building construction' />
 
-      {!trivia &&
+      {!trivia && (
         <Card>
           <Card.Body>
             <p className='font-weight-bold mb-0'>Loading trivia data <span aria-label='hourglass flowing sand emoji' role='img'>⏳</span></p>
           </Card.Body>
-        </Card>}
+        </Card>
+      )}
 
-      {trivia &&
+      {trivia && (
         <>
           <TriviaInfo code={trivia.triviaId} host={trivia.host} />
           <ExistingRounds rounds={trivia.rounds} />
           <TieBreaker tieBreaker={trivia.tieBreaker} />
           <AddARound />
-        </>}
+        </>
+      )}
 
       <Link to='/'>Home</Link>
     </>
