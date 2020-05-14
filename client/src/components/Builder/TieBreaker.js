@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
-
 import { Button, Card, Form } from 'react-bootstrap'
+
+// components
+import ReadyBadge from './ReadyBadge'
 
 const TieBreaker = ({ tieBreaker }) => {
   const [validated, setValidated] = useState(false)
@@ -37,8 +39,8 @@ const TieBreaker = ({ tieBreaker }) => {
   return (
     <Card>
       <Card.Body>
-        <details>
-          <summary className='h5 mb-0'>Tie Breaker</summary>
+        <details open={!tieBreaker.question}>
+          <summary className='h5 mb-0'>Tie Breaker <ReadyBadge isReady={tieBreaker.question} /></summary>
 
           <hr />
 

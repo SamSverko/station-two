@@ -3,6 +3,9 @@ import React, { useState } from 'react'
 import { Button, Card } from 'react-bootstrap'
 import styled from 'styled-components'
 
+// components
+import ReadyBadge from './ReadyBadge'
+
 // styles
 const RoundStyle = styled.div`
   .title {
@@ -37,33 +40,29 @@ const RoundStyle = styled.div`
 const ExistingRounds = ({ rounds }) => {
   const DisplayRoundsTitle = () => {
     let titleText = ''
-    if (rounds.length > 1) {
+    if (rounds.length !== 1) {
       titleText = `${rounds.length} Rounds`
     } else if (rounds.length === 1) {
       titleText = '1 Round'
-    } else {
-      titleText = 'No rounds of trivia'
     }
-    return <summary className='h5 mb-0'>{titleText}</summary>
+    return <summary className='h5 mb-0'>{titleText} <ReadyBadge isReady={rounds.length} /></summary>
   }
 
   const DisplayRounds = () => {
     return (
-      <>
-        <details>
-          <DisplayRoundsTitle />
-          {rounds.map((round, i) => {
-            if (round.type === 'multipleChoice') {
-              return <MultipleChoiceRound key={i} round={round} roundNumber={i} />
-            } else if (round.type === 'picture') {
-              return <PictureRound key={i} round={round} roundNumber={i} />
-            } else if (round.type === 'lightning') {
-              return <LightningRound key={i} round={round} roundNumber={i} />
-            }
-            return null
-          })}
-        </details>
-      </>
+      <details>
+        <DisplayRoundsTitle />
+        {rounds.map((round, i) => {
+          if (round.type === 'multipleChoice') {
+            return <MultipleChoiceRound key={i} round={round} roundNumber={i} />
+          } else if (round.type === 'picture') {
+            return <PictureRound key={i} round={round} roundNumber={i} />
+          } else if (round.type === 'lightning') {
+            return <LightningRound key={i} round={round} roundNumber={i} />
+          }
+          return null
+        })}
+      </details>
     )
   }
 
