@@ -6,7 +6,6 @@ import styled from 'styled-components'
 // styles
 const RoundStyle = styled.div`
   .title {
-    font-size: 1.25em;
     font-weight: bold;
   }
   .buttons {
@@ -28,25 +27,39 @@ const RoundStyle = styled.div`
   }
   details {
     text-align: left;
+    img {
+      height: auto;
+      width: 50%;
+    }
   }
 `
 
 const ExistingRounds = ({ rounds }) => {
   console.log(rounds)
 
-  const NoRounds = () => {
-    return (
-      <Card.Title>No rounds in trivia</Card.Title>
-    )
+  const DisplayRoundsTitle = () => {
+    if (rounds.length > 1) {
+      return <Card.Title>{rounds.length} Rounds</Card.Title>
+    } else if (rounds.length === 1) {
+      return <Card.Title>1 Round</Card.Title>
+    } else {
+      return <Card.Title className='mb-0'>No rounds of trivia</Card.Title>
+    }
   }
 
   const DisplayRounds = () => {
     return (
       <>
+        <DisplayRoundsTitle />
         {rounds.map((round, i) => {
           if (round.type === 'multipleChoice') {
             return <MultipleChoiceRound key={i} round={round} roundNumber={i} />
+          } else if (round.type === 'picture') {
+            return <PictureRound key={i} round={round} roundNumber={i} />
+          } else if (round.type === 'lightning') {
+            return <LightningRound key={i} round={round} roundNumber={i} />
           }
+          return null
         })}
       </>
     )
@@ -57,7 +70,6 @@ const ExistingRounds = ({ rounds }) => {
 
     return (
       <RoundStyle>
-        <h2>Rounds</h2>
         <hr />
         <p className='title'>Round {roundNumber + 1}</p>
         <div className='buttons'>
@@ -101,7 +113,97 @@ const ExistingRounds = ({ rounds }) => {
             )
           })}
         </details>
+      </RoundStyle>
+    )
+  }
+
+  const PictureRound = ({ round, roundNumber }) => {
+    const [areDetailsVisible, setAreDetailsVisible] = useState(false)
+
+    return (
+      <RoundStyle>
         <hr />
+        <p className='title'>Round {roundNumber + 1}</p>
+        <div className='buttons'>
+          <Button onClick={() => { console.log(`EDIT round ${roundNumber}`) }} variant='primary'>Edit</Button>
+          <Button onClick={() => { console.log(`DELETE round ${roundNumber}`) }} variant='danger'>Delete</Button>
+        </div>
+        <div className='info'>
+          <p>
+            <span className='font-weight-bold'>Type</span><br />
+            {round.type}
+          </p>
+          <p>
+            <span className='font-weight-bold'>Theme</span><br />
+            {round.theme}
+          </p>
+          <p>
+            <span className='font-weight-bold'>Questions</span><br />
+            {round.pictures.length}
+          </p>
+          <p>
+            <span className='font-weight-bold'>Point Value</span><br />
+            {round.pointValue}
+          </p>
+        </div>
+        <details>
+          <summary onClick={() => { setAreDetailsVisible(!areDetailsVisible) }}>{(areDetailsVisible) ? 'Hide' : 'Show'} pictures</summary>
+          {round.pictures.map((picture, i) => {
+            return (
+              <div key={i}>
+                <hr className='w-50' />
+                <p><span className='font-weight-bold'>Picture {i + 1}:</span></p>
+                <img alt={picture.answer} src={picture.url} />
+                <p><span className='font-weight-bold'>Answer:</span> {picture.answer}</p>
+              </div>
+            )
+          })}
+        </details>
+      </RoundStyle>
+    )
+  }
+
+  const LightningRound = ({ round, roundNumber }) => {
+    const [areDetailsVisible, setAreDetailsVisible] = useState(false)
+
+    return (
+      <RoundStyle>
+        <hr />
+        <p className='title'>Round {roundNumber + 1}</p>
+        <div className='buttons'>
+          <Button onClick={() => { console.log(`EDIT round ${roundNumber}`) }} variant='primary'>Edit</Button>
+          <Button onClick={() => { console.log(`DELETE round ${roundNumber}`) }} variant='danger'>Delete</Button>
+        </div>
+        <div className='info'>
+          <p>
+            <span className='font-weight-bold'>Type</span><br />
+            {round.type}
+          </p>
+          <p>
+            <span className='font-weight-bold'>Theme</span><br />
+            {round.theme}
+          </p>
+          <p>
+            <span className='font-weight-bold'>Questions</span><br />
+            {round.questions.length}
+          </p>
+          <p>
+            <span className='font-weight-bold'>Point Value</span><br />
+            {round.pointValue}
+          </p>
+        </div>
+        <details>
+          <summary onClick={() => { setAreDetailsVisible(!areDetailsVisible) }}>{(areDetailsVisible) ? 'Hide' : 'Show'} questions</summary>
+          {round.questions.map((question, i) => {
+            return (
+              <div key={i}>
+                <hr className='w-50' />
+                <p><span className='font-weight-bold'>Question {i + 1}:</span> {question.question}</p>
+                <p><span className='font-weight-bold'>Answer:</span> {question.answer}</p>
+              </div>
+            )
+          })}
+        </details>
       </RoundStyle>
     )
   }
@@ -109,8 +211,7 @@ const ExistingRounds = ({ rounds }) => {
   return (
     <Card>
       <Card.Body>
-        {rounds.length < 1 && <NoRounds />}
-        {rounds.length >= 1 && <DisplayRounds />}
+        <DisplayRounds />
       </Card.Body>
     </Card>
   )

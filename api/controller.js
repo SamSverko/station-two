@@ -59,7 +59,7 @@ module.exports = {
       type: 'picture',
       theme: req.body.roundTheme,
       pointValue: req.body.roundPointValue,
-      questions: req.body.roundPictures
+      pictures: req.body.roundPictures
     }
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
       { triviaId: req.body.triviaId },

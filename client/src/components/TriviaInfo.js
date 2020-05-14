@@ -2,7 +2,7 @@
 import React from 'react'
 import { Card } from 'react-bootstrap'
 
-const RoundInfo = ({ code, host }) => {
+const TriviaInfo = ({ code, host }) => {
   return (
     <Card>
       <Card.Body>
@@ -12,4 +12,4 @@ const RoundInfo = ({ code, host }) => {
   )
 }
 
-export default RoundInfo
+export default TriviaInfo

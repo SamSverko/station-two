@@ -1,10 +1,11 @@
 // dependencies
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
+import { Card } from 'react-bootstrap'
 
 // components
 import Header from '../components/Header'
-import RoundInfo from '../components/RoundInfo'
+import TriviaInfo from '../components/TriviaInfo'
 import AddARound from '../components/Builder/AddARound'
 
 // components
@@ -16,7 +17,7 @@ const Builder = () => {
   const [trivia, setTrivia] = useState(false)
 
   const fetchTrivia = useCallback(() => {
-    window.fetch(`http://localhost:4000/api/v1/getDocument/trivia/${triviaId}`)
+    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -43,9 +44,16 @@ const Builder = () => {
     <>
       <Header text='Trivia Builder' emoji='🏗' emojiDescription='building construction' />
 
+      {!trivia &&
+        <Card>
+          <Card.Body>
+            <p className='font-weight-bold mb-0'>Loading trivia data <span aria-label='hourglass flowing sand emoji' role='img'>⏳</span></p>
+          </Card.Body>
+        </Card>}
+
       {trivia &&
         <>
-          <RoundInfo code={trivia.triviaId} host={trivia.host} />
+          <TriviaInfo code={trivia.triviaId} host={trivia.host} />
           <ExistingRounds rounds={trivia.rounds} />
           <AddARound />
         </>}
