@@ -38,29 +38,33 @@ const ExistingRounds = ({ rounds }) => {
   console.log(rounds)
 
   const DisplayRoundsTitle = () => {
+    let titleText = ''
     if (rounds.length > 1) {
-      return <Card.Title>{rounds.length} Rounds</Card.Title>
+      titleText = `${rounds.length} Rounds`
     } else if (rounds.length === 1) {
-      return <Card.Title>1 Round</Card.Title>
+      titleText = '1 Round'
     } else {
-      return <Card.Title className='mb-0'>No rounds of trivia</Card.Title>
+      titleText = 'No rounds of trivia'
     }
+    return <summary class='h5 mb-0'>{titleText}</summary>
   }
 
   const DisplayRounds = () => {
     return (
       <>
-        <DisplayRoundsTitle />
-        {rounds.map((round, i) => {
-          if (round.type === 'multipleChoice') {
-            return <MultipleChoiceRound key={i} round={round} roundNumber={i} />
-          } else if (round.type === 'picture') {
-            return <PictureRound key={i} round={round} roundNumber={i} />
-          } else if (round.type === 'lightning') {
-            return <LightningRound key={i} round={round} roundNumber={i} />
-          }
-          return null
-        })}
+        <details>
+          <DisplayRoundsTitle />
+          {rounds.map((round, i) => {
+            if (round.type === 'multipleChoice') {
+              return <MultipleChoiceRound key={i} round={round} roundNumber={i} />
+            } else if (round.type === 'picture') {
+              return <PictureRound key={i} round={round} roundNumber={i} />
+            } else if (round.type === 'lightning') {
+              return <LightningRound key={i} round={round} roundNumber={i} />
+            }
+            return null
+          })}
+        </details>
       </>
     )
   }
