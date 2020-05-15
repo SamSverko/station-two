@@ -87,8 +87,6 @@ const App = () => {
         <Route render={(props) => {
           // update page title
           routes.forEach((route) => {
-            console.log('pathname', props.location.pathname)
-            console.log('path', route.path)
             if (route.path === props.location.pathname) {
               document.title = `${route.title} | Station Two`
             } else if (props.location.pathname.includes('/builder')) {
