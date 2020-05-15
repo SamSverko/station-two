@@ -1,5 +1,6 @@
 // dependencies
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Button, Card } from 'react-bootstrap'
 import styled from 'styled-components'
 
@@ -18,7 +19,7 @@ const AddARoundSelectionRowStyle = styled.div`
   }
 `
 
-const AddARoundSelection = () => {
+const AddARoundSelection = ({ triviaId }) => {
   return (
     <Card>
       <Card.Body>
@@ -26,7 +27,9 @@ const AddARoundSelection = () => {
         <hr />
         <AddARoundSelectionRowStyle>
           <div>
-            <Button variant='primary'>Multiple Choice</Button>
+            <Link to={`/builder/${triviaId}/multipleChoice`}>
+              <Button variant='primary'>Multiple Choice</Button>
+            </Link>
             <p className='text-muted'>Players guess A, B, C, or D.</p>
           </div>
           <hr />

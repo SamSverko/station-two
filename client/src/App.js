@@ -7,11 +7,16 @@ import styled, { createGlobalStyle } from 'styled-components'
 // views
 import IndexView from './views/Index'
 import PlayView from './views/Play'
+
 import HostView from './views/Host'
 import HostNewView from './views/HostNew'
 import HostExistingView from './views/HostExisting'
-import LobbyView from './views/Lobby'
+
 import BuilderView from './views/Builder'
+import FormMultipleChoiceView from './views/FormMultipleChoice'
+
+import LobbyView from './views/Lobby'
+
 import Error404 from './views/Error404'
 
 // styles
@@ -66,15 +71,21 @@ const routes = [
     exact: true
   },
   {
-    title: 'Lobby',
-    path: '/lobby/:triviaId',
-    component: LobbyView,
-    exact: true
-  },
-  {
     title: 'Builder',
     path: '/builder/:triviaId',
     component: BuilderView,
+    exact: true
+  },
+  {
+    title: 'Host - Multiple Choice',
+    path: '/builder/:triviaId/multipleChoice/',
+    component: FormMultipleChoiceView,
+    exact: true
+  },
+  {
+    title: 'Lobby',
+    path: '/lobby/:triviaId',
+    component: LobbyView,
     exact: true
   }
 ]
@@ -87,8 +98,6 @@ const App = () => {
         <Route render={(props) => {
           // update page title
           routes.forEach((route) => {
-            console.log('pathname', props.location.pathname)
-            console.log('path', route.path)
             if (route.path === props.location.pathname) {
               document.title = `${route.title} | Station Two`
             } else if (props.location.pathname.includes('/builder')) {

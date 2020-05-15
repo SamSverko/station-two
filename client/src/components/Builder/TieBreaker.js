@@ -4,7 +4,7 @@ import { Button, Card, Form } from 'react-bootstrap'
 // components
 import ReadyBadge from './ReadyBadge'
 
-const TieBreaker = ({ tieBreaker }) => {
+const TieBreaker = ({ fetchTrivia, tieBreaker, triviaId }) => {
   const [validated, setValidated] = useState(false)
   const [question, setQuestion] = useState(false)
   const [answer, setAnswer] = useState(false)
@@ -27,9 +27,15 @@ const TieBreaker = ({ tieBreaker }) => {
 
     if (event.currentTarget.checkValidity() !== false) {
       if (question && answer) {
-        console.log('EDIT TIE BREAKER')
-      } else {
-        console.log('SAM WAS RIGHT')
+        const xhttp = new window.XMLHttpRequest()
+        xhttp.onreadystatechange = function () {
+          if (this.readyState === 4 && this.status === 200) {
+            fetchTrivia()
+          }
+        }
+        xhttp.open('POST', 'http://localhost:4000/api/v1/updateTieBreaker')
+        xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+        xhttp.send(JSON.stringify({ triviaId: triviaId, tieBreakerQuestion: question, tieBreakerAnswer: answer }))
       }
     } else {
       setValidated(true)
