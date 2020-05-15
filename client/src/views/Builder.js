@@ -6,12 +6,10 @@ import { Card } from 'react-bootstrap'
 // components
 import Header from '../components/Header'
 import BuilderStatus from '../components/Builder/BuilderStatus'
+import ExistingRounds from '../components/Builder/ExistingRounds'
 import TriviaInfo from '../components/TriviaInfo'
 import AddARound from '../components/Builder/AddARound'
 import TieBreaker from '../components/Builder/TieBreaker'
-
-// components
-import ExistingRounds from '../components/Builder/ExistingRounds'
 
 const Builder = () => {
   const history = useHistory()
@@ -60,7 +58,7 @@ const Builder = () => {
           <BuilderStatus isRoundsComplete={(trivia.rounds.length > 0)} isTieBreakerComplete={(trivia.tieBreaker.question)} />
           <ExistingRounds rounds={trivia.rounds} />
           <TieBreaker fetchTrivia={fetchTrivia} tieBreaker={trivia.tieBreaker} triviaId={trivia.triviaId} />
-          <AddARound />
+          <AddARound triviaId={triviaId} />
         </>
       )}
 
