@@ -18,12 +18,19 @@ const RoundActionButtons = styled.div`
   }
 `
 
-const Question = ({ id }) => {
-  const [question, setQuestion] = useState(false)
+const Question = ({ id, roundQuestions, setRoundQuestion }) => {
+  const [question, setQuestion] = useState('')
   const [options, setOptions] = useState([])
-  const [answer, setAnswer] = useState(false)
+  const [answer, setAnswer] = useState('')
 
   const optionsArray = [0, 1, 2, 3]
+
+  const updateRoundQuestion = (id) => {
+    if (question.length > 0 && options.length > 0 && answer.length > 0) {
+      console.log(question, options, answer)
+    }
+  }
+
   return (
     <>
       {/* question */}
@@ -32,7 +39,7 @@ const Question = ({ id }) => {
         <Form.Control
           onChange={(event) => {
             setQuestion(event.target.value)
-            console.log(question)
+            updateRoundQuestion(id)
           }}
           placeholder='Question'
           required
@@ -56,7 +63,7 @@ const Question = ({ id }) => {
                 savedOptions[option] = event.target.value
 
                 setOptions(savedOptions)
-                console.log(options)
+                updateRoundQuestion(id)
               }}
               placeholder='Answer'
               required
@@ -81,7 +88,7 @@ const Question = ({ id }) => {
             name={`question${id}Answer`}
             onChange={(event) => {
               setAnswer(event.target.value)
-              console.log(answer)
+              updateRoundQuestion(id)
             }}
             required
             type='radio'
@@ -101,7 +108,7 @@ const FormMultipleChoice = () => {
   const [validated, setValidated] = useState(false)
   const [roundTheme, setRoundTheme] = useState('none')
   const [roundPointValue, setRoundPointValue] = useState(1)
-  // const [roundQuestions, setRoundQuestion] = useState([])
+  const [roundQuestions, setRoundQuestion] = useState([])
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -150,7 +157,7 @@ const FormMultipleChoice = () => {
 
             <hr />
 
-            <Question id={0} />
+            <Question id={0} roundQuestions={roundQuestions} setRoundQuestion={setRoundQuestion} />
 
             <RoundActionButtons>
               <Button className='item' type='submit' variant='primary'>Save</Button>
