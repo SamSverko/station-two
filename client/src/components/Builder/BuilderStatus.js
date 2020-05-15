@@ -12,6 +12,7 @@ const BuilderStatus = ({ isRoundsComplete, isTieBreakerComplete }) => {
   return (
     <Alert variant={isTriviaReady ? 'success' : 'danger'}>
       <p className='h5'>This trivia is {isTriviaReady ? null : 'not'} ready for hosting.</p>
+      <hr />
       <div className={isTriviaReady ? 'd-none' : 'd-block'}>
         <p>Complete the following:</p>
         <ol className='text-left'>
