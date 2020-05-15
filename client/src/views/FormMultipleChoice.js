@@ -1,5 +1,5 @@
 // dependencies
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Button, Card, Form } from 'react-bootstrap'
 import styled from 'styled-components'
@@ -25,14 +25,23 @@ const FormMultipleChoice = () => {
   const [validated, setValidated] = useState(false)
   const [roundTheme, setRoundTheme] = useState('none')
   const [roundPointValue, setRoundPointValue] = useState(1)
-  // const [roundQuestions, setRoundQuestion] = useState([])
+  const [roundQuestions, setRoundQuestions] = useState([])
+
+  const updateRoundQuestion = useCallback((question) => {
+    console.log('updateRoundQuestion')
+    setRoundQuestions(question)
+  })
+
+  useEffect(() => {
+    updateRoundQuestion()
+  }, [updateRoundQuestion])
 
   const handleSubmit = (event) => {
     event.preventDefault()
     event.stopPropagation()
 
     if (event.currentTarget.checkValidity() !== false) {
-      console.log(roundTheme, roundPointValue)
+      console.log(roundTheme, roundPointValue, roundQuestions)
     } else {
       setValidated(true)
     }
@@ -74,7 +83,7 @@ const FormMultipleChoice = () => {
 
             <hr />
 
-            <Question id={0} />
+            <Question id={0} updateRoundQuestion={updateRoundQuestion} />
 
             <RoundActionButtons>
               <Button className='item' type='submit' variant='primary'>Save</Button>
