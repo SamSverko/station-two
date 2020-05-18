@@ -20,6 +20,8 @@ const RoundActionButtons = styled.div`
 `
 
 const FormMultipleChoice = () => {
+  const optionsArray = [0, 1, 2, 3]
+
   const { triviaId } = useParams()
 
   const [validated, setValidated] = useState(false)
@@ -39,8 +41,6 @@ const FormMultipleChoice = () => {
     { ...blankQuestion }
   ])
 
-  const optionsArray = [0, 1, 2, 3]
-
   const addQuestion = () => {
     if (questionState.length < 3) {
       setIsMaxQuestionsReached(false)
@@ -51,7 +51,9 @@ const FormMultipleChoice = () => {
   }
 
   const removeQuestion = (id) => {
-    console.log(id)
+    const currentQuestions = [...questionState]
+    const updatedQuestions = currentQuestions.slice(0, id).concat(currentQuestions.slice(id + 1, currentQuestions.length))
+    setQuestionState(updatedQuestions)
   }
 
   const handleQuestionChange = (event) => {
