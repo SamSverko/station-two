@@ -225,6 +225,29 @@ router.post(`/api/v${API_VERSION}/addPictureRound`, [
   }
 })
 
+// update picture round
+router.post(`/api/v${API_VERSION}/updatePictureRound`, [
+  validateData.triviaId,
+  validateData.roundNumber,
+  validateData.roundThemeOptional,
+  validateData.roundPointValueOptional,
+  validateData.roundPictures,
+  validateData.roundPicturesUrl,
+  validateData.roundPicturesAnswer
+], (req, res, next) => {
+  console.log(`${req.method} request for UPDATE PICTURE ROUND.`)
+  try {
+    validationResult(req).throw()
+
+    req.body.roundTheme = (typeof req.body.roundTheme !== 'undefined') ? req.body.roundTheme : 'none'
+    req.body.roundPointValue = (typeof req.body.roundPointValue !== 'undefined') ? req.body.roundPointValue : 1
+
+    apiController.updatePictureRound(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
 // update tie breaker
 router.post(`/api/v${API_VERSION}/updateTieBreaker`, [
   validateData.triviaId,

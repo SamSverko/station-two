@@ -101,6 +101,30 @@ module.exports = {
       }
     )
   },
+  updatePictureRound: async (req, res, next) => {
+    const roundToInsert = {
+      type: 'picture',
+      theme: req.body.roundTheme,
+      pointValue: req.body.roundPointValue,
+      pictures: req.body.roundPictures
+    }
+
+    req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
+      { triviaId: req.body.triviaId },
+      {
+        $set: {
+          [`rounds.${req.body.roundNumber}`]: roundToInsert
+        }
+      },
+      (error, result) => {
+        if (error) {
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'addMultipleChoiceRound() updateOne\' query failed.')
+        } else {
+          res.sendStatus(200)
+        }
+      }
+    )
+  },
   updateTieBreaker: async (req, res, next) => {
     const tieBreakerToInsert = {
       question: req.body.tieBreakerQuestion,

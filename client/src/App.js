@@ -14,6 +14,7 @@ import HostExistingView from './views/HostExisting'
 
 import BuilderView from './views/Builder'
 import FormMultipleChoiceView from './views/FormMultipleChoice'
+import FormPictureView from './views/FormPicture'
 
 import LobbyView from './views/Lobby'
 
@@ -80,6 +81,12 @@ const routes = [
     title: 'Host - Multiple Choice',
     path: '/builder/:triviaId/multipleChoice/:roundNumber',
     component: FormMultipleChoiceView,
+    exact: true
+  },
+  {
+    title: 'Host - Picture',
+    path: '/builder/:triviaId/picture/:roundNumber',
+    component: FormPictureView,
     exact: true
   },
   {

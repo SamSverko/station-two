@@ -157,8 +157,8 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
         <hr />
         <p className='title'>Round {roundNumber + 1}</p>
         <div className='buttons'>
-          <Button onClick={() => { console.log(`EDIT round ${roundNumber}`) }} variant='primary'>Edit</Button>
-          <Button onClick={() => { console.log(`DELETE round ${roundNumber}`) }} variant='danger'>Delete</Button>
+          <Button onClick={() => { editRound('picture', roundNumber) }} variant='primary'>Edit</Button>
+          <Button onClick={() => { deleteRound(roundNumber) }} variant='danger'>Delete</Button>
         </div>
         <div className='info'>
           <p>
@@ -185,7 +185,7 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
               <div key={i}>
                 <hr className='w-50' />
                 <p><span className='font-weight-bold'>Picture {i + 1}:</span></p>
-                <img alt={picture.answer} src={picture.url} />
+                <img alt={picture.answer} className='mb-3' src={picture.url} />
                 <p><span className='font-weight-bold'>Answer:</span> {picture.answer}</p>
               </div>
             )

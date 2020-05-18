@@ -18,10 +18,9 @@ const RoundActionButtons = styled.div`
   }
 `
 
-const FormMultipleChoice = () => {
+const FormPicture = () => {
   // constants
-  const optionsArray = [0, 1, 2, 3]
-  const maxQuestions = 20
+  const maxPictures = 20
 
   // history & params
   const history = useHistory()
@@ -31,20 +30,20 @@ const FormMultipleChoice = () => {
   // state
   const [validated, setValidated] = useState(false)
   const [postStatus, setPostStatus] = useState('pending')
-  const [isMaxQuestionsReached, setIsMaxQuestionsReached] = useState(false)
+  const [isMaxPicturesReached, setIsMaxPicturesReached] = useState(false)
 
   const [roundInfoState, setRoundInfoState] = useState({
     theme: 'none',
-    questionPointValue: 1
+    picturePointValue: 1
   })
   const handleRoundInfoChange = (event) => setRoundInfoState({
     ...roundInfoState,
     [event.target.name]: event.target.value
   })
 
-  const blankQuestion = { question: '', answer: '', options: ['', '', '', ''] }
-  const [questionState, setQuestionState] = useState([
-    { ...blankQuestion }
+  const blankPicture = { url: '', answer: '' }
+  const [pictureState, setPictureState] = useState([
+    { ...blankPicture }
   ])
 
   // fetch round data (if editing existing round)
@@ -61,13 +60,9 @@ const FormMultipleChoice = () => {
           // populate form data
           setRoundInfoState({
             theme: data.theme,
-            questionPointValue: data.pointValue
+            picturePointValue: data.pointValue
           })
-          setQuestionState(data.questions)
-          // check the proper answer radio button
-          data.questions.forEach((question, counter) => {
-            document.getElementById(`question-${counter}-answer-${question.answer}`).checked = true
-          })
+          setPictureState(data.pictures)
         } else {
           history.push(`/builder/${triviaId}`)
         }
@@ -83,36 +78,62 @@ const FormMultipleChoice = () => {
   }, [fetchRound, roundNumber])
 
   // handle form updates
-  const addQuestion = () => {
-    setQuestionState([...questionState, { ...blankQuestion }])
+  const addPicture = () => {
+    setPictureState([...pictureState, { ...blankPicture }])
 
-    if (questionState.length < maxQuestions - 1) {
-      setIsMaxQuestionsReached(false)
+    if (pictureState.length < maxPictures - 1) {
+      setIsMaxPicturesReached(false)
     } else {
-      setIsMaxQuestionsReached(true)
+      setIsMaxPicturesReached(true)
     }
   }
 
-  const removeQuestion = (id) => {
-    const currentQuestions = [...questionState]
-    const updatedQuestions = currentQuestions.slice(0, id).concat(currentQuestions.slice(id + 1, currentQuestions.length))
-    setQuestionState(updatedQuestions)
+  const removePicture = (id) => {
+    const currentPictures = [...pictureState]
+    const updatedPictures = currentPictures.slice(0, id).concat(currentPictures.slice(id + 1, currentPictures.length))
+    setPictureState(updatedPictures)
 
-    if (questionState.length <= maxQuestions) {
-      setIsMaxQuestionsReached(false)
+    if (pictureState.length <= maxPictures) {
+      setIsMaxPicturesReached(false)
     }
   }
 
-  const handleQuestionChange = (event) => {
-    const updatedQuestions = [...questionState]
-    updatedQuestions[event.target.dataset.idx][event.target.dataset.field] = event.target.value
-    setQuestionState(updatedQuestions)
+  const handlePictureChange = (event) => {
+    const updatedPictures = [...pictureState]
+    updatedPictures[event.target.dataset.idx][event.target.dataset.field] = event.target.value
+    setPictureState(updatedPictures)
   }
 
-  const handleOptionsChange = (event) => {
-    const updatedQuestions = [...questionState]
-    updatedQuestions[event.target.dataset.idx][event.target.dataset.field][event.target.dataset.optionindex] = event.target.value
-    setQuestionState(updatedQuestions)
+  const validateImageUrl = (event, idx) => {
+    event.persist()
+    const imageThumbnail = document.getElementById(`picture-${idx}-thumbnail`)
+    return new Promise((resolve, reject) => {
+      const timeout = 5000
+      let timer = ''
+      const img = new window.Image()
+      img.onerror = img.onabort = () => {
+        clearTimeout(timer)
+        // Promise.reject(new Error('Error loading image source.'))
+        console.log('Error loading image source.')
+        event.target.classList.remove('is-valid')
+        event.target.classList.add('is-invalid')
+        imageThumbnail.classList.add('d-none')
+      }
+      img.onload = () => {
+        clearTimeout(timer)
+        resolve('Success.')
+        event.target.classList.remove('is-invalid')
+        event.target.classList.add('is-valid')
+        imageThumbnail.classList.remove('d-none')
+        imageThumbnail.src = event.target.value
+      }
+      timer = setTimeout(() => {
+        img.src = '//!!!!/noexist.jpg'
+        // Promise.reject(new Error('Timeout loading image source.'))
+        console.log('Invalid URL.')
+      }, timeout)
+      img.src = event.target.value
+    })
   }
 
   const handleSubmit = (event) => {
@@ -123,8 +144,8 @@ const FormMultipleChoice = () => {
       const dataToSubmit = {
         triviaId: triviaId,
         roundTheme: roundInfoState.theme,
-        roundPointValue: roundInfoState.questionPointValue,
-        roundQuestions: questionState
+        roundPointValue: roundInfoState.picturePointValue,
+        roundPictures: pictureState
       }
 
       if (roundNumber === 'new') {
@@ -142,7 +163,7 @@ const FormMultipleChoice = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/addMultipleChoiceRound')
+        xhttp.open('POST', 'http://localhost:4000/api/v1/addPictureRound')
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       } else {
@@ -162,7 +183,7 @@ const FormMultipleChoice = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/updateMultipleChoiceRound')
+        xhttp.open('POST', 'http://localhost:4000/api/v1/updatePictureRound')
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       }
@@ -173,7 +194,7 @@ const FormMultipleChoice = () => {
 
   return (
     <>
-      <Header text='Multiple Choice' emoji='❓' emojiDescription='question emoji' />
+      <Header text='Picture' emoji='🖼' emojiDescription='framed picture emoji' />
 
       <Card>
         <Card.Body>
@@ -193,84 +214,57 @@ const FormMultipleChoice = () => {
               <Form.Control.Feedback type='invalid'>Code must be 4 alphabetical characters [A-Z].</Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group className='text-left' controlId='formQuestionPointValue'>
-              <Form.Label>Question point value</Form.Label>
+            <Form.Group className='text-left' controlId='formPicturePointValue'>
+              <Form.Label>Picture point value</Form.Label>
               <Form.Control
-                name='questionPointValue'
+                name='picturePointValue'
                 onChange={handleRoundInfoChange}
-                placeholder={roundInfoState.questionPointValue}
+                placeholder={roundInfoState.picturePointValue}
                 type='number'
-                value={roundInfoState.questionPointValue}
+                value={roundInfoState.picturePointValue}
               />
               <Form.Text className='text-muted'>Default if left blank: 1</Form.Text>
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              <Form.Control.Feedback type='invalid'><b>Question point value</b> must be a number.</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><b>Picture point value</b> must be a number.</Form.Control.Feedback>
             </Form.Group>
 
             {
-              questionState.map((item, idx) => {
+              pictureState.map((item, idx) => {
                 return (
-                  <div key={`question-container-${idx}`}>
-                    {/* question */}
-                    <Form.Group className='text-left' controlId={`name-${idx}`}>
-                      <Form.Label>Question {idx + 1} {idx > 0 && (<Badge onClick={() => { removeQuestion(idx) }} variant='danger'>Remove</Badge>)}</Form.Label>
+                  <div key={`picture-container-${idx}`}>
+                    {/* url */}
+                    <Form.Group className='text-left' controlId={`url-${idx}`}>
+                      <Form.Label>Picture {idx + 1} URL {idx > 0 && (<Badge onClick={() => { removePicture(idx) }} variant='danger'>Remove</Badge>)}</Form.Label>
                       <Form.Control
-                        data-field='question'
+                        data-field='url'
                         data-idx={idx}
-                        name={`question-${idx}-question`}
-                        onChange={handleQuestionChange}
+                        name={`picture-${idx}-url`}
+                        onBlur={(event) => { validateImageUrl(event, idx) }}
+                        onChange={handlePictureChange}
                         required
                         type='text'
-                        value={questionState[idx].question}
+                        value={pictureState[idx].url}
                       />
                       <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                      <Form.Control.Feedback type='invalid'><b>Question {idx + 1}</b> must be filled out.</Form.Control.Feedback>
+                      <Form.Control.Feedback type='invalid'><b>Picture {idx + 1} URL</b> must link to an image (hint: 'https://image.png').</Form.Control.Feedback>
+                      <img className='d-none mt-3 w-25' id={`picture-${idx}-thumbnail`} />
                     </Form.Group>
 
-                    {/* options */}
-                    <div className='text-left'>
-                      <p>Possible answers for question {idx + 1}</p>
-                      {optionsArray.map((option) =>
-                        <Form.Group className='text-left' controlId={`question-${idx}-option-${option}`} key={`question-${idx}-option-${option}`}>
-                          <Form.Label className='d-inline mr-3'>{String.fromCharCode(97 + option).toUpperCase()}</Form.Label>
-                          <Form.Control
-                            className='d-inline w-50'
-                            data-field='options'
-                            data-idx={idx}
-                            data-optionindex={option}
-                            name={`question-${idx}-option-${option}`}
-                            onChange={handleOptionsChange}
-                            placeholder='Answer'
-                            required
-                            type='text'
-                            value={questionState[idx].options[option]}
-                          />
-                          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                          <Form.Control.Feedback type='invalid'><b>{String.fromCharCode(97 + option).toUpperCase()}</b> must be filled out.</Form.Control.Feedback>
-                        </Form.Group>
-                      )}
-                    </div>
-
                     {/* answer */}
-                    <div className='text-left'>
-                      <p>Actual answer for question {idx + 1}</p>
-                      {optionsArray.map((item) =>
-                        <Form.Check
-                          className='mr-4'
-                          data-field='answer'
-                          data-idx={idx}
-                          id={`question-${idx}-answer-${item}`}
-                          inline
-                          key={item}
-                          label={String.fromCharCode(97 + item).toUpperCase()}
-                          name={`question-${idx}-answer`}
-                          onChange={handleQuestionChange}
-                          required
-                          type='radio'
-                          value={item}
-                        />
-                      )}
-                    </div>
+                    <Form.Group className='text-left' controlId={`answer-${idx}`}>
+                      <Form.Label>Answer</Form.Label>
+                      <Form.Control
+                        data-field='answer'
+                        data-idx={idx}
+                        name={`picture-${idx}-answer`}
+                        onChange={handlePictureChange}
+                        required
+                        type='text'
+                        value={pictureState[idx].answer}
+                      />
+                      <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                      <Form.Control.Feedback type='invalid'><b>Answer {idx + 1}</b> must be filled out.</Form.Control.Feedback>
+                    </Form.Group>
 
                     <hr />
                   </div>
@@ -279,11 +273,11 @@ const FormMultipleChoice = () => {
             }
 
             <div className='text-left'>
-              {!isMaxQuestionsReached && (
-                <Button disabled={isMaxQuestionsReached} onClick={addQuestion} variant='outline-primary'>Add a question</Button>
+              {!isMaxPicturesReached && (
+                <Button disabled={isMaxPicturesReached} onClick={addPicture} variant='outline-primary'>Add a picture</Button>
               )}
-              {isMaxQuestionsReached && (
-                <Alert variant='warning'>Rounds are limited to a maximum of {maxQuestions} questions.</Alert>
+              {isMaxPicturesReached && (
+                <Alert variant='warning'>Rounds are limited to a maximum of {maxPictures} pictures.</Alert>
               )}
             </div>
 
@@ -310,4 +304,4 @@ const FormMultipleChoice = () => {
   )
 }
 
-export default FormMultipleChoice
+export default FormPicture

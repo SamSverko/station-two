@@ -34,7 +34,9 @@ const AddARoundSelection = ({ triviaId }) => {
           </div>
           <hr />
           <div>
-            <Button variant='primary'>Picture</Button>
+            <Link to={`/builder/${triviaId}/picture/new`}>
+              <Button variant='primary'>Picture</Button>
+            </Link>
             <p className='text-muted'>Players guess the picture.</p>
           </div>
           <hr />
