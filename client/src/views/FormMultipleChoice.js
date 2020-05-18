@@ -21,6 +21,7 @@ const RoundActionButtons = styled.div`
 
 const FormMultipleChoice = () => {
   const optionsArray = [0, 1, 2, 3]
+  const maxQuestions = 20
 
   const { triviaId } = useParams()
 
@@ -36,15 +37,16 @@ const FormMultipleChoice = () => {
     [event.target.name]: event.target.value
   })
 
-  const blankQuestion = { question: '', answer: '' }
+  const blankQuestion = { question: '', answer: '', options: ['', '', '', ''] }
   const [questionState, setQuestionState] = useState([
     { ...blankQuestion }
   ])
 
   const addQuestion = () => {
-    if (questionState.length < 3) {
+    setQuestionState([...questionState, { ...blankQuestion }])
+
+    if (questionState.length < maxQuestions - 1) {
       setIsMaxQuestionsReached(false)
-      setQuestionState([...questionState, { ...blankQuestion }])
     } else {
       setIsMaxQuestionsReached(true)
     }
@@ -54,11 +56,21 @@ const FormMultipleChoice = () => {
     const currentQuestions = [...questionState]
     const updatedQuestions = currentQuestions.slice(0, id).concat(currentQuestions.slice(id + 1, currentQuestions.length))
     setQuestionState(updatedQuestions)
+
+    if (questionState.length <= maxQuestions) {
+      setIsMaxQuestionsReached(false)
+    }
   }
 
   const handleQuestionChange = (event) => {
     const updatedQuestions = [...questionState]
     updatedQuestions[event.target.dataset.idx][event.target.dataset.field] = event.target.value
+    setQuestionState(updatedQuestions)
+  }
+
+  const handleOptionsChange = (event) => {
+    const updatedQuestions = [...questionState]
+    updatedQuestions[event.target.dataset.idx][event.target.dataset.field][event.target.dataset.optionindex] = event.target.value
     setQuestionState(updatedQuestions)
   }
 
@@ -122,11 +134,11 @@ const FormMultipleChoice = () => {
                       <Form.Control
                         data-field='question'
                         data-idx={idx}
-                        name={`name-${idx}`}
-                        value={questionState[idx].name}
+                        name={`question-${idx}-question`}
                         onChange={handleQuestionChange}
                         required
                         type='text'
+                        value={questionState[idx].name}
                       />
                       <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                       <Form.Control.Feedback type='invalid'><b>Question {idx + 1}</b> must be filled out.</Form.Control.Feedback>
@@ -153,6 +165,30 @@ const FormMultipleChoice = () => {
                       )}
                     </div>
 
+                    {/* options */}
+                    <div className='text-left'>
+                      <p>Possible answers for question {idx + 1}</p>
+                      {optionsArray.map((option) =>
+                        <Form.Group className='text-left' controlId={`question-${idx}-option-${option}`} key={`question-${idx}-option-${option}`}>
+                          <Form.Label className='d-inline mr-3'>{String.fromCharCode(97 + option).toUpperCase()}</Form.Label>
+                          <Form.Control
+                            className='d-inline w-50'
+                            data-field='options'
+                            data-idx={idx}
+                            data-optionindex={option}
+                            name={`question-${idx}-option-${option}`}
+                            onChange={handleOptionsChange}
+                            placeholder='Answer'
+                            required
+                            type='text'
+                            value={questionState[idx].options[option]}
+                          />
+                          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                          <Form.Control.Feedback type='invalid'><b>{String.fromCharCode(97 + option).toUpperCase()}</b> must be filled out.</Form.Control.Feedback>
+                        </Form.Group>
+                      )}
+                    </div>
+
                     <hr />
                   </div>
                 )
@@ -160,9 +196,11 @@ const FormMultipleChoice = () => {
             }
 
             <div className='mb-3 text-left'>
-              <Button className='mb-3' disabled={isMaxQuestionsReached} onClick={addQuestion} variant='outline-primary'>Add a question</Button>
+              {!isMaxQuestionsReached && (
+                <Button className='mb-3' disabled={isMaxQuestionsReached} onClick={addQuestion} variant='outline-primary'>Add a question</Button>
+              )}
               {isMaxQuestionsReached && (
-                <Alert variant='danger'>Rounds are limited to a mamximum of 20 questions.</Alert>
+                <Alert variant='warning'>Rounds are limited to a mamximum of {maxQuestions} questions.</Alert>
               )}
             </div>
 
