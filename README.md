@@ -48,6 +48,7 @@ Data is provided through REST API endpoints. View the [API Documentation](https:
 - [cors](https://www.npmjs.com/package/cors) - Node.js CORS middleware.
 - [dotenv](https://www.npmjs.com/package/dotenv) - Loads environment variables from .env file.
 - [express](https://www.npmjs.com/package/express) - Fast, unopinionated, minimalist web framework.
+- [express-mongo-sanitize](https://www.npmjs.com/package/express-mongo-sanitize) - Sanitize your express payload to prevent MongoDB operator injection..
 - [express-validator](https://www.npmjs.com/package/express-validator) - Express middleware for the validator module.
 - [fetch](https://www.npmjs.com/package/fetch) - Fetch URL contents.
 - [helmet](https://www.npmjs.com/package/helmet) - Help secure Express/Connect apps with various HTTP headers.

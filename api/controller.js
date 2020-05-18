@@ -36,7 +36,7 @@ module.exports = {
       type: 'multipleChoice',
       theme: req.body.roundTheme,
       pointValue: req.body.roundPointValue,
-      questions: req.body.roundQuestions,
+      questions: req.body.roundQuestions
     }
 
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(

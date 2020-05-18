@@ -13,14 +13,16 @@ const cors = require('cors')
 // const http = require('http').createServer(app)
 // const io = require('socket.io')(http, { pingTimeout: 10000, pingInterval: 5000 })
 const compression = require('compression')
+const mongoSanitize = require('express-mongo-sanitize')
 const MongoClient = require('mongodb').MongoClient
 
 // local files
 const router = require(path.join(__dirname, './api/routes'))
 
-// helmet and cors
+// helmet, cors, and mongoSanitize
 app.use(helmet())
 app.use(cors())
+app.use(mongoSanitize())
 
 // enable gzip compression, urlencoded (for form submits), and bodyParser for JSON posts
 app.use(compression())
