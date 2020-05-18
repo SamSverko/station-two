@@ -1,12 +1,11 @@
 // dependencies
 import React, { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import { Alert, Badge, Button, Card, Form } from 'react-bootstrap'
 import styled from 'styled-components'
 
 // components
 import Header from '../components/Header'
-// import Question from '../components/Builder/FormMultipleChoice/Question'
 
 // styles
 const RoundActionButtons = styled.div`
@@ -23,14 +22,16 @@ const FormMultipleChoice = () => {
   const optionsArray = [0, 1, 2, 3]
   const maxQuestions = 20
 
+  const history = useHistory()
   const { triviaId } = useParams()
 
   const [validated, setValidated] = useState(false)
+  const [postStatus, setPostStatus] = useState('pending')
   const [isMaxQuestionsReached, setIsMaxQuestionsReached] = useState(false)
 
   const [roundInfoState, setRoundInfoState] = useState({
     theme: 'none',
-    questionPointValue: 0
+    questionPointValue: 1
   })
   const handleRoundInfoChange = (event) => setRoundInfoState({
     ...roundInfoState,
@@ -78,11 +79,31 @@ const FormMultipleChoice = () => {
     event.preventDefault()
     event.stopPropagation()
 
-    console.log(roundInfoState)
-    console.log(questionState)
-
     if (event.currentTarget.checkValidity() !== false) {
-      // console.log(roundTheme, roundPointValue, roundQuestions)
+      const dataToSubmit = {
+        triviaId: triviaId,
+        roundTheme: roundInfoState.theme,
+        roundPointValue: roundInfoState.questionPointValue,
+        roundQuestions: questionState
+      }
+
+      const xhttp = new window.XMLHttpRequest()
+      xhttp.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+          console.log(this.response)
+          if (this.response === 'OK') {
+            setPostStatus(true)
+            window.setTimeout(() => {
+              history.push(`/builder/${triviaId}`)
+            }, 2000)
+          } else {
+            setPostStatus(false)
+          }
+        }
+      }
+      xhttp.open('POST', 'http://localhost:4000/api/v1/addMultipleChoiceRound')
+      xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+      xhttp.send(JSON.stringify(dataToSubmit))
     } else {
       setValidated(true)
     }
@@ -144,27 +165,6 @@ const FormMultipleChoice = () => {
                       <Form.Control.Feedback type='invalid'><b>Question {idx + 1}</b> must be filled out.</Form.Control.Feedback>
                     </Form.Group>
 
-                    {/* answer */}
-                    <div className='text-left'>
-                      <p>Actual answer for question {idx + 1}</p>
-                      {optionsArray.map((item) =>
-                        <Form.Check
-                          className='mr-4'
-                          data-field='answer'
-                          data-idx={idx}
-                          id={`question-${idx}-answer-${item}`}
-                          inline
-                          key={item}
-                          label={String.fromCharCode(97 + item).toUpperCase()}
-                          name={`question-${idx}-answer`}
-                          onChange={handleQuestionChange}
-                          required
-                          type='radio'
-                          value={item}
-                        />
-                      )}
-                    </div>
-
                     {/* options */}
                     <div className='text-left'>
                       <p>Possible answers for question {idx + 1}</p>
@@ -189,22 +189,50 @@ const FormMultipleChoice = () => {
                       )}
                     </div>
 
+                    {/* answer */}
+                    <div className='text-left'>
+                      <p>Actual answer for question {idx + 1}</p>
+                      {optionsArray.map((item) =>
+                        <Form.Check
+                          className='mr-4'
+                          data-field='answer'
+                          data-idx={idx}
+                          id={`question-${idx}-answer-${item}`}
+                          inline
+                          key={item}
+                          label={String.fromCharCode(97 + item).toUpperCase()}
+                          name={`question-${idx}-answer`}
+                          onChange={handleQuestionChange}
+                          required
+                          type='radio'
+                          value={item}
+                        />
+                      )}
+                    </div>
+
                     <hr />
                   </div>
                 )
               })
             }
 
-            <div className='mb-3 text-left'>
+            <div className='text-left'>
               {!isMaxQuestionsReached && (
-                <Button className='mb-3' disabled={isMaxQuestionsReached} onClick={addQuestion} variant='outline-primary'>Add a question</Button>
+                <Button disabled={isMaxQuestionsReached} onClick={addQuestion} variant='outline-primary'>Add a question</Button>
               )}
               {isMaxQuestionsReached && (
-                <Alert variant='warning'>Rounds are limited to a mamximum of {maxQuestions} questions.</Alert>
+                <Alert variant='warning'>Rounds are limited to a maximum of {maxQuestions} questions.</Alert>
               )}
             </div>
 
             <hr />
+
+            {postStatus === true && (
+              <Alert className='mt-3' variant='success'>Round saved. You will now be directed back to the Builder.</Alert>
+            )}
+            {postStatus === false && (
+              <Alert className='mt-3' variant='danger'>Failed to save round. Please try again</Alert>
+            )}
 
             <RoundActionButtons>
               <Button className='item' type='submit' variant='primary'>Save</Button>
@@ -212,6 +240,7 @@ const FormMultipleChoice = () => {
                 <Button className='w-100' variant='danger'>Discard</Button>
               </Link>
             </RoundActionButtons>
+
           </Form>
         </Card.Body>
       </Card>
