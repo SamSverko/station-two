@@ -14,7 +14,9 @@ import TieBreaker from '../components/Builder/TieBreaker'
 const Builder = () => {
   const history = useHistory()
   const { triviaId } = useParams()
+
   const [trivia, setTrivia] = useState(false)
+  const [isRoundsComplete, setIsRoundsComplete] = useState(false)
 
   const fetchTrivia = useCallback(() => {
     window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}`)
@@ -27,7 +29,7 @@ const Builder = () => {
       }).then((data) => {
         if (!data.statusCode) {
           setTrivia(data)
-          // console.log(data)
+          setIsRoundsComplete((data.rounds.length > 0))
         } else {
           history.push('/')
         }
@@ -55,8 +57,8 @@ const Builder = () => {
       {trivia && (
         <>
           <TriviaInfo code={trivia.triviaId} host={trivia.host} />
-          <BuilderStatus isRoundsComplete={(trivia.rounds.length > 0)} isTieBreakerComplete={(trivia.tieBreaker.question)} />
-          <ExistingRounds rounds={trivia.rounds} />
+          <BuilderStatus isRoundsComplete={isRoundsComplete} isTieBreakerComplete={(trivia.tieBreaker.question)} />
+          <ExistingRounds rounds={trivia.rounds} setIsRoundsComplete={setIsRoundsComplete} triviaId={trivia.triviaId} />
           <TieBreaker fetchTrivia={fetchTrivia} tieBreaker={trivia.tieBreaker} triviaId={trivia.triviaId} />
           <AddARound triviaId={triviaId} />
         </>

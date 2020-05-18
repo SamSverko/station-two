@@ -95,7 +95,7 @@ const FormMultipleChoice = () => {
             setPostStatus(true)
             window.setTimeout(() => {
               history.push(`/builder/${triviaId}`)
-            }, 2000)
+            }, 1500)
           } else {
             setPostStatus(false)
           }
@@ -231,7 +231,7 @@ const FormMultipleChoice = () => {
               <Alert className='mt-3' variant='success'>Round saved. You will now be directed back to the Builder.</Alert>
             )}
             {postStatus === false && (
-              <Alert className='mt-3' variant='danger'>Failed to save round. Please try again</Alert>
+              <Alert className='mt-3' variant='danger'>Failed to save round. Please try again.</Alert>
             )}
 
             <RoundActionButtons>

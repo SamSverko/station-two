@@ -210,7 +210,7 @@ router.post(`/api/v${API_VERSION}/updateTieBreaker`, [
 })
 
 // delete round
-router.post(`/api/v${API_VERSION}/deleteRound`, [
+router.delete(`/api/v${API_VERSION}/deleteRound`, [
   validateData.triviaId,
   validateData.roundNumber
 ], (req, res, next) => {

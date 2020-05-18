@@ -1,6 +1,6 @@
 // dependencies
 import React, { useState } from 'react'
-import { Button, Card } from 'react-bootstrap'
+import { Alert, Button, Card } from 'react-bootstrap'
 import styled from 'styled-components'
 
 // components
@@ -37,22 +37,44 @@ const RoundStyle = styled.div`
   }
 `
 
-const ExistingRounds = ({ rounds }) => {
+const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
+  const [roundsState, setRoundsState] = useState(rounds)
+  const [deleteRoundError, setDeleteRoundError] = useState(false)
+
+  const deleteRound = (roundNumber) => {
+    const xhttp = new window.XMLHttpRequest()
+    xhttp.onreadystatechange = function () {
+      if (this.readyState === 4 && this.status === 200) {
+        if (this.response === 'OK') {
+          const currentRounds = [...roundsState]
+          const updatedRounds = currentRounds.slice(0, roundNumber).concat(currentRounds.slice(roundNumber + 1, currentRounds.length))
+          setRoundsState(updatedRounds)
+          setIsRoundsComplete((updatedRounds.length > 0))
+        } else {
+          setDeleteRoundError(true)
+        }
+      }
+    }
+    xhttp.open('DELETE', 'http://localhost:4000/api/v1/deleteRound')
+    xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+    xhttp.send(JSON.stringify({ triviaId: triviaId, roundNumber: roundNumber }))
+  }
+
   const DisplayRoundsTitle = () => {
     let titleText = ''
-    if (rounds.length !== 1) {
-      titleText = `${rounds.length} Rounds`
-    } else if (rounds.length === 1) {
+    if (roundsState.length !== 1) {
+      titleText = `${roundsState.length} Rounds`
+    } else if (roundsState.length === 1) {
       titleText = '1 Round'
     }
-    return <summary className='h5 mb-0'>{titleText} <ReadyBadge isReady={rounds.length} /></summary>
+    return <summary className='h5 mb-0'>{titleText} <ReadyBadge isReady={roundsState.length} /></summary>
   }
 
   const DisplayRounds = () => {
     return (
       <details>
         <DisplayRoundsTitle />
-        {rounds.map((round, i) => {
+        {roundsState.map((round, i) => {
           if (round.type === 'multipleChoice') {
             return <MultipleChoiceRound key={i} round={round} roundNumber={i} />
           } else if (round.type === 'picture') {
@@ -75,7 +97,7 @@ const ExistingRounds = ({ rounds }) => {
         <p className='title'>Round {roundNumber + 1}</p>
         <div className='buttons'>
           <Button onClick={() => { console.log(`EDIT round ${roundNumber}`) }} variant='primary'>Edit</Button>
-          <Button onClick={() => { console.log(`DELETE round ${roundNumber}`) }} variant='danger'>Delete</Button>
+          <Button onClick={() => { deleteRound(roundNumber) }} variant='danger'>Delete</Button>
         </div>
         <div className='info'>
           <p>
@@ -212,6 +234,9 @@ const ExistingRounds = ({ rounds }) => {
   return (
     <Card>
       <Card.Body>
+        {deleteRoundError && (
+          <Alert variant='danger'>Failed to delete round. Please try again.</Alert>
+        )}
         <DisplayRounds />
       </Card.Body>
     </Card>
