@@ -1,16 +1,12 @@
 // dependencies
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 
-const Question = ({ id, updateRoundQuestion }) => {
+const Question = ({ id, roundQuestions, setRoundQuestions }) => {
   const [question, setQuestion] = useState(false)
   const [options, setOptions] = useState([])
   const [answer, setAnswer] = useState(false)
   const optionsArray = [0, 1, 2, 3]
-
-  const updateCallback = useCallback(() => {
-    updateRoundQuestion(questionToSave)
-  }, [questionToSave])
 
   useEffect(() => {
     const questionToSave = {
@@ -30,10 +26,9 @@ const Question = ({ id, updateRoundQuestion }) => {
     }
 
     if (questionToSave.question !== false && questionToSave.options.length === 4 && questionToSave.answer !== false) {
-      updateRoundQuestion(questionToSave)
-      console.log('inChildUseEffect')
+      roundQuestions[id] = questionToSave
     }
-  }, [answer, id, options, question, updateRoundQuestion])
+  }, [answer, id, options, question, roundQuestions, setRoundQuestions])
 
   return (
     <>
