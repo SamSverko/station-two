@@ -247,7 +247,7 @@ const FormPicture = () => {
                       />
                       <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                       <Form.Control.Feedback type='invalid'><b>Picture {idx + 1} URL</b> must link to an image (hint: 'https://image.png').</Form.Control.Feedback>
-                      <img className='d-none mt-3 w-25' id={`picture-${idx}-thumbnail`} />
+                      <img alt='Url thumbnail preview.' className='d-none mt-3 w-25' id={`picture-${idx}-thumbnail`} />
                     </Form.Group>
 
                     {/* answer */}
@@ -274,7 +274,7 @@ const FormPicture = () => {
 
             <div className='text-left'>
               {!isMaxPicturesReached && (
-                <Button disabled={isMaxPicturesReached} onClick={addPicture} variant='outline-primary'>Add a picture</Button>
+                <Button disabled={isMaxPicturesReached} onClick={addPicture} variant='outline-primary'>Add a Picture</Button>
               )}
               {isMaxPicturesReached && (
                 <Alert variant='warning'>Rounds are limited to a maximum of {maxPictures} pictures.</Alert>

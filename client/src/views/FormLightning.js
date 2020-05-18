@@ -18,9 +18,8 @@ const RoundActionButtons = styled.div`
   }
 `
 
-const FormMultipleChoice = () => {
+const FormLightning = () => {
   // constants
-  const optionsArray = [0, 1, 2, 3]
   const maxQuestions = 20
 
   // history & params
@@ -42,7 +41,7 @@ const FormMultipleChoice = () => {
     [event.target.name]: event.target.value
   })
 
-  const blankQuestion = { question: '', answer: '', options: ['', '', '', ''] }
+  const blankQuestion = { question: '', answer: '' }
   const [questionState, setQuestionState] = useState([
     { ...blankQuestion }
   ])
@@ -64,10 +63,6 @@ const FormMultipleChoice = () => {
             questionPointValue: data.pointValue
           })
           setQuestionState(data.questions)
-          // check the proper answer radio button
-          data.questions.forEach((question, counter) => {
-            document.getElementById(`question-${counter}-answer-${question.answer}`).checked = true
-          })
         } else {
           history.push(`/builder/${triviaId}`)
         }
@@ -109,12 +104,6 @@ const FormMultipleChoice = () => {
     setQuestionState(updatedQuestions)
   }
 
-  const handleOptionsChange = (event) => {
-    const updatedQuestions = [...questionState]
-    updatedQuestions[event.target.dataset.idx][event.target.dataset.field][event.target.dataset.optionindex] = event.target.value
-    setQuestionState(updatedQuestions)
-  }
-
   const handleSubmit = (event) => {
     event.preventDefault()
     event.stopPropagation()
@@ -124,7 +113,7 @@ const FormMultipleChoice = () => {
         triviaId: triviaId,
         roundTheme: roundInfoState.theme,
         roundPointValue: roundInfoState.questionPointValue,
-        roundQuestions: questionState
+        roundLightningQuestions: questionState
       }
 
       if (roundNumber === 'new') {
@@ -142,7 +131,7 @@ const FormMultipleChoice = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/addMultipleChoiceRound')
+        xhttp.open('POST', 'http://localhost:4000/api/v1/addLightningRound')
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       } else {
@@ -162,7 +151,7 @@ const FormMultipleChoice = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/updateMultipleChoiceRound')
+        xhttp.open('POST', 'http://localhost:4000/api/v1/updateLightningRound')
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       }
@@ -173,7 +162,7 @@ const FormMultipleChoice = () => {
 
   return (
     <>
-      <Header text='Multiple Choice' emoji='❓' emojiDescription='question emoji' />
+      <Header text='Lightning' emoji='⚡️' emojiDescription='zap emoji' />
 
       <Card>
         <Card.Body>
@@ -196,7 +185,7 @@ const FormMultipleChoice = () => {
             <Form.Group className='text-left' controlId='formQuestionPointValue'>
               <Form.Label>Question point value</Form.Label>
               <Form.Control
-                name='questionPointValue'
+                name='QuestionPointValue'
                 onChange={handleRoundInfoChange}
                 placeholder={roundInfoState.questionPointValue}
                 type='number'
@@ -212,7 +201,7 @@ const FormMultipleChoice = () => {
                 return (
                   <div key={`question-container-${idx}`}>
                     {/* question */}
-                    <Form.Group className='text-left' controlId={`name-${idx}`}>
+                    <Form.Group className='text-left' controlId={`question-${idx}`}>
                       <Form.Label>Question {idx + 1} {idx > 0 && (<Badge onClick={() => { removeQuestion(idx) }} variant='danger'>Remove</Badge>)}</Form.Label>
                       <Form.Control
                         data-field='question'
@@ -224,53 +213,24 @@ const FormMultipleChoice = () => {
                         value={questionState[idx].question}
                       />
                       <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                      <Form.Control.Feedback type='invalid'><b>Question {idx + 1}</b> must be filled out.</Form.Control.Feedback>
+                      <Form.Control.Feedback type='invalid'><b>Question</b> must be filled out.</Form.Control.Feedback>
                     </Form.Group>
 
-                    {/* options */}
-                    <div className='text-left'>
-                      <p>Possible answers for question {idx + 1}</p>
-                      {optionsArray.map((option) =>
-                        <Form.Group className='text-left' controlId={`question-${idx}-option-${option}`} key={`question-${idx}-option-${option}`}>
-                          <Form.Label className='d-inline mr-3'>{String.fromCharCode(97 + option).toUpperCase()}</Form.Label>
-                          <Form.Control
-                            className='d-inline w-50'
-                            data-field='options'
-                            data-idx={idx}
-                            data-optionindex={option}
-                            name={`question-${idx}-option-${option}`}
-                            onChange={handleOptionsChange}
-                            placeholder='Answer'
-                            required
-                            type='text'
-                            value={questionState[idx].options[option]}
-                          />
-                          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                          <Form.Control.Feedback type='invalid'><b>{String.fromCharCode(97 + option).toUpperCase()}</b> must be filled out.</Form.Control.Feedback>
-                        </Form.Group>
-                      )}
-                    </div>
-
                     {/* answer */}
-                    <div className='text-left'>
-                      <p>Actual answer for question {idx + 1}</p>
-                      {optionsArray.map((item) =>
-                        <Form.Check
-                          className='mr-4'
-                          data-field='answer'
-                          data-idx={idx}
-                          id={`question-${idx}-answer-${item}`}
-                          inline
-                          key={item}
-                          label={String.fromCharCode(97 + item).toUpperCase()}
-                          name={`question-${idx}-answer`}
-                          onChange={handleQuestionChange}
-                          required
-                          type='radio'
-                          value={item}
-                        />
-                      )}
-                    </div>
+                    <Form.Group className='text-left' controlId={`answer-${idx}`}>
+                      <Form.Label>Answer</Form.Label>
+                      <Form.Control
+                        data-field='answer'
+                        data-idx={idx}
+                        name={`question-${idx}-answer`}
+                        onChange={handleQuestionChange}
+                        required
+                        type='text'
+                        value={questionState[idx].answer}
+                      />
+                      <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                      <Form.Control.Feedback type='invalid'><b>Answer {idx + 1}</b> must be filled out.</Form.Control.Feedback>
+                    </Form.Group>
 
                     <hr />
                   </div>
@@ -310,4 +270,4 @@ const FormMultipleChoice = () => {
   )
 }
 
-export default FormMultipleChoice
+export default FormLightning

@@ -19,6 +19,13 @@ const AddARoundSelectionRowStyle = styled.div`
   }
 `
 
+const ButtonStyle = styled(Button)`
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+  text-decoration: none;
+`
+
 const AddARoundSelection = ({ triviaId }) => {
   return (
     <Card>
@@ -27,21 +34,23 @@ const AddARoundSelection = ({ triviaId }) => {
         <hr />
         <AddARoundSelectionRowStyle>
           <div>
-            <Link to={`/builder/${triviaId}/multipleChoice/new`}>
-              <Button variant='primary'>Multiple Choice</Button>
+            <Link className='text-decoration-none' to={`/builder/${triviaId}/multipleChoice/new`}>
+              <ButtonStyle variant='primary'>Multiple Choice <span aria-label='question emoji' role='img'>❓</span></ButtonStyle>
             </Link>
             <p className='text-muted'>Players guess A, B, C, or D.</p>
           </div>
           <hr />
           <div>
-            <Link to={`/builder/${triviaId}/picture/new`}>
-              <Button variant='primary'>Picture</Button>
+            <Link className='text-decoration-none' to={`/builder/${triviaId}/picture/new`}>
+              <ButtonStyle variant='primary'>Picture <span aria-label='framed picture emoji' role='img'>🖼</span></ButtonStyle>
             </Link>
             <p className='text-muted'>Players guess the picture.</p>
           </div>
           <hr />
           <div>
-            <Button variant='primary'>Lightning</Button>
+            <Link className='text-decoration-none' to={`/builder/${triviaId}/lightning/new`}>
+              <ButtonStyle variant='primary'>Lightning <span aria-label='zap emoji' role='img'>⚡️</span></ButtonStyle>
+            </Link>
             <p className='text-muted'>Players provide exact answer.</p>
           </div>
         </AddARoundSelectionRowStyle>

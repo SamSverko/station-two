@@ -203,8 +203,8 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
         <hr />
         <p className='title'>Round {roundNumber + 1}</p>
         <div className='buttons'>
-          <Button onClick={() => { console.log(`EDIT round ${roundNumber}`) }} variant='primary'>Edit</Button>
-          <Button onClick={() => { console.log(`DELETE round ${roundNumber}`) }} variant='danger'>Delete</Button>
+          <Button onClick={() => { editRound('lightning', roundNumber) }} variant='primary'>Edit</Button>
+          <Button onClick={() => { deleteRound(roundNumber) }} variant='danger'>Delete</Button>
         </div>
         <div className='info'>
           <p>

@@ -203,6 +203,29 @@ router.post(`/api/v${API_VERSION}/addLightningRound`, [
   }
 })
 
+// add lightning round
+router.post(`/api/v${API_VERSION}/updateLightningRound`, [
+  validateData.triviaId,
+  validateData.roundNumber,
+  validateData.roundThemeOptional,
+  validateData.roundPointValueOptional,
+  validateData.roundLightningQuestions,
+  validateData.roundLightningQuestionsQuestion,
+  validateData.roundLightningQuestionsAnswer
+], (req, res, next) => {
+  console.log(`${req.method} request for UPDATE LIGHTNING ROUND.`)
+  try {
+    validationResult(req).throw()
+
+    req.body.roundTheme = (typeof req.body.roundTheme !== 'undefined') ? req.body.roundTheme : 'none'
+    req.body.roundPointValue = (typeof req.body.roundPointValue !== 'undefined') ? req.body.roundPointValue : 1
+
+    apiController.updateLightningRound(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
 // add picture round
 router.post(`/api/v${API_VERSION}/addPictureRound`, [
   validateData.triviaId,
