@@ -78,7 +78,7 @@ const routes = [
   },
   {
     title: 'Host - Multiple Choice',
-    path: '/builder/:triviaId/multipleChoice/',
+    path: '/builder/:triviaId/multipleChoice/:roundNumber',
     component: FormMultipleChoiceView,
     exact: true
   },

@@ -149,6 +149,38 @@ router.post(`/api/v${API_VERSION}/addMultipleChoiceRound`, [
   }
 })
 
+// update multiple choice round
+router.post(`/api/v${API_VERSION}/updateMultipleChoiceRound`, [
+  validateData.triviaId,
+  validateData.roundNumber,
+  validateData.roundThemeOptional,
+  validateData.roundPointValueOptional,
+  validateData.roundQuestions,
+  validateData.roundQuestionsQuestion,
+  validateData.roundQuestionsOptions,
+  validateData.roundQuestionsOptionsOption,
+  validateData.roundQuestionsAnswer
+], (req, res, next) => {
+  console.log(`${req.method} request for UPDATE MULTIPLE CHOICE ROUND.`)
+  try {
+    validationResult(req).throw()
+
+    req.body.roundTheme = (typeof req.body.roundTheme !== 'undefined') ? req.body.roundTheme : 'none'
+    req.body.roundPointValue = (typeof req.body.roundPointValue !== 'undefined') ? req.body.roundPointValue : 1
+
+    // validate [roundQuestions.*.options] length
+    req.body.roundQuestions.forEach((question) => {
+      if (question.options.length !== 4) {
+        utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, '[roundQuestions.*.options] must be an array with 4 items')
+      }
+    })
+
+    apiController.updateMultipleChoiceRound(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
 // add lightning round
 router.post(`/api/v${API_VERSION}/addLightningRound`, [
   validateData.triviaId,

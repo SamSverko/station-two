@@ -1,5 +1,6 @@
 // dependencies
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import { Alert, Button, Card } from 'react-bootstrap'
 import styled from 'styled-components'
 
@@ -38,8 +39,16 @@ const RoundStyle = styled.div`
 `
 
 const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
+  // history & params
+  const history = useHistory()
+
+  // state
   const [roundsState, setRoundsState] = useState(rounds)
   const [deleteRoundError, setDeleteRoundError] = useState(false)
+
+  const editRound = (roundType, roundNumber) => {
+    history.push(`/builder/${triviaId}/${roundType}/${roundNumber}`)
+  }
 
   const deleteRound = (roundNumber) => {
     const xhttp = new window.XMLHttpRequest()
@@ -96,7 +105,7 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
         <hr />
         <p className='title'>Round {roundNumber + 1}</p>
         <div className='buttons'>
-          <Button onClick={() => { console.log(`EDIT round ${roundNumber}`) }} variant='primary'>Edit</Button>
+          <Button onClick={() => { editRound('multipleChoice', roundNumber) }} variant='primary'>Edit</Button>
           <Button onClick={() => { deleteRound(roundNumber) }} variant='danger'>Delete</Button>
         </div>
         <div className='info'>

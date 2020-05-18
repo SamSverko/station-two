@@ -1,5 +1,5 @@
 // dependencies
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import { Alert, Badge, Button, Card, Form } from 'react-bootstrap'
 import styled from 'styled-components'
@@ -19,12 +19,16 @@ const RoundActionButtons = styled.div`
 `
 
 const FormMultipleChoice = () => {
+  // constants
   const optionsArray = [0, 1, 2, 3]
   const maxQuestions = 20
 
+  // history & params
   const history = useHistory()
   const { triviaId } = useParams()
+  const { roundNumber } = useParams()
 
+  // state
   const [validated, setValidated] = useState(false)
   const [postStatus, setPostStatus] = useState('pending')
   const [isMaxQuestionsReached, setIsMaxQuestionsReached] = useState(false)
@@ -43,6 +47,42 @@ const FormMultipleChoice = () => {
     { ...blankQuestion }
   ])
 
+  // fetch round data (if editing existing round)
+  const fetchRound = useCallback(() => {
+    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}?roundNumber=${roundNumber}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          return Promise.reject(response)
+        }
+      }).then((data) => {
+        if (!data.statusCode) {
+          // populate form data
+          setRoundInfoState({
+            theme: data.theme,
+            questionPointValue: data.pointValue
+          })
+          setQuestionState(data.questions)
+          // check the proper answer radio button
+          data.questions.forEach((question, counter) => {
+            document.getElementById(`question-${counter}-answer-${question.answer}`).checked = true
+          })
+        } else {
+          history.push(`/builder/${triviaId}`)
+        }
+      }).catch((error) => {
+        console.error('Error fetching trivia document', error)
+      })
+  }, [history, roundNumber, triviaId])
+
+  useEffect(() => {
+    if (roundNumber !== 'new') {
+      fetchRound()
+    }
+  }, [fetchRound, roundNumber])
+
+  // handle form updates
   const addQuestion = () => {
     setQuestionState([...questionState, { ...blankQuestion }])
 
@@ -87,23 +127,45 @@ const FormMultipleChoice = () => {
         roundQuestions: questionState
       }
 
-      const xhttp = new window.XMLHttpRequest()
-      xhttp.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-          console.log(this.response)
-          if (this.response === 'OK') {
-            setPostStatus(true)
-            window.setTimeout(() => {
-              history.push(`/builder/${triviaId}`)
-            }, 1500)
-          } else {
-            setPostStatus(false)
+      if (roundNumber === 'new') {
+        const xhttp = new window.XMLHttpRequest()
+        xhttp.onreadystatechange = function () {
+          if (this.readyState === 4 && this.status === 200) {
+            if (this.response === 'OK') {
+              setPostStatus(true)
+              window.setTimeout(() => {
+                history.push(`/builder/${triviaId}`)
+              }, 1500)
+            } else {
+              console.log(JSON.parse(this.response))
+              setPostStatus(false)
+            }
           }
         }
+        xhttp.open('POST', 'http://localhost:4000/api/v1/addMultipleChoiceRound')
+        xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+        xhttp.send(JSON.stringify(dataToSubmit))
+      } else {
+        dataToSubmit.roundNumber = roundNumber
+
+        const xhttp = new window.XMLHttpRequest()
+        xhttp.onreadystatechange = function () {
+          if (this.readyState === 4 && this.status === 200) {
+            if (this.response === 'OK') {
+              setPostStatus(true)
+              window.setTimeout(() => {
+                history.push(`/builder/${triviaId}`)
+              }, 1500)
+            } else {
+              console.log(JSON.parse(this.response))
+              setPostStatus(false)
+            }
+          }
+        }
+        xhttp.open('POST', 'http://localhost:4000/api/v1/updateMultipleChoiceRound')
+        xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+        xhttp.send(JSON.stringify(dataToSubmit))
       }
-      xhttp.open('POST', 'http://localhost:4000/api/v1/addMultipleChoiceRound')
-      xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
-      xhttp.send(JSON.stringify(dataToSubmit))
     } else {
       setValidated(true)
     }
@@ -159,7 +221,7 @@ const FormMultipleChoice = () => {
                         onChange={handleQuestionChange}
                         required
                         type='text'
-                        value={questionState[idx].name}
+                        value={questionState[idx].question}
                       />
                       <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                       <Form.Control.Feedback type='invalid'><b>Question {idx + 1}</b> must be filled out.</Form.Control.Feedback>

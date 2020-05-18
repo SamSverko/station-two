@@ -27,7 +27,7 @@ const AddARoundSelection = ({ triviaId }) => {
         <hr />
         <AddARoundSelectionRowStyle>
           <div>
-            <Link to={`/builder/${triviaId}/multipleChoice`}>
+            <Link to={`/builder/${triviaId}/multipleChoice/new`}>
               <Button variant='primary'>Multiple Choice</Button>
             </Link>
             <p className='text-muted'>Players guess A, B, C, or D.</p>

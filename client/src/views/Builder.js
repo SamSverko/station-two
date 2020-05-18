@@ -40,7 +40,7 @@ const Builder = () => {
 
   useEffect(() => {
     fetchTrivia()
-  }, [fetchTrivia, triviaId])
+  }, [fetchTrivia])
 
   return (
     <>
