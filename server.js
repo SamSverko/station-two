@@ -10,8 +10,8 @@ const express = require('express')
 const app = express()
 const helmet = require('helmet')
 const cors = require('cors')
-// const http = require('http').createServer(app)
-// const io = require('socket.io')(http, { pingTimeout: 10000, pingInterval: 5000 })
+const http = require('http').createServer(app)
+const io = require('socket.io')(http, { pingTimeout: 10000, pingInterval: 5000 })
 const compression = require('compression')
 const mongoSanitize = require('express-mongo-sanitize')
 const MongoClient = require('mongodb').MongoClient
@@ -28,6 +28,28 @@ app.use(mongoSanitize())
 app.use(compression())
 app.use(express.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+
+// web socket
+// ROOMS: socket.to = send to all but not sender | io.to = send to all including sender
+// NO ROOMS: io.emit = send to all including sender | socket.emit = send to sender only | socket.broadcast.emit = send to all but not sender
+io.on('connection', (socket) => {
+  let roomCode = false
+  socket.on('joinRoom', (data) => {
+    roomCode = data
+    socket.join(roomCode)
+    console.log('[SOCKET] player joined.')
+    socket.to(roomCode).emit('player joined')
+  })
+
+  socket.on('button test', (data) => {
+    // console.log(`[SOCKET] ${roomCode}`)
+    socket.to(roomCode).emit('button test', data)
+  })
+
+  socket.on('disconnect', (data) => {
+    console.log('[SOCKET] player left.')
+  })
+})
 
 // database connection
 MongoClient.connect(process.env.DB_URL, {
@@ -60,6 +82,6 @@ process.on('SIGINT', function () {
 })
 
 // turn app listening on
-app.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log(`Server successfully started app, listening at ${HOST}:${PORT}.`)
 })

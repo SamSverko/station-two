@@ -111,5 +111,6 @@ Data is provided through REST API endpoints. View the [API Documentation](https:
 - [react-bootstrap](https://www.npmjs.com/package/react-bootstrap) - Bootstrap 4 components built with React.
 - [react-dom](https://www.npmjs.com/package/react-dom) - React package for working with the DOM.
 - [react-router-dom](https://www.npmjs.com/package/react-router-dom) - DOM bindings for React Router.
-- [react-scripts](https://www.npmjs.com/package/react-scripts) - https://www.npmjs.com/package/react-scripts.
+- [react-scripts](https://www.npmjs.com/package/react-scripts) - Configuration and scripts for Create React App.
+- [socket.io-client](https://www.npmjs.com/package/socket.io-client) - Realtime framework server (client).
 - [styled-components](https://www.npmjs.com/package/styled-components) - Visual primitives for the component age. Use the best bits of ES6 and CSS to style your apps without stress.

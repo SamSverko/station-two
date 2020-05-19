@@ -61,8 +61,6 @@ const Play = () => {
       uniqueId: uuidState
     }
 
-    console.log(dataToSubmit)
-
     const xhttp = new window.XMLHttpRequest()
     xhttp.onreadystatechange = function () {
       if (this.readyState === 4 && this.status === 200) {

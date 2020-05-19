@@ -1,12 +1,16 @@
 // dependencies
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Badge, Card } from 'react-bootstrap'
+import io from 'socket.io-client'
+import { Badge, Button, Card } from 'react-bootstrap'
 import styled from 'styled-components'
 
 // components
 import Header from '../components/Header'
 import TriviaInfo from '../components/TriviaInfo'
+
+// socket
+const socket = io('http://localhost:4000')
 
 // styles
 const PlayersStyle = styled.div`
@@ -21,6 +25,14 @@ const PlayersStyle = styled.div`
     margin: 5px;
   }
 `
+
+socket.on('button test', (data) => {
+  console.log('button test', data)
+})
+
+socket.on('player joined', (data) => {
+  console.log('A new player has joined the lobby.')
+})
 
 const Lobby = () => {
   const { hostName, triviaId, role } = useParams()
@@ -53,7 +65,12 @@ const Lobby = () => {
 
   useEffect(() => {
     fetchPlayers()
-  }, [fetchPlayers])
+    socket.connect()
+    socket.emit('joinRoom', triviaId)
+    return () => {
+      socket.disconnect()
+    }
+  }, [fetchPlayers, triviaId])
 
   const Players = ({ players }) => {
     // players = [
@@ -81,6 +98,7 @@ const Lobby = () => {
           <Card.Title>Players</Card.Title>
           <PlayersStyle>
             {players.map((player, counter) => {
+              // display player
               if (player.name === hostName) {
                 return <Badge key={counter} variant='success'>{player.name} <span aria-label='crown emoji' role='img'>👑</span></Badge>
               } else if (player.uniqueId === playerIdState) {
@@ -109,6 +127,7 @@ const Lobby = () => {
       <TriviaInfo code={triviaId} host={hostName} />
       {playersState && (<Players players={playersState} />)}
       <Footer />
+      <Button onClick={() => { socket.emit('button test', 'hello there!') }}>SOCKET TEST</Button>
     </>
   )
 }
