@@ -1,13 +1,10 @@
 // dependencies
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Alert, Button } from 'react-bootstrap'
 
-const BuilderStatus = ({ isRoundsComplete, isTieBreakerComplete }) => {
+const BuilderStatus = ({ isRoundsComplete, isTieBreakerComplete, triviaId }) => {
   const isTriviaReady = (isRoundsComplete && isTieBreakerComplete)
-
-  const hostTrivia = () => {
-    console.log('HOST TRIVIA!')
-  }
 
   return (
     <Alert variant={isTriviaReady ? 'success' : 'danger'}>
@@ -20,7 +17,9 @@ const BuilderStatus = ({ isRoundsComplete, isTieBreakerComplete }) => {
           <li className={isTieBreakerComplete ? 'd-none' : 'd-list-item'}>Complete the Tie Breaker.</li>
         </ol>
       </div>
-      <Button disabled={!isTriviaReady} onClick={hostTrivia}>Host Trivia</Button>
+      <Link to={`/lobby/${triviaId}/host`}>
+        <Button disabled={!isTriviaReady}>Host Trivia</Button>
+      </Link>
     </Alert>
   )
 }

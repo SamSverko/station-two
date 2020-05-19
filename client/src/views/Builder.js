@@ -57,7 +57,7 @@ const Builder = () => {
       {trivia && (
         <>
           <TriviaInfo code={trivia.triviaId} host={trivia.host} />
-          <BuilderStatus isRoundsComplete={isRoundsComplete} isTieBreakerComplete={(trivia.tieBreaker.question)} />
+          <BuilderStatus isRoundsComplete={isRoundsComplete} isTieBreakerComplete={(trivia.tieBreaker.question)} triviaId={trivia.triviaId} />
           <ExistingRounds rounds={trivia.rounds} setIsRoundsComplete={setIsRoundsComplete} triviaId={trivia.triviaId} />
           <TieBreaker fetchTrivia={fetchTrivia} tieBreaker={trivia.tieBreaker} triviaId={trivia.triviaId} />
           <AddARound triviaId={triviaId} />
