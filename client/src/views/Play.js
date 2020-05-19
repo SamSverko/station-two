@@ -61,13 +61,15 @@ const Play = () => {
       uniqueId: uuidState
     }
 
+    console.log(dataToSubmit)
+
     const xhttp = new window.XMLHttpRequest()
     xhttp.onreadystatechange = function () {
       if (this.readyState === 4 && this.status === 200) {
         if (this.response === 'OK') {
           history.push(`/lobby/${code}/player/${host}`)
         } else {
-          console.warn('Error joining lobby.')
+          setCheckLobbyState('error')
         }
       }
     }
@@ -78,7 +80,7 @@ const Play = () => {
 
   useEffect(() => {
     if (window.localStorage.getItem('playerId') === null) {
-      window.localStorage.setItem('playerId', generateUUID)
+      window.localStorage.setItem('playerId', generateUUID())
     }
     setUuidState(window.localStorage.getItem('playerId'))
   }, [uuidState])
@@ -150,6 +152,13 @@ const Play = () => {
               <Alert variant='danger'>
                 Lobby <span className='font-weight-bold text-uppercase'>{code}</span> not found.<br />
                 Please try with a different code.
+              </Alert>
+            )}
+
+            {checkLobbyState === 'error' && (
+              <Alert variant='danger'>
+                Error joining lobby.
+                Please try clearing your browser's cache.
               </Alert>
             )}
 

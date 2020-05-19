@@ -1,26 +1,114 @@
 // dependencies
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { Badge, Card } from 'react-bootstrap'
+import styled from 'styled-components'
 
 // components
 import Header from '../components/Header'
 import TriviaInfo from '../components/TriviaInfo'
 
+// styles
+const PlayersStyle = styled.div`
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-height: 90px;
+  overflow-y: scroll;
+  width: 100%;
+  .badge {
+    margin: 5px;
+  }
+`
+
 const Lobby = () => {
   const { hostName, triviaId, role } = useParams()
+
+  const [playersState, setPlayersState] = useState(false)
+  const [playerIdState] = useState(window.localStorage.getItem('playerId'))
+
+  const fetchPlayers = useCallback(() => {
+    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}?playersOnly=true`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          return Promise.reject(response)
+        }
+      }).then((data) => {
+        if (!data.statusCode) {
+          if (data.players.length > 0) {
+            setPlayersState(data.players)
+          } else if (data.players.length === 0) {
+            console.error('Error fetching trivia document', data)
+          }
+        } else {
+          console.error('Error fetching trivia document', data)
+        }
+      }).catch((error) => {
+        console.error('Error fetching trivia document', error)
+      })
+  }, [triviaId])
+
+  useEffect(() => {
+    fetchPlayers()
+  }, [fetchPlayers])
+
+  const Players = ({ players }) => {
+    // players = [
+    //   { name: 'aye' },
+    //   { name: 'beeeeee' },
+    //   { name: 'ceeee' },
+    //   { name: 'cdd' },
+    //   { name: 'adfger' },
+    //   { name: 'reyhtrw' },
+    //   { name: 'ewrtyhw' },
+    //   { name: 'wrtg' },
+    //   { name: 'wrgtreg' },
+    //   { name: 'ertyuiiop' },
+    //   { name: 'kojmkojkoi' },
+    //   { name: 'ddf' },
+    //   { name: 'sdfsdf' },
+    //   { name: 'ssdfsam' },
+    //   { name: 'sadfam' },
+    //   { name: 'ssdafam' }
+    // ]
+
+    return (
+      <Card>
+        <Card.Body>
+          <Card.Title>Players</Card.Title>
+          <PlayersStyle>
+            {players.map((player, counter) => {
+              if (player.name === hostName) {
+                return <Badge key={counter} variant='success'>{player.name} <span aria-label='crown emoji' role='img'>👑</span></Badge>
+              } else if (player.uniqueId === playerIdState) {
+                return <Badge key={counter} variant='primary'>{player.name} <span aria-label='hand wave emoji' role='img'>👋</span></Badge>
+              } else {
+                return <Badge key={counter} variant='info'>{player.name}</Badge>
+              }
+            })}
+          </PlayersStyle>
+        </Card.Body>
+      </Card>
+    )
+  }
+
+  const Footer = () => {
+    if (role === 'host') {
+      return <Link to={`/builder/${triviaId}`}>To Builder</Link>
+    } else {
+      return <Link to='/'>Home</Link>
+    }
+  }
 
   return (
     <>
       <Header text='Lobby' emoji='🏟' emojiDescription='stadium' />
-
       <TriviaInfo code={triviaId} host={hostName} />
-
-      {role === 'player' && (
-        <Link to='/'>Home</Link>
-      )}
-      {role === 'host' && (
-        <Link to={`/builder/${triviaId}`}>To Builder</Link>
-      )}
+      {playersState && (<Players players={playersState} />)}
+      <Footer />
     </>
   )
 }
