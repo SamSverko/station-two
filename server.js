@@ -1,5 +1,6 @@
 // node
 const path = require('path')
+const httpPost = require('http')
 const bodyParser = require('body-parser')
 
 // dependencies
@@ -34,13 +35,15 @@ app.use(bodyParser.json())
 // NO ROOMS: io.emit = send to all including sender | socket.emit = send to sender only | socket.broadcast.emit = send to all but not sender
 io.on('connection', (socket) => {
   let roomCode = false
+  let playerName = false
   let playerId = false
 
   socket.on('joinRoom', (data) => {
     roomCode = data.triviaId
+    playerName = data.playerName
     playerId = data.playerId
 
-    console.log(`[SOCKET] ${playerId} joined ${roomCode}`)
+    console.log(`[SOCKET] ${playerName} joined ${roomCode}`)
 
     socket.join(roomCode)
     socket.to(roomCode).emit('player joined')
@@ -51,12 +54,36 @@ io.on('connection', (socket) => {
     socket.to(roomCode).emit('button test', data)
   })
 
-  socket.on('leaveRoom', (data) => {
-    console.log('[SOCKET] player left.', data)
-  })
-
   socket.on('disconnect', () => {
-    console.log(`[SOCKET] ${playerId} left ${roomCode}`)
+    console.log(`[SOCKET] ${playerName} left ${roomCode}`)
+
+    const postData = JSON.stringify({
+      triviaId: roomCode,
+      name: playerName,
+      uniqueId: playerId
+    })
+    const filteredHost = socket.handshake.headers.host.substring(0, socket.handshake.headers.host.indexOf(':'))
+    const options = {
+      hostname: filteredHost,
+      port: 4000,
+      path: '/api/v1/leaveLobby',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': postData.length
+      }
+    }
+    const req = httpPost.request(options, (res) => {
+      res.on('data', (d) => {
+        process.stdout.write(d)
+        io.to(roomCode).emit('player disconnected', playerName, playerId)
+      })
+      req.on('error', (error) => {
+        console.error(error)
+      })
+    })
+    req.write(postData)
+    req.end()
   })
 })
 

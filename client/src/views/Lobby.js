@@ -30,6 +30,7 @@ const Lobby = () => {
   const { hostName, triviaId, role } = useParams()
 
   const [playersState, setPlayersState] = useState(false)
+  const [setPlayerNameState] = useState(false)
   const [playerIdState] = useState(window.localStorage.getItem('playerId'))
 
   const fetchPlayers = useCallback(() => {
@@ -43,6 +44,12 @@ const Lobby = () => {
       }).then((data) => {
         if (!data.statusCode) {
           if (data.players.length > 0) {
+            data.players.forEach((player) => {
+              if (player.uniqueId === playerIdState) {
+                setPlayerNameState(player.name)
+                socket.emit('joinRoom', { triviaId: triviaId, playerName: player.name, playerId: player.uniqueId })
+              }
+            })
             setPlayersState(data.players)
           } else if (data.players.length === 0) {
             console.error('Error fetching trivia document', data)
@@ -53,16 +60,15 @@ const Lobby = () => {
       }).catch((error) => {
         console.error('Error fetching trivia document', error)
       })
-  }, [triviaId])
+  }, [playerIdState, setPlayerNameState, triviaId])
 
   useEffect(() => {
-    fetchPlayers()
     socket.connect()
-    socket.emit('joinRoom', { triviaId: triviaId, playerId: playerIdState })
+    fetchPlayers()
     return () => {
       socket.disconnect()
     }
-  }, [fetchPlayers, playerIdState, triviaId])
+  }, [fetchPlayers])
 
   const Players = ({ players }) => {
     // players = [
@@ -120,6 +126,10 @@ const Lobby = () => {
 
   socket.on('player joined', (data) => {
     console.log('A new player has joined the lobby.')
+  })
+
+  socket.on('player disconnected', (playerName, playerId) => {
+    console.log(`${playerName}, ${playerId} left the lobby!`)
   })
 
   return (
