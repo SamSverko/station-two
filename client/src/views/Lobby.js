@@ -1,23 +1,24 @@
 // dependencies
-import React, { useState } from 'react'
+import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 // components
 import Header from '../components/Header'
+import TriviaInfo from '../components/TriviaInfo'
 
 const Lobby = () => {
-  const { triviaId, role } = useParams()
-
-  const [roleState] = useState(role)
+  const { hostName, triviaId, role } = useParams()
 
   return (
     <>
       <Header text='Lobby' emoji='🏟' emojiDescription='stadium' />
 
-      {roleState === 'player' && (
-        <Link to='/'>To Index</Link>
+      <TriviaInfo code={triviaId} host={hostName} />
+
+      {role === 'player' && (
+        <Link to='/'>Home</Link>
       )}
-      {roleState === 'host' && (
+      {role === 'host' && (
         <Link to={`/builder/${triviaId}`}>To Builder</Link>
       )}
     </>

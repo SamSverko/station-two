@@ -1,5 +1,5 @@
 // dependencies
-import React, { useCallback, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { Alert, Button, Card, Form } from 'react-bootstrap'
 import styled from 'styled-components'
@@ -17,11 +17,21 @@ const FormControlStyle = styled(Form.Control)`
 const Play = () => {
   const history = useHistory()
   const [validated, setValidated] = useState(false)
+  const [uuidState, setUuidState] = useState(false)
   const [name, setName] = useState(false)
   const [code, setCode] = useState(false)
   const [checkLobbyState, setCheckLobbyState] = useState(false)
 
-  const fetchLobby = useCallback(() => {
+  const generateUUID = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = Math.random() * 16 | 0
+      const v = c === 'x' ? r : (r & (0x3 | 0x8))
+      return v.toString(16)
+    })
+  }
+
+  const fetchLobby = () => {
+    setCheckLobbyState('pending')
     window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${code}?playersOnly=true`)
       .then((response) => {
         if (response.ok) {
@@ -31,10 +41,9 @@ const Play = () => {
         }
       }).then((data) => {
         if (!data.statusCode) {
-          console.log(data)
-          if (data.length > 0) {
-            history.push(`/lobby/${code}/player`)
-          } else if (data.length === 0) {
+          if (data.players.length > 0) {
+            joinLobby(data.host)
+          } else if (data.players.length === 0) {
             setCheckLobbyState('not-ready')
           }
         } else {
@@ -43,7 +52,36 @@ const Play = () => {
       }).catch((error) => {
         console.error('Error fetching trivia document', error)
       })
-  }, [history, code])
+  }
+
+  const joinLobby = (host) => {
+    const dataToSubmit = {
+      triviaId: code,
+      name: name,
+      uniqueId: uuidState
+    }
+
+    const xhttp = new window.XMLHttpRequest()
+    xhttp.onreadystatechange = function () {
+      if (this.readyState === 4 && this.status === 200) {
+        if (this.response === 'OK') {
+          history.push(`/lobby/${code}/player/${host}`)
+        } else {
+          console.warn('Error joining lobby.')
+        }
+      }
+    }
+    xhttp.open('POST', 'http://localhost:4000/api/v1/joinLobby')
+    xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+    xhttp.send(JSON.stringify(dataToSubmit))
+  }
+
+  useEffect(() => {
+    if (window.localStorage.getItem('playerId') === null) {
+      window.localStorage.setItem('playerId', generateUUID)
+    }
+    setUuidState(window.localStorage.getItem('playerId'))
+  }, [uuidState])
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -101,7 +139,7 @@ const Play = () => {
             </Form.Group>
 
             {checkLobbyState === 'pending' && (
-              <Alert variant='info'>Checking lobby {code}.</Alert>
+              <Alert variant='info'>Checking lobby <span className='font-weight-bold text-uppercase'>{code}</span>.</Alert>
             )}
 
             {checkLobbyState === 'not-ready' && (

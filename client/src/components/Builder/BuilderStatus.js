@@ -1,10 +1,51 @@
 // dependencies
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import { Alert, Button } from 'react-bootstrap'
 
-const BuilderStatus = ({ isRoundsComplete, isTieBreakerComplete, triviaId }) => {
+const BuilderStatus = ({ host, isRoundsComplete, isTieBreakerComplete, triviaId }) => {
+  const history = useHistory()
+
+  const [uuidState, setUuidState] = useState(false)
+
   const isTriviaReady = (isRoundsComplete && isTieBreakerComplete)
+
+  const generateUUID = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = Math.random() * 16 | 0
+      const v = c === 'x' ? r : (r & (0x3 | 0x8))
+      return v.toString(16)
+    })
+  }
+
+  const joinLobby = () => {
+    const dataToSubmit = {
+      triviaId: triviaId,
+      name: host,
+      uniqueId: uuidState
+    }
+
+    const xhttp = new window.XMLHttpRequest()
+    xhttp.onreadystatechange = function () {
+      if (this.readyState === 4 && this.status === 200) {
+        if (this.response === 'OK') {
+          history.push(`/lobby/${triviaId}/host/${host}`)
+        } else {
+          console.warn('Error joining lobby.')
+        }
+      }
+    }
+    xhttp.open('POST', 'http://localhost:4000/api/v1/joinLobby')
+    xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+    xhttp.send(JSON.stringify(dataToSubmit))
+  }
+
+  useEffect(() => {
+    if (window.localStorage.getItem('playerId') === null) {
+      window.localStorage.setItem('playerId', generateUUID)
+    }
+    setUuidState(window.localStorage.getItem('playerId'))
+  }, [uuidState])
 
   return (
     <Alert variant={isTriviaReady ? 'success' : 'danger'}>
@@ -17,9 +58,7 @@ const BuilderStatus = ({ isRoundsComplete, isTieBreakerComplete, triviaId }) => 
           <li className={isTieBreakerComplete ? 'd-none' : 'd-list-item'}>Complete the Tie Breaker.</li>
         </ol>
       </div>
-      <Link to={`/lobby/${triviaId}/host`}>
-        <Button disabled={!isTriviaReady}>Host Trivia</Button>
-      </Link>
+      <Button disabled={!isTriviaReady} onClick={joinLobby}>Host Trivia</Button>
     </Alert>
   )
 }

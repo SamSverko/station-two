@@ -242,30 +242,24 @@ module.exports = {
       if (error) {
         utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId} .`)
       }
-      const lobby = JSON.parse(body)
-      console.log(lobby)
-      if (req.body.isHost || lobby.length > 0) {
-        req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
-          { triviaId: req.body.triviaId.toLowerCase() },
-          {
-            $addToSet: {
-              players: {
-                name: req.body.name.toLowerCase(),
-                uniqueId: req.body.uniqueId.toLowerCase()
-              }
-            }
-          },
-          (error, result) => {
-            if (error) {
-              utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() updateOne\' query failed.')
-            } else {
-              res.sendStatus(200)
+      req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
+        { triviaId: req.body.triviaId.toLowerCase() },
+        {
+          $addToSet: {
+            players: {
+              name: req.body.name.toLowerCase(),
+              uniqueId: req.body.uniqueId.toLowerCase()
             }
           }
-        )
-      } else {
-        utils.handleServerError(next, 401, 'Lobby is not available to join.', req.method, req.url, 'The host has not yet entered the lobby, meaning you cannot.')
-      }
+        },
+        (error, result) => {
+          if (error) {
+            utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() updateOne\' query failed.')
+          } else {
+            res.sendStatus(200)
+          }
+        }
+      )
     })
   },
   getDocument: async (req, res, next) => {
@@ -294,7 +288,9 @@ module.exports = {
           } else if (req.params.collection === DB_COLLECTION_LOBBIES) {
             // tieBreaker responses || specified responses from specified round || all responses from specified round || specified responses from all rounds
             if (typeof req.query.playersOnly !== 'undefined') {
-              document = result.players
+              document = {}
+              document.host = result.host
+              document.players = result.players
             } else if (typeof req.query.tieBreaker !== 'undefined') {
               const filteredReponses = []
               document.responses.forEach((response) => {

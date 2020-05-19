@@ -98,7 +98,7 @@ const routes = [
   },
   {
     title: 'Lobby',
-    path: '/lobby/:triviaId/:role',
+    path: '/lobby/:triviaId/:role/:hostName',
     component: LobbyView,
     exact: true
   }

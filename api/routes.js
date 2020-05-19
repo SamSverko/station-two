@@ -14,7 +14,6 @@ const utils = require('./utils')
 // express-validator parameters
 const validateData = {
   collection: check('collection', 'Value must be [trivia] or [lobbies]').isString().isIn([DB_COLLECTION_TRIVIA, DB_COLLECTION_LOBBIES]),
-  isHost: check('isHost', 'Value must be [true] or [false]').trim().isBoolean().toBoolean(),
   name: body('name', 'Value must be between 3 and 10 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().isLength({ min: 3, max: 10 }),
   nameOptional: body('name', 'Value must be between 3 and 10 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().isLength({ min: 3, max: 10 }).optional(),
   playerResponse: check('playerResponse', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim(),
@@ -77,8 +76,7 @@ router.get(`/api/v${API_VERSION}/getDocument/:collection/:triviaId`, [
 router.post(`/api/v${API_VERSION}/joinLobby`, [
   validateData.triviaId,
   validateData.name,
-  validateData.uniqueId,
-  validateData.isHost
+  validateData.uniqueId
 ], (req, res, next) => {
   console.log(`${req.method} request for JOIN LOBBY.`)
   try {
