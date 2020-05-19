@@ -26,14 +26,6 @@ const PlayersStyle = styled.div`
   }
 `
 
-socket.on('button test', (data) => {
-  console.log('button test', data)
-})
-
-socket.on('player joined', (data) => {
-  console.log('A new player has joined the lobby.')
-})
-
 const Lobby = () => {
   const { hostName, triviaId, role } = useParams()
 
@@ -66,11 +58,11 @@ const Lobby = () => {
   useEffect(() => {
     fetchPlayers()
     socket.connect()
-    socket.emit('joinRoom', triviaId)
+    socket.emit('joinRoom', { triviaId: triviaId, playerId: playerIdState })
     return () => {
       socket.disconnect()
     }
-  }, [fetchPlayers, triviaId])
+  }, [fetchPlayers, playerIdState, triviaId])
 
   const Players = ({ players }) => {
     // players = [
@@ -120,6 +112,15 @@ const Lobby = () => {
       return <Link to='/'>Home</Link>
     }
   }
+
+  // socket
+  socket.on('button test', (data) => {
+    console.log('button test', data)
+  })
+
+  socket.on('player joined', (data) => {
+    console.log('A new player has joined the lobby.')
+  })
 
   return (
     <>

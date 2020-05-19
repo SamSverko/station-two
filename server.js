@@ -34,10 +34,15 @@ app.use(bodyParser.json())
 // NO ROOMS: io.emit = send to all including sender | socket.emit = send to sender only | socket.broadcast.emit = send to all but not sender
 io.on('connection', (socket) => {
   let roomCode = false
+  let playerId = false
+
   socket.on('joinRoom', (data) => {
-    roomCode = data
+    roomCode = data.triviaId
+    playerId = data.playerId
+
+    console.log(`[SOCKET] ${playerId} joined ${roomCode}`)
+
     socket.join(roomCode)
-    console.log('[SOCKET] player joined.')
     socket.to(roomCode).emit('player joined')
   })
 
@@ -46,8 +51,12 @@ io.on('connection', (socket) => {
     socket.to(roomCode).emit('button test', data)
   })
 
-  socket.on('disconnect', (data) => {
-    console.log('[SOCKET] player left.')
+  socket.on('leaveRoom', (data) => {
+    console.log('[SOCKET] player left.', data)
+  })
+
+  socket.on('disconnect', () => {
+    console.log(`[SOCKET] ${playerId} left ${roomCode}`)
   })
 })
 
