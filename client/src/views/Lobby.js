@@ -8,6 +8,8 @@ import styled from 'styled-components'
 // components
 import Header from '../components/Header'
 import TriviaInfo from '../components/TriviaInfo'
+import HostDisplay from '../components/Lobby/HostDisplay'
+import PlayerDisplay from '../components/Lobby/PlayerDisplay'
 
 // styles
 const PlayersStyle = styled.div`
@@ -29,6 +31,27 @@ const Lobby = () => {
   const [playerNameState] = useState(window.localStorage.getItem('playerName'))
   const [playerIdState] = useState(window.localStorage.getItem('playerId'))
   const [playersState, setPlayersState] = useState([])
+  const [triviaDataState, setTriviaDataState] = useState(false)
+
+  const fetchTriviaData = useCallback(() => {
+    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          return Promise.reject(response)
+        }
+      }).then((data) => {
+        if (!data.statusCode) {
+          console.log(data)
+          setTriviaDataState(data)
+        } else {
+          console.error('Error fetching trivia document', data)
+        }
+      }).catch((error) => {
+        console.error('Error fetching trivia document', error)
+      })
+  }, [triviaId])
 
   const fetchPlayers = useCallback(() => {
     window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}?playersOnly=true`)
@@ -79,6 +102,9 @@ const Lobby = () => {
   useEffect(() => {
     const socket = io('http://localhost:4000')
     joinLobby(socket)
+    if (role === 'host') {
+      fetchTriviaData()
+    }
 
     socket.on('player joined', () => {
       console.log('[SOCKET - player joined]')
@@ -93,7 +119,7 @@ const Lobby = () => {
     return () => {
       socket.close()
     }
-  }, [fetchPlayers, joinLobby])
+  }, [fetchPlayers, fetchTriviaData, joinLobby, role])
 
   // children components
   const Players = ({ players }) => {
@@ -137,6 +163,14 @@ const Lobby = () => {
     )
   }
 
+  const Display = () => {
+    if (role === 'host' && triviaDataState) {
+      return <HostDisplay triviaData={triviaDataState} />
+    } else {
+      return <PlayerDisplay />
+    }
+  }
+
   const Footer = () => {
     if (role === 'host') {
       return <Link to={`/builder/${triviaId}`}>To Builder</Link>
@@ -150,6 +184,7 @@ const Lobby = () => {
       <Header text='Lobby' emoji='🏟' emojiDescription='stadium' />
       <TriviaInfo code={triviaId} host={hostName} />
       {playersState && (<Players players={playersState} />)}
+      <Display />
       <Footer />
     </>
   )

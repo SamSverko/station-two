@@ -185,7 +185,7 @@ const FormLightning = () => {
             <Form.Group className='text-left' controlId='formQuestionPointValue'>
               <Form.Label>Question point value</Form.Label>
               <Form.Control
-                name='QuestionPointValue'
+                name='questionPointValue'
                 onChange={handleRoundInfoChange}
                 placeholder={roundInfoState.questionPointValue}
                 type='number'

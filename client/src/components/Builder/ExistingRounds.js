@@ -137,7 +137,7 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
                 <ol className='font-weight-bold' type='A'>
                   {question.options.map((option, i) => {
                     return (
-                      <li className='font-weight-normal' key={i}>{option}</li>
+                      <li key={i}><span className='font-weight-normal'>{option}</span></li>
                     )
                   })}
                 </ol>
