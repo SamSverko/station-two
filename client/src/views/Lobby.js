@@ -2,15 +2,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import io from 'socket.io-client'
-import { Badge, Button, Card } from 'react-bootstrap'
+import { Badge, Card } from 'react-bootstrap'
 import styled from 'styled-components'
 
 // components
 import Header from '../components/Header'
 import TriviaInfo from '../components/TriviaInfo'
-
-// socket
-const socket = io('http://localhost:4000')
 
 // styles
 const PlayersStyle = styled.div`
@@ -29,9 +26,9 @@ const PlayersStyle = styled.div`
 const Lobby = () => {
   const { hostName, triviaId, role } = useParams()
 
-  const [playersState, setPlayersState] = useState(false)
-  const [setPlayerNameState] = useState(false)
+  const [playerNameState] = useState(window.localStorage.getItem('playerName'))
   const [playerIdState] = useState(window.localStorage.getItem('playerId'))
+  const [playersState, setPlayersState] = useState([])
 
   const fetchPlayers = useCallback(() => {
     window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}?playersOnly=true`)
@@ -44,15 +41,9 @@ const Lobby = () => {
       }).then((data) => {
         if (!data.statusCode) {
           if (data.players.length > 0) {
-            data.players.forEach((player) => {
-              if (player.uniqueId === playerIdState) {
-                setPlayerNameState(player.name)
-                socket.emit('joinRoom', { triviaId: triviaId, playerName: player.name, playerId: player.uniqueId })
-              }
-            })
             setPlayersState(data.players)
           } else if (data.players.length === 0) {
-            console.error('Error fetching trivia document', data)
+            console.warn('Empty lobby retrieved.', data)
           }
         } else {
           console.error('Error fetching trivia document', data)
@@ -60,16 +51,51 @@ const Lobby = () => {
       }).catch((error) => {
         console.error('Error fetching trivia document', error)
       })
-  }, [playerIdState, setPlayerNameState, triviaId])
+  }, [triviaId])
+
+  const joinLobby = useCallback((socket) => {
+    const dataToSubmit = {
+      triviaId: triviaId,
+      name: playerNameState,
+      uniqueId: playerIdState
+    }
+
+    const xhttp = new window.XMLHttpRequest()
+    xhttp.onreadystatechange = function () {
+      if (this.readyState === 4 && this.status === 200) {
+        if (this.response === 'OK') {
+          console.log('OK POSTING TO DB')
+          socket.emit('joinRoom', { triviaId: triviaId, playerName: playerNameState, playerId: playerIdState })
+        } else {
+          console.warn('Error joining lobby.')
+        }
+      }
+    }
+    xhttp.open('POST', 'http://localhost:4000/api/v1/joinLobby')
+    xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+    xhttp.send(JSON.stringify(dataToSubmit))
+  }, [playerIdState, playerNameState, triviaId])
 
   useEffect(() => {
-    socket.connect()
-    fetchPlayers()
-    return () => {
-      socket.disconnect()
-    }
-  }, [fetchPlayers])
+    const socket = io('http://localhost:4000')
+    joinLobby(socket)
 
+    socket.on('player joined', () => {
+      console.log('[SOCKET - player joined]')
+      fetchPlayers()
+    })
+
+    socket.on('player left', () => {
+      console.log('[SOCKET - player joined]')
+      fetchPlayers()
+    })
+
+    return () => {
+      socket.close()
+    }
+  }, [fetchPlayers, joinLobby])
+
+  // children components
   const Players = ({ players }) => {
     // players = [
     //   { name: 'aye' },
@@ -119,26 +145,12 @@ const Lobby = () => {
     }
   }
 
-  // socket
-  socket.on('button test', (data) => {
-    console.log('button test', data)
-  })
-
-  socket.on('player joined', (data) => {
-    console.log('A new player has joined the lobby.')
-  })
-
-  socket.on('player disconnected', (playerName, playerId) => {
-    console.log(`${playerName}, ${playerId} left the lobby!`)
-  })
-
   return (
     <>
       <Header text='Lobby' emoji='🏟' emojiDescription='stadium' />
       <TriviaInfo code={triviaId} host={hostName} />
       {playersState && (<Players players={playersState} />)}
       <Footer />
-      <Button onClick={() => { socket.emit('button test', 'hello there!') }}>SOCKET TEST</Button>
     </>
   )
 }

@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
     console.log(`[SOCKET] ${playerName} joined ${roomCode}`)
 
     socket.join(roomCode)
-    socket.to(roomCode).emit('player joined')
+    io.to(roomCode).emit('player joined')
   })
 
   socket.on('button test', (data) => {
@@ -74,9 +74,9 @@ io.on('connection', (socket) => {
       }
     }
     const req = httpPost.request(options, (res) => {
-      res.on('data', (d) => {
-        process.stdout.write(d)
-        io.to(roomCode).emit('player disconnected', playerName, playerId)
+      res.on('data', (data) => {
+        process.stdout.write(data)
+        io.to(roomCode).emit('player left')
       })
       req.on('error', (error) => {
         console.error(error)

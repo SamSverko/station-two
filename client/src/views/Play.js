@@ -42,7 +42,7 @@ const Play = () => {
       }).then((data) => {
         if (!data.statusCode) {
           if (data.players.length > 0) {
-            joinLobby(data.host)
+            history.push(`/lobby/${code}/player/${data.host}`)
           } else if (data.players.length === 0) {
             setCheckLobbyState('not-ready')
           }
@@ -52,28 +52,6 @@ const Play = () => {
       }).catch((error) => {
         console.error('Error fetching trivia document', error)
       })
-  }
-
-  const joinLobby = (host) => {
-    const dataToSubmit = {
-      triviaId: code,
-      name: name,
-      uniqueId: uuidState
-    }
-
-    const xhttp = new window.XMLHttpRequest()
-    xhttp.onreadystatechange = function () {
-      if (this.readyState === 4 && this.status === 200) {
-        if (this.response === 'OK') {
-          history.push(`/lobby/${code}/player/${host}`)
-        } else {
-          setCheckLobbyState('error')
-        }
-      }
-    }
-    xhttp.open('POST', 'http://localhost:4000/api/v1/joinLobby')
-    xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
-    xhttp.send(JSON.stringify(dataToSubmit))
   }
 
   useEffect(() => {
@@ -89,6 +67,7 @@ const Play = () => {
 
     if (event.currentTarget.checkValidity() !== false) {
       if (name && code) {
+        window.localStorage.setItem('playerName', name)
         fetchLobby()
       }
     } else {

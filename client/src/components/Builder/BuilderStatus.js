@@ -1,11 +1,9 @@
 // dependencies
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Alert, Button } from 'react-bootstrap'
 
 const BuilderStatus = ({ host, isRoundsComplete, isTieBreakerComplete, triviaId }) => {
-  const history = useHistory()
-
   const [uuidState, setUuidState] = useState(false)
 
   const isTriviaReady = (isRoundsComplete && isTieBreakerComplete)
@@ -16,28 +14,6 @@ const BuilderStatus = ({ host, isRoundsComplete, isTieBreakerComplete, triviaId 
       const v = c === 'x' ? r : (r & (0x3 | 0x8))
       return v.toString(16)
     })
-  }
-
-  const joinLobby = () => {
-    const dataToSubmit = {
-      triviaId: triviaId,
-      name: host,
-      uniqueId: uuidState
-    }
-
-    const xhttp = new window.XMLHttpRequest()
-    xhttp.onreadystatechange = function () {
-      if (this.readyState === 4 && this.status === 200) {
-        if (this.response === 'OK') {
-          history.push(`/lobby/${triviaId}/host/${host}`)
-        } else {
-          console.warn('Error joining lobby.')
-        }
-      }
-    }
-    xhttp.open('POST', 'http://localhost:4000/api/v1/joinLobby')
-    xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
-    xhttp.send(JSON.stringify(dataToSubmit))
   }
 
   useEffect(() => {
@@ -58,7 +34,9 @@ const BuilderStatus = ({ host, isRoundsComplete, isTieBreakerComplete, triviaId 
           <li className={isTieBreakerComplete ? 'd-none' : 'd-list-item'}>Complete the Tie Breaker.</li>
         </ol>
       </div>
-      <Button disabled={!isTriviaReady} onClick={joinLobby}>Host Trivia</Button>
+      <Link onClick={() => { window.localStorage.setItem('playerName', host) }} to={`/lobby/${triviaId}/host/${host}`}>
+        <Button disabled={!isTriviaReady}>Host Trivia</Button>
+      </Link>
     </Alert>
   )
 }
