@@ -132,8 +132,10 @@ const Lobby = () => {
     })
 
     socket.on('player responded', (data) => {
-      console.log('[SOCKET - player responded]')
-      fetchLobbyData()
+      if (role === 'host') {
+        console.log('[SOCKET - player responded]')
+        fetchLobbyData()
+      }
     })
 
     return () => {
