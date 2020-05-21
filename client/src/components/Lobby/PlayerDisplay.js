@@ -209,6 +209,78 @@ const Player = ({ playerDisplayDataState, socket }) => {
       )
     }
 
+    const Lightning = () => {
+      const [validated, setValidated] = useState(false)
+      const [response, setResponse] = useState(false)
+
+      const submitResponse = (target) => {
+        const dataToSubmit = {
+          triviaId: triviaId,
+          name: window.localStorage.getItem('playerName'),
+          uniqueId: window.localStorage.getItem('playerId'),
+          roundType: playerDisplayDataState.roundData.type,
+          playerResponse: response,
+          roundNumber: parseInt(playerDisplayDataState.roundData.roundNumber),
+          questionNumber: parseInt(playerDisplayDataState.roundData.questionNumber)
+        }
+
+        const xhttp = new window.XMLHttpRequest()
+        xhttp.onreadystatechange = function () {
+          if (this.readyState === 4 && this.status === 200) {
+            if (this.response === 'OK') {
+              console.log('[OK] submitResponse')
+              setCurrentResponse({
+                display: response,
+                raw: response
+              })
+              socket.emit('playerResponded', dataToSubmit)
+            } else {
+              console.warn(this.response)
+              console.warn('Error posting response.')
+            }
+          }
+        }
+        xhttp.open('POST', 'http://localhost:4000/api/v1/submitResponse')
+        xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+        xhttp.send(JSON.stringify(dataToSubmit))
+      }
+
+      const handleSubmit = (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+
+        if (event.currentTarget.checkValidity() !== false) {
+          if (response) {
+            submitResponse()
+          }
+        } else {
+          setValidated(true)
+        }
+      }
+
+      return (
+        <div>
+          <p className='h5'>Question {playerDisplayDataState.roundData.questionNumber + 1}</p>
+          <p>{playerDisplayDataState.question}</p>
+          <Form noValidate onSubmit={handleSubmit} validated={validated}>
+            <Form.Group className='text-left' controlId='formResponse'>
+              <Form.Label>Response</Form.Label>
+              <Form.Control
+                name='response'
+                onChange={(event) => setResponse(event.target.value)}
+                required
+                type='text'
+              />
+              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><b>Response</b> is required.</Form.Control.Feedback>
+            </Form.Group>
+
+            <Button type='submit' variant='primary'>Submit</Button>
+          </Form>
+        </div>
+      )
+    }
+
     if (playerDisplayDataState.roundData !== 'tieBreaker') {
       return (
         <RoundStyle>
@@ -234,6 +306,7 @@ const Player = ({ playerDisplayDataState, socket }) => {
           <hr />
           {playerDisplayDataState.roundData.type === 'multipleChoice' && (<MultipleChoice />)}
           {playerDisplayDataState.roundData.type === 'picture' && (<Picture />)}
+          {playerDisplayDataState.roundData.type === 'lightning' && (<Lightning />)}
           <hr />
           <div>
             <p className='h5'>
