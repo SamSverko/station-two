@@ -38,7 +38,7 @@ const Player = ({ playerDisplayDataState, socket }) => {
 
     if (!playerDisplayDataState.roundData) {
       return (
-        <p>Please wait for Host.</p>
+        <p className='mb-0 h5'>Please wait for Host <span aria-label='hourglass flowing sand emoji' role='img'>⏳</span></p>
       )
     } else if (playerDisplayDataState.roundData) {
       return <DisplayQuestion />
