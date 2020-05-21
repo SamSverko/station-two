@@ -72,9 +72,11 @@ const PlayRound = ({ lobbyData, roundNumber, roundData, socket }) => {
         dataToSend.question = question.question
         dataToSend.options = question.options
       } else if (roundData.type === 'picture') {
+        dataToSend.roundData.numberOfQuestions = roundData.pictures.length
         dataToSend.roundData.questionNumber = questionNumber
         dataToSend.pictureUrl = question.url
       } else if (roundData.type === 'lightning') {
+        dataToSend.roundData.numberOfQuestions = roundData.questions.length
         dataToSend.roundData.questionNumber = questionNumber
         dataToSend.question = question.question
       }
@@ -217,7 +219,7 @@ const PlayRound = ({ lobbyData, roundNumber, roundData, socket }) => {
                   <p><span className='font-weight-bold'>Answer:</span> {picture.answer}</p>
                 </div>
                 <div className='right'>
-                  <Button onClick={() => { socketQuestion(picture) }}>Display</Button>
+                  <Button onClick={() => { socketQuestion(picture, i) }}>Display</Button>
                 </div>
                 <div className='players-to-respond'>
                   <p className='font-weight-bold'>Players left to respond:</p>
@@ -262,7 +264,7 @@ const PlayRound = ({ lobbyData, roundNumber, roundData, socket }) => {
                   <p><span className='font-weight-bold'>Answer:</span> {question.answer}</p>
                 </div>
                 <div className='right'>
-                  <Button onClick={() => { socketQuestion(question) }}>Display</Button>
+                  <Button onClick={() => { socketQuestion(question, i) }}>Display</Button>
                 </div>
                 <div className='players-to-respond'>
                   <p className='font-weight-bold'>Players left to respond:</p>

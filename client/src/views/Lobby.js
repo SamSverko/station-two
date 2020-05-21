@@ -19,6 +19,27 @@ const Lobby = () => {
   const [playersState, setPlayersState] = useState([])
   const [triviaDataState, setTriviaDataState] = useState(false)
   const [playerDisplayDataState, setPlayerDisplayDataState] = useState(false)
+  const [lobbyData, setLobbyData] = useState(false)
+
+  const fetchLobbyData = useCallback(() => {
+    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          return Promise.reject(response)
+        }
+      }).then((data) => {
+        if (!data.statusCode) {
+          console.log('[OK] fetchLobbyData')
+          setLobbyData(data)
+        } else {
+          console.error('Error fetching lobby document', data)
+        }
+      }).catch((error) => {
+        console.error('Error fetching lobby document', error)
+      })
+  }, [triviaId])
 
   const fetchTriviaData = useCallback(() => {
     window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}`)
@@ -92,6 +113,7 @@ const Lobby = () => {
 
     if (role === 'host') {
       fetchTriviaData()
+      fetchLobbyData()
     }
 
     socket.on('player joined', () => {
@@ -111,18 +133,18 @@ const Lobby = () => {
 
     socket.on('player responded', (data) => {
       console.log('[SOCKET - player responded]')
-      console.log(data)
+      fetchLobbyData()
     })
 
     return () => {
       socket.close()
     }
-  }, [fetchPlayers, fetchTriviaData, joinLobby, role, socket])
+  }, [fetchLobbyData, fetchPlayers, fetchTriviaData, joinLobby, role, socket])
 
   // children components
   const Display = () => {
-    if (role === 'host' && triviaDataState) {
-      return <HostDisplay socket={socket} triviaData={triviaDataState} />
+    if (role === 'host' && triviaDataState && lobbyData) {
+      return <HostDisplay lobbyData={lobbyData} socket={socket} triviaData={triviaDataState} />
     } else {
       return <PlayerDisplay socket={socket} playerDisplayDataState={playerDisplayDataState} />
     }
