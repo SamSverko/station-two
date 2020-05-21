@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Card } from 'react-bootstrap'
 import styled from 'styled-components'
 
@@ -22,9 +22,10 @@ const HostControlContainerStyle = styled.div`
 `
 
 const HostDisplay = ({ triviaData }) => {
-  const [currentHostActionState, setCurrentHostActionState] = useState(false)
-  const [currentRoundDataState, setCurrentRoundDataState] = useState(false)
-  const [currentRoundNumberState, setCurrentRoundNumberState] = useState(false)
+  const [currentButtonSelected, setCurrentButtonSelectedState] = useState(window.localStorage.getItem('currentButtonSelected') || false)
+  const [currentHostActionState, setCurrentHostActionState] = useState(window.localStorage.getItem('currentHostActionState') || false)
+  const [currentRoundDataState, setCurrentRoundDataState] = useState(JSON.parse(window.localStorage.getItem('currentRoundDataState')) || false)
+  const [currentRoundNumberState, setCurrentRoundNumberState] = useState(window.localStorage.getItem('currentRoundNumberState') || false)
 
   const hostAction = (action, target, round, roundNumber) => {
     // update checked style
@@ -34,10 +35,21 @@ const HostDisplay = ({ triviaData }) => {
     }
     target.classList.add('active')
 
+    window.localStorage.setItem('currentButtonSelected', target.id)
+    setCurrentButtonSelectedState(target.id)
+    window.localStorage.setItem('currentHostActionState', action)
     setCurrentHostActionState(action)
+    window.localStorage.setItem('currentRoundDataState', JSON.stringify(round))
     setCurrentRoundDataState(round)
+    window.localStorage.setItem('currentRoundNumberState', roundNumber)
     setCurrentRoundNumberState(roundNumber)
   }
+
+  useEffect(() => {
+    if (currentButtonSelected !== 'false' && currentButtonSelected !== false) {
+      document.getElementById(currentButtonSelected).classList.add('active')
+    }
+  }, [currentButtonSelected])
 
   return (
     <Card>
@@ -45,19 +57,20 @@ const HostDisplay = ({ triviaData }) => {
         <Card.Title>Host Controls</Card.Title>
         <HostControlContainerStyle>
           {triviaData.rounds.map((round, idx) => {
+            const displayRound = idx + 1
             return (
               <div key={idx}>
-                <Button className='action-button' onClick={(event) => { hostAction('play-round', event.target, round, idx) }}>Play Round {idx + 1}</Button>
-                <Button className='action-button' onClick={(event) => { hostAction('mark-round', event.target, round, idx) }}>Mark Round {idx + 1}</Button>
+                <Button className='action-button' id={`host-control-play-${idx}`} onClick={(event) => { hostAction('play-round', event.target, round, idx) }}>Play Round {displayRound}</Button>
+                <Button className='action-button' id={`host-control-mark-${idx}`} onClick={(event) => { hostAction('mark-round', event.target, round, idx) }}>Mark Round {displayRound}</Button>
               </div>
             )
           })}
           <div>
-            <Button className='action-button' onClick={(event) => { hostAction('play-round', event.target, triviaData.tieBreaker, 'tieBreaker') }}>Play Tie Breaker</Button>
-            <Button className='action-button' onClick={(event) => { hostAction('mark-round', event.target, triviaData.tieBreaker, 'tieBreaker') }}>Mark Tie Breaker</Button>
+            <Button className='action-button' id='host-control-play-tie' onClick={(event) => { hostAction('play-round', event.target, triviaData.tieBreaker, 'tieBreaker') }}>Play Tie Breaker</Button>
+            <Button className='action-button' id='host-control-mark-tie' onClick={(event) => { hostAction('mark-round', event.target, triviaData.tieBreaker, 'tieBreaker') }}>Mark Tie Breaker</Button>
           </div>
           <div>
-            <Button className='action-button' onClick={(event) => { hostAction('display-leaderboard', event.target) }}>Display Leaderboard</Button>
+            <Button className='action-button' id='host-control-leaderboard' onClick={(event) => { hostAction('display-leaderboard', event.target) }}>Display Leaderboard</Button>
           </div>
         </HostControlContainerStyle>
 

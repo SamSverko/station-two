@@ -52,11 +52,13 @@ const RoundStyle = styled.div`
 `
 
 const PlayRound = ({ roundNumber, roundData }) => {
+  const displayRound = parseInt(roundNumber) + 1
+
   if (roundData.type === 'multipleChoice') {
     return (
       <RoundStyle>
         <hr />
-        <p className='h5'>Play Round {roundNumber + 1}</p>
+        <p className='h5'>Play Round {displayRound}</p>
         <div className='info'>
           <p>
             <span className='font-weight-bold'>Type</span><br />
@@ -108,7 +110,7 @@ const PlayRound = ({ roundNumber, roundData }) => {
     return (
       <RoundStyle>
         <hr />
-        <p className='h5'>Play Round {roundNumber + 1}</p>
+        <p className='h5'>Play Round {displayRound}</p>
         <div className='info'>
           <p>
             <span className='font-weight-bold'>Type</span><br />
@@ -154,7 +156,7 @@ const PlayRound = ({ roundNumber, roundData }) => {
     return (
       <RoundStyle>
         <hr />
-        <p className='h5'>Play Round {roundNumber + 1}</p>
+        <p className='h5'>Play Round {displayRound}</p>
         <div className='info'>
           <p>
             <span className='font-weight-bold'>Type</span><br />
