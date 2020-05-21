@@ -119,11 +119,17 @@ const Lobby = () => {
     socket.on('player joined', () => {
       console.log('[SOCKET - player joined]')
       fetchPlayers()
+      if (role === 'host') {
+        fetchLobbyData()
+      }
     })
 
     socket.on('player left', () => {
-      console.log('[SOCKET - player joined]')
+      console.log('[SOCKET - player left]')
       fetchPlayers()
+      if (role === 'host') {
+        fetchLobbyData()
+      }
     })
 
     socket.on('display question', (data) => {
