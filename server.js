@@ -49,9 +49,9 @@ io.on('connection', (socket) => {
     io.to(roomCode).emit('player joined')
   })
 
-  socket.on('button test', (data) => {
-    // console.log(`[SOCKET] ${roomCode}`)
-    socket.to(roomCode).emit('button test', data)
+  socket.on('hostAction', (data) => {
+    console.log(`[SOCKET - hostAction] ${data}`)
+    socket.to(roomCode).emit('host action', data)
   })
 
   socket.on('disconnect', () => {
