@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Badge, Button } from 'react-bootstrap'
 import styled from 'styled-components'
 
@@ -51,7 +51,7 @@ const RoundStyle = styled.div`
   }
 `
 
-const PlayRound = ({ roundNumber, roundData, socket }) => {
+const PlayRound = ({ lobbyData, roundNumber, roundData, socket }) => {
   const displayRound = parseInt(roundNumber) + 1
 
   const socketQuestion = (question, questionNumber) => {
@@ -88,6 +88,49 @@ const PlayRound = ({ roundNumber, roundData, socket }) => {
     socket.emit('displayQuestion', dataToSend)
   }
 
+  const PlayersLeftToRespond = ({ roundNumber, questionNumber }) => {
+    const [playersToRespond, setPlayersToResponse] = useState([])
+
+    useEffect(() => {
+      const playersInLobby = []
+      lobbyData.players.forEach((player) => {
+        playersInLobby.push(player)
+      })
+
+      const playerResponses = []
+      lobbyData.responses.forEach((response) => {
+        if (response.roundNumber === parseInt(roundNumber) && response.questionNumber === parseInt(questionNumber)) {
+          playerResponses.push({ name: response.name, uniqueId: response.uniqueId })
+        }
+      })
+
+      const playersLeft = playersInLobby.filter(user => {
+        return playerResponses.findIndex(owner => (owner.name === user.name && owner.uniqueId === user.uniqueId)) === -1
+      })
+      if (playersLeft.length > 1) {
+        setPlayersToResponse(playersLeft)
+      } else {
+        setPlayersToResponse(false)
+      }
+    }, [questionNumber, roundNumber])
+
+    return (
+      <>
+        {!playersToRespond && (<Badge variant='success'>All Responses In</Badge>)}
+        {Array.isArray(playersToRespond) && (
+          playersToRespond.map((player, i) => {
+            if (player.name !== window.localStorage.getItem('playerName') && player.uniqueId !== window.localStorage.getItem('playerId')) {
+              return (
+                <Badge className='mr-1' key={i} variant='danger'>{player.name}</Badge>
+              )
+            }
+            return null
+          })
+        )}
+      </>
+    )
+  }
+
   if (roundData.type === 'multipleChoice') {
     return (
       <RoundStyle>
@@ -122,7 +165,7 @@ const PlayRound = ({ roundNumber, roundData, socket }) => {
                   <ol className='font-weight-bold' type='A'>
                     {question.options.map((option, i) => {
                       return (
-                        <li className='font-weight-normal' key={i}>{option}</li>
+                        <li key={i}><span className='font-weight-normal'>{option}</span></li>
                       )
                     })}
                   </ol>
@@ -132,7 +175,7 @@ const PlayRound = ({ roundNumber, roundData, socket }) => {
                 </div>
                 <div className='players-to-respond'>
                   <p className='font-weight-bold'>Players left to respond:</p>
-                  <Badge variant='info'>sam</Badge>
+                  <PlayersLeftToRespond roundNumber={roundNumber} questionNumber={i} />
                 </div>
               </div>
             )
@@ -178,7 +221,7 @@ const PlayRound = ({ roundNumber, roundData, socket }) => {
                 </div>
                 <div className='players-to-respond'>
                   <p className='font-weight-bold'>Players left to respond:</p>
-                  <Badge variant='info'>sam</Badge>
+                  <PlayersLeftToRespond roundNumber={roundNumber} questionNumber={i} />
                 </div>
               </div>
             )
@@ -223,7 +266,7 @@ const PlayRound = ({ roundNumber, roundData, socket }) => {
                 </div>
                 <div className='players-to-respond'>
                   <p className='font-weight-bold'>Players left to respond:</p>
-                  <Badge variant='info'>sam</Badge>
+                  <PlayersLeftToRespond roundNumber={roundNumber} questionNumber={i} />
                 </div>
               </div>
             )
@@ -248,7 +291,7 @@ const PlayRound = ({ roundNumber, roundData, socket }) => {
             </div>
             <div className='players-to-respond'>
               <p className='font-weight-bold'>Players left to respond:</p>
-              <Badge variant='info'>sam</Badge>
+              <PlayersLeftToRespond roundNumber='tieBreaker' questionNumber='tieBreaker' />
             </div>
           </div>
         </div>

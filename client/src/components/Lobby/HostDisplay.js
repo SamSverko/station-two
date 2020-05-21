@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { Button, Card } from 'react-bootstrap'
 import styled from 'styled-components'
 
@@ -22,10 +23,33 @@ const HostControlContainerStyle = styled.div`
 `
 
 const HostDisplay = ({ socket, triviaData }) => {
+  const { triviaId } = useParams()
+
   const [currentButtonSelected, setCurrentButtonSelectedState] = useState(window.localStorage.getItem('currentButtonSelected') || false)
   const [currentHostActionState, setCurrentHostActionState] = useState(window.localStorage.getItem('currentHostActionState') || false)
   const [currentRoundDataState, setCurrentRoundDataState] = useState(JSON.parse(window.localStorage.getItem('currentRoundDataState')) || false)
   const [currentRoundNumberState, setCurrentRoundNumberState] = useState(window.localStorage.getItem('currentRoundNumberState') || false)
+  const [lobbyData, setLobbyData] = useState(false)
+
+  const fetchLobbyData = useCallback(() => {
+    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          return Promise.reject(response)
+        }
+      }).then((data) => {
+        if (!data.statusCode) {
+          console.log('[OK] fetchLobbyData')
+          setLobbyData(data)
+        } else {
+          console.error('Error fetching player response', data)
+        }
+      }).catch((error) => {
+        console.error('Error fetching player response', error)
+      })
+  }, [triviaId])
 
   const hostAction = (action, target, round, roundNumber) => {
     // update checked style
@@ -35,6 +59,7 @@ const HostDisplay = ({ socket, triviaData }) => {
     }
     target.classList.add('active')
 
+    // save data to state or local storage
     window.localStorage.setItem('currentButtonSelected', target.id)
     setCurrentButtonSelectedState(target.id)
     window.localStorage.setItem('currentHostActionState', action)
@@ -44,14 +69,18 @@ const HostDisplay = ({ socket, triviaData }) => {
     window.localStorage.setItem('currentRoundNumberState', roundNumber)
     setCurrentRoundNumberState(roundNumber)
 
-    // socket.emit('hostAction', roundNumber)
+    fetchLobbyData()
   }
 
   useEffect(() => {
     if (currentButtonSelected !== 'false' && currentButtonSelected !== false) {
       document.getElementById(currentButtonSelected).classList.add('active')
     }
-  }, [currentButtonSelected])
+
+    if (lobbyData === false) {
+      fetchLobbyData() // WHY YOU KEEP RUNNING?
+    }
+  }, [currentButtonSelected, currentRoundNumberState, fetchLobbyData, lobbyData])
 
   return (
     <Card>
@@ -76,7 +105,7 @@ const HostDisplay = ({ socket, triviaData }) => {
           </div>
         </HostControlContainerStyle>
 
-        {currentHostActionState === 'play-round' && (<PlayRound roundData={currentRoundDataState} roundNumber={currentRoundNumberState} socket={socket} />)}
+        {(currentHostActionState === 'play-round' && lobbyData) && (<PlayRound lobbyData={lobbyData} roundData={currentRoundDataState} roundNumber={currentRoundNumberState} socket={socket} />)}
         {currentHostActionState === 'mark-round' && (<MarkRound roundNumber={currentRoundNumberState} />)}
         {currentHostActionState === 'display-leaderboard' && (<Leaderboard />)}
       </Card.Body>

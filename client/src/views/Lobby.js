@@ -109,6 +109,11 @@ const Lobby = () => {
       setPlayerDisplayDataState(data)
     })
 
+    socket.on('player responded', (data) => {
+      console.log('[SOCKET - player responded]')
+      console.log(data)
+    })
+
     return () => {
       socket.close()
     }
@@ -119,7 +124,7 @@ const Lobby = () => {
     if (role === 'host' && triviaDataState) {
       return <HostDisplay socket={socket} triviaData={triviaDataState} />
     } else {
-      return <PlayerDisplay playerDisplayDataState={playerDisplayDataState} />
+      return <PlayerDisplay socket={socket} playerDisplayDataState={playerDisplayDataState} />
     }
   }
 

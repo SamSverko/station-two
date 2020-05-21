@@ -50,8 +50,13 @@ io.on('connection', (socket) => {
   })
 
   socket.on('displayQuestion', (data) => {
-    console.log(`[SOCKET - displayQuestion] ${data}`)
+    console.log('[SOCKET - displayQuestion]')
     socket.to(roomCode).emit('display question', data)
+  })
+
+  socket.on('playerResponded', (data) => {
+    console.log('[SOCKET - playerResponded]')
+    socket.to(roomCode).emit('player responded', data)
   })
 
   socket.on('disconnect', () => {

@@ -29,7 +29,7 @@ const RoundStyle = styled.div`
     }
 `
 
-const Player = ({ playerDisplayDataState }) => {
+const Player = ({ playerDisplayDataState, socket }) => {
   const Display = () => {
     if (!playerDisplayDataState.roundData) {
       return (
@@ -99,7 +99,7 @@ const Player = ({ playerDisplayDataState }) => {
                 display: String.fromCharCode(97 + parseInt(target.dataset.response)).toUpperCase(),
                 raw: target.dataset.response
               })
-              // socket.emit('joinRoom', { triviaId: triviaId, playerName: playerNameState, playerId: playerIdState })
+              socket.emit('playerResponded', dataToSubmit)
             } else {
               console.warn(this.response)
               console.warn('Error posting response.')
