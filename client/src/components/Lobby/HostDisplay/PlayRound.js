@@ -51,8 +51,39 @@ const RoundStyle = styled.div`
   }
 `
 
-const PlayRound = ({ roundNumber, roundData }) => {
+const PlayRound = ({ roundNumber, roundData, socket }) => {
   const displayRound = parseInt(roundNumber) + 1
+
+  const socketQuestion = (question) => {
+    let dataToSend = {}
+
+    if (question !== 'tieBreaker') {
+      dataToSend = {
+        roundData: {
+          pointValue: roundData.pointValue,
+          roundNumber: roundNumber,
+          theme: roundData.theme,
+          type: roundData.type
+        }
+      }
+      if (roundData.type === 'multipleChoice') {
+        dataToSend.roundData.numberOfQuestions = roundData.questions.length
+        dataToSend.question = question.question
+        dataToSend.options = question.options
+      } else if (roundData.type === 'picture') {
+        dataToSend.pictureUrl = question.url
+      } else if (roundData.type === 'lightning') {
+        dataToSend.question = question.question
+      }
+    } else {
+      dataToSend = {
+        roundData: 'tieBreaker',
+        question: roundData.question
+      }
+    }
+
+    socket.emit('displayQuestion', dataToSend)
+  }
 
   if (roundData.type === 'multipleChoice') {
     return (
@@ -94,7 +125,7 @@ const PlayRound = ({ roundNumber, roundData }) => {
                   </ol>
                 </div>
                 <div className='right'>
-                  <Button>Hidden</Button>
+                  <Button onClick={() => { socketQuestion(question) }}>Display</Button>
                 </div>
                 <div className='players-to-respond'>
                   <p className='font-weight-bold'>Players left to respond:</p>
@@ -140,7 +171,7 @@ const PlayRound = ({ roundNumber, roundData }) => {
                   <p><span className='font-weight-bold'>Answer:</span> {picture.answer}</p>
                 </div>
                 <div className='right'>
-                  <Button>Hidden</Button>
+                  <Button onClick={() => { socketQuestion(picture) }}>Display</Button>
                 </div>
                 <div className='players-to-respond'>
                   <p className='font-weight-bold'>Players left to respond:</p>
@@ -185,7 +216,7 @@ const PlayRound = ({ roundNumber, roundData }) => {
                   <p><span className='font-weight-bold'>Answer:</span> {question.answer}</p>
                 </div>
                 <div className='right'>
-                  <Button>Hidden</Button>
+                  <Button onClick={() => { socketQuestion(question) }}>Display</Button>
                 </div>
                 <div className='players-to-respond'>
                   <p className='font-weight-bold'>Players left to respond:</p>
@@ -210,7 +241,7 @@ const PlayRound = ({ roundNumber, roundData }) => {
               <p><span className='font-weight-bold'>Answer:</span> {roundData.answer}</p>
             </div>
             <div className='right'>
-              <Button>Hidden</Button>
+              <Button onClick={() => { socketQuestion('tieBreaker') }}>Display</Button>
             </div>
             <div className='players-to-respond'>
               <p className='font-weight-bold'>Players left to respond:</p>

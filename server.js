@@ -49,41 +49,43 @@ io.on('connection', (socket) => {
     io.to(roomCode).emit('player joined')
   })
 
-  socket.on('hostAction', (data) => {
-    console.log(`[SOCKET - hostAction] ${data}`)
-    socket.to(roomCode).emit('host action', data)
+  socket.on('displayQuestion', (data) => {
+    console.log(`[SOCKET - displayQuestion] ${data}`)
+    socket.to(roomCode).emit('display question', data)
   })
 
   socket.on('disconnect', () => {
-    console.log(`[SOCKET] ${playerName} left ${roomCode}`)
+    if (playerName && roomCode) {
+      console.log(`[SOCKET] ${playerName} left ${roomCode}`)
 
-    const postData = JSON.stringify({
-      triviaId: roomCode,
-      name: playerName,
-      uniqueId: playerId
-    })
-    const filteredHost = socket.handshake.headers.host.substring(0, socket.handshake.headers.host.indexOf(':'))
-    const options = {
-      hostname: filteredHost,
-      port: 4000,
-      path: '/api/v1/leaveLobby',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': postData.length
+      const postData = JSON.stringify({
+        triviaId: roomCode,
+        name: playerName,
+        uniqueId: playerId
+      })
+      const filteredHost = socket.handshake.headers.host.substring(0, socket.handshake.headers.host.indexOf(':'))
+      const options = {
+        hostname: filteredHost,
+        port: 4000,
+        path: '/api/v1/leaveLobby',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': postData.length
+        }
       }
+      const req = httpPost.request(options, (res) => {
+        res.on('data', (data) => {
+          process.stdout.write(data)
+          io.to(roomCode).emit('player left')
+        })
+        req.on('error', (error) => {
+          console.error(error)
+        })
+      })
+      req.write(postData)
+      req.end()
     }
-    const req = httpPost.request(options, (res) => {
-      res.on('data', (data) => {
-        process.stdout.write(data)
-        io.to(roomCode).emit('player left')
-      })
-      req.on('error', (error) => {
-        console.error(error)
-      })
-    })
-    req.write(postData)
-    req.end()
   })
 })
 

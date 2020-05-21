@@ -44,7 +44,7 @@ const HostDisplay = ({ socket, triviaData }) => {
     window.localStorage.setItem('currentRoundNumberState', roundNumber)
     setCurrentRoundNumberState(roundNumber)
 
-    socket.emit('hostAction', roundNumber)
+    // socket.emit('hostAction', roundNumber)
   }
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const HostDisplay = ({ socket, triviaData }) => {
           </div>
         </HostControlContainerStyle>
 
-        {currentHostActionState === 'play-round' && (<PlayRound roundData={currentRoundDataState} roundNumber={currentRoundNumberState} />)}
+        {currentHostActionState === 'play-round' && (<PlayRound roundData={currentRoundDataState} roundNumber={currentRoundNumberState} socket={socket} />)}
         {currentHostActionState === 'mark-round' && (<MarkRound roundNumber={currentRoundNumberState} />)}
         {currentHostActionState === 'display-leaderboard' && (<Leaderboard />)}
       </Card.Body>

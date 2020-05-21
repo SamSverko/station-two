@@ -103,8 +103,9 @@ const Lobby = () => {
       fetchPlayers()
     })
 
-    socket.on('host action', (data) => {
-      console.log('[SOCKET - host action]')
+    socket.on('display question', (data) => {
+      console.log('[SOCKET - display question]')
+      console.log(data)
     })
 
     return () => {
