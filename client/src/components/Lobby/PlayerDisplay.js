@@ -55,7 +55,13 @@ const Player = ({ playerDisplayDataState, socket }) => {
       const questionNumber = playerDisplayDataState.roundData.questionNumber
       const name = window.localStorage.getItem('playerName')
       const playerId = window.localStorage.getItem('playerId')
-      window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}?roundNumber=${roundNumber}&questionNumber=${questionNumber}&name=${name}&uniqueId=${playerId}`)
+      let fetchUrl = ''
+      if (playerDisplayDataState.roundData !== 'tieBreaker') {
+        fetchUrl = `http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}?roundNumber=${roundNumber}&questionNumber=${questionNumber}&name=${name}&uniqueId=${playerId}`
+      } else {
+        fetchUrl = `http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}?tieBreaker=true`
+      }
+      window.fetch(fetchUrl)
         .then((response) => {
           if (response.ok) {
             return response.json()
@@ -70,6 +76,16 @@ const Player = ({ playerDisplayDataState, socket }) => {
                   display: String.fromCharCode(97 + parseInt(data[0].response)).toUpperCase(),
                   raw: data[0].response
                 })
+              } else if (playerDisplayDataState.roundData === 'tieBreaker') {
+                data.forEach((response) => {
+                  if (response.name === name && response.uniqueId === playerId) {
+                    setCurrentResponse({
+                      display: response.response,
+                      raw: response.response
+                    })
+                  }
+                })
+                console.log(data)
               } else {
                 setCurrentResponse({
                   display: data[0].response,
@@ -281,6 +297,76 @@ const Player = ({ playerDisplayDataState, socket }) => {
       )
     }
 
+    const TieBreaker = () => {
+      const [validated, setValidated] = useState(false)
+      const [response, setResponse] = useState(false)
+
+      const submitResponse = (target) => {
+        const dataToSubmit = {
+          triviaId: triviaId,
+          name: window.localStorage.getItem('playerName'),
+          uniqueId: window.localStorage.getItem('playerId'),
+          roundType: 'tieBreaker',
+          playerResponse: response
+        }
+
+        const xhttp = new window.XMLHttpRequest()
+        xhttp.onreadystatechange = function () {
+          if (this.readyState === 4 && this.status === 200) {
+            if (this.response === 'OK') {
+              console.log('[OK] submitResponse')
+              setCurrentResponse({
+                display: response,
+                raw: response
+              })
+              socket.emit('playerResponded', dataToSubmit)
+            } else {
+              console.warn(this.response)
+              console.warn('Error posting response.')
+            }
+          }
+        }
+        xhttp.open('POST', 'http://localhost:4000/api/v1/submitResponse')
+        xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+        xhttp.send(JSON.stringify(dataToSubmit))
+      }
+
+      const handleSubmit = (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+
+        if (event.currentTarget.checkValidity() !== false) {
+          if (response) {
+            submitResponse()
+          }
+        } else {
+          setValidated(true)
+        }
+      }
+
+      return (
+        <div>
+          <p className='h5'>Tie Breaker</p>
+          <p>{playerDisplayDataState.question}</p>
+          <Form noValidate onSubmit={handleSubmit} validated={validated}>
+            <Form.Group className='text-left' controlId='formResponse'>
+              <Form.Label>Response</Form.Label>
+              <Form.Control
+                name='response'
+                onChange={(event) => setResponse(event.target.value)}
+                required
+                type='number'
+              />
+              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><b>Response</b> must be a number.</Form.Control.Feedback>
+            </Form.Group>
+
+            <Button type='submit' variant='primary'>Submit</Button>
+          </Form>
+        </div>
+      )
+    }
+
     if (playerDisplayDataState.roundData !== 'tieBreaker') {
       return (
         <RoundStyle>
@@ -317,7 +403,15 @@ const Player = ({ playerDisplayDataState, socket }) => {
       )
     } else {
       return (
-        <p>Tie Breaker</p>
+        <div>
+          <TieBreaker />
+          <hr />
+          <div>
+            <p className='h5'>
+              Your response: {!currentResponse.display && (<Badge variant='danger'>Not Yet Recorded</Badge>)}{currentResponse.display && (<Badge variant='success'>{currentResponse.display}</Badge>)}
+            </p>
+          </div>
+        </div>
       )
     }
   }

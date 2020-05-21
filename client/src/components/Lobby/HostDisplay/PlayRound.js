@@ -101,7 +101,7 @@ const PlayRound = ({ lobbyData, roundNumber, roundData, socket }) => {
 
       const playerResponses = []
       lobbyData.responses.forEach((response) => {
-        if (response.roundNumber === parseInt(roundNumber) && response.questionNumber === parseInt(questionNumber)) {
+        if ((response.roundNumber === parseInt(roundNumber) && response.questionNumber === parseInt(questionNumber)) || (response.roundType === 'tieBreaker' && roundNumber === 'tieBreaker')) {
           playerResponses.push({ name: response.name, uniqueId: response.uniqueId })
         }
       })
