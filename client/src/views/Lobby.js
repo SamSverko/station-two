@@ -18,6 +18,7 @@ const Lobby = () => {
   const [playerIdState] = useState(window.localStorage.getItem('playerId'))
   const [playersState, setPlayersState] = useState([])
   const [triviaDataState, setTriviaDataState] = useState(false)
+  const [playerDisplayDataState, setPlayerDisplayDataState] = useState(false)
 
   const fetchTriviaData = useCallback(() => {
     window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}`)
@@ -105,7 +106,7 @@ const Lobby = () => {
 
     socket.on('display question', (data) => {
       console.log('[SOCKET - display question]')
-      console.log(data)
+      setPlayerDisplayDataState(data)
     })
 
     return () => {
@@ -118,7 +119,7 @@ const Lobby = () => {
     if (role === 'host' && triviaDataState) {
       return <HostDisplay socket={socket} triviaData={triviaDataState} />
     } else {
-      return <PlayerDisplay />
+      return <PlayerDisplay playerDisplayDataState={playerDisplayDataState} />
     }
   }
 

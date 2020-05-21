@@ -54,7 +54,7 @@ const RoundStyle = styled.div`
 const PlayRound = ({ roundNumber, roundData, socket }) => {
   const displayRound = parseInt(roundNumber) + 1
 
-  const socketQuestion = (question) => {
+  const socketQuestion = (question, questionNumber) => {
     let dataToSend = {}
 
     if (question !== 'tieBreaker') {
@@ -68,11 +68,14 @@ const PlayRound = ({ roundNumber, roundData, socket }) => {
       }
       if (roundData.type === 'multipleChoice') {
         dataToSend.roundData.numberOfQuestions = roundData.questions.length
+        dataToSend.roundData.questionNumber = questionNumber
         dataToSend.question = question.question
         dataToSend.options = question.options
       } else if (roundData.type === 'picture') {
+        dataToSend.roundData.questionNumber = questionNumber
         dataToSend.pictureUrl = question.url
       } else if (roundData.type === 'lightning') {
+        dataToSend.roundData.questionNumber = questionNumber
         dataToSend.question = question.question
       }
     } else {
@@ -125,7 +128,7 @@ const PlayRound = ({ roundNumber, roundData, socket }) => {
                   </ol>
                 </div>
                 <div className='right'>
-                  <Button onClick={() => { socketQuestion(question) }}>Display</Button>
+                  <Button onClick={() => { socketQuestion(question, i) }}>Display</Button>
                 </div>
                 <div className='players-to-respond'>
                   <p className='font-weight-bold'>Players left to respond:</p>
