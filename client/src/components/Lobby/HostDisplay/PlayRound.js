@@ -121,7 +121,7 @@ const PlayRound = ({ lobbyData, roundNumber, roundData, socket }) => {
           playersToRespond.map((player, i) => {
             if (player.name !== window.localStorage.getItem('playerName') && player.uniqueId !== window.localStorage.getItem('playerId')) {
               return (
-                <Badge className='mr-1' key={i} variant='danger'>{player.name}</Badge>
+                <Badge className='mr-1' key={i} variant='info'>{player.name}</Badge>
               )
             }
             return null

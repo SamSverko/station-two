@@ -12,6 +12,7 @@ const PlayersStyle = styled.div`
   overflow-y: scroll;
   width: 100%;
   .badge {
+    font-size: 1em;
     margin: 5px;
   }
 `
@@ -44,9 +45,9 @@ const Players = ({ hostName, players, playerIdState }) => {
           {players.map((player, counter) => {
             // display player
             if (player.name === hostName) {
-              return <Badge key={counter} variant='success'>{player.name} <span aria-label='crown emoji' role='img'>👑</span></Badge>
+              return <Badge key={counter} variant='info'><span aria-label='crown emoji' role='img'>👑</span> {player.name}</Badge>
             } else if (player.uniqueId === playerIdState) {
-              return <Badge key={counter} variant='primary'>{player.name} <span aria-label='hand wave emoji' role='img'>👋</span></Badge>
+              return <Badge key={counter} variant='info'><span aria-label='hand wave emoji' role='img'>👋</span> {player.name}</Badge>
             } else {
               return <Badge key={counter} variant='info'>{player.name}</Badge>
             }
