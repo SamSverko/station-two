@@ -13,6 +13,7 @@ import PlayerDisplay from '../components/Lobby/PlayerDisplay'
 const Lobby = () => {
   const { hostName, triviaId, role } = useParams()
 
+  const [socket] = useState(io('http://localhost:4000'))
   const [playerNameState] = useState(window.localStorage.getItem('playerName'))
   const [playerIdState] = useState(window.localStorage.getItem('playerId'))
   const [playersState, setPlayersState] = useState([])
@@ -86,8 +87,8 @@ const Lobby = () => {
   }, [playerIdState, playerNameState, triviaId])
 
   useEffect(() => {
-    const socket = io('http://localhost:4000')
     joinLobby(socket)
+
     if (role === 'host') {
       fetchTriviaData()
     }
@@ -102,15 +103,19 @@ const Lobby = () => {
       fetchPlayers()
     })
 
+    socket.on('host action', (data) => {
+      console.log('[SOCKET - host action]')
+    })
+
     return () => {
       socket.close()
     }
-  }, [fetchPlayers, fetchTriviaData, joinLobby, role])
+  }, [fetchPlayers, fetchTriviaData, joinLobby, role, socket])
 
   // children components
   const Display = () => {
     if (role === 'host' && triviaDataState) {
-      return <HostDisplay triviaData={triviaDataState} />
+      return <HostDisplay socket={socket} triviaData={triviaDataState} />
     } else {
       return <PlayerDisplay />
     }

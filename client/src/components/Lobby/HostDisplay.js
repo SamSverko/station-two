@@ -21,7 +21,7 @@ const HostControlContainerStyle = styled.div`
   }
 `
 
-const HostDisplay = ({ triviaData }) => {
+const HostDisplay = ({ socket, triviaData }) => {
   const [currentButtonSelected, setCurrentButtonSelectedState] = useState(window.localStorage.getItem('currentButtonSelected') || false)
   const [currentHostActionState, setCurrentHostActionState] = useState(window.localStorage.getItem('currentHostActionState') || false)
   const [currentRoundDataState, setCurrentRoundDataState] = useState(JSON.parse(window.localStorage.getItem('currentRoundDataState')) || false)
@@ -43,6 +43,8 @@ const HostDisplay = ({ triviaData }) => {
     setCurrentRoundDataState(round)
     window.localStorage.setItem('currentRoundNumberState', roundNumber)
     setCurrentRoundNumberState(roundNumber)
+
+    socket.emit('hostAction', roundNumber)
   }
 
   useEffect(() => {
@@ -70,7 +72,7 @@ const HostDisplay = ({ triviaData }) => {
             <Button className='action-button' id='host-control-mark-tie' onClick={(event) => { hostAction('mark-round', event.target, triviaData.tieBreaker, 'tieBreaker') }}>Mark Tie Breaker</Button>
           </div>
           <div>
-            <Button className='action-button' id='host-control-leaderboard' onClick={(event) => { hostAction('display-leaderboard', event.target) }}>Display Leaderboard</Button>
+            <Button className='action-button' id='host-control-leaderboard' onClick={(event) => { hostAction('display-leaderboard', event.target, '{"type":"leaderboard"}') }}>Display Leaderboard</Button>
           </div>
         </HostControlContainerStyle>
 
