@@ -61,6 +61,8 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
     savedLobbyData.responses.forEach((response) => {
       if (parseInt(response.roundNumber) === parseInt(roundNumber)) {
         tempCurrentRound.push(response)
+      } else if (roundNumber === 'tieBreaker' && response.roundType === 'tieBreaker') {
+        tempCurrentRound.push(response)
       }
     })
     setCurrentRoundResponses(tempCurrentRound)
@@ -71,10 +73,15 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
       triviaId: triviaId,
       name: name,
       uniqueId: uniqueId,
-      roundType: roundData.type,
-      score: parseFloat(pointValue),
-      roundNumber: parseInt(roundNumber),
-      questionNumber: parseInt(questionNumber)
+      score: parseFloat(pointValue)
+    }
+
+    if (roundNumber !== 'tieBreaker') {
+      dataToSubmit.roundType = roundData.type
+      dataToSubmit.roundNumber = parseInt(roundNumber)
+      dataToSubmit.questionNumber = parseInt(questionNumber)
+    } else {
+      dataToSubmit.roundType = 'tieBreaker'
     }
 
     const xhttp = new window.XMLHttpRequest()
@@ -235,11 +242,50 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
     )
   }
 
+  const TieBreaker = () => {
+    const CurrentQuestion = ({ response }) => {
+      return (
+        <tr>
+          <td>{response.response} ({roundData.answer - response.response})</td>
+          <td>
+            <Button className={(parseFloat(response.score) === 1) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, 1, response.name, response.uniqueId) }} variant='success'>Winner</Button>
+            <Button className={(parseFloat(response.score) === 0) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, 0, response.name, response.uniqueId) }} variant='danger'>Loser</Button>
+          </td>
+        </tr>
+      )
+    }
+
+    return (
+      <>
+        <hr />
+        <p className='h5'>Mark Tie Breaker</p>
+        <TableStyle bordered size='sm'>
+          <thead>
+            <tr className='striped'>
+              <th>Player Answer</th>
+              <th>Mark</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className='striped'>
+              <th>Q: <span className='font-weight-normal'>{roundData.question}</span></th>
+              <th>A: <span className='font-weight-normal'>{roundData.answer}</span></th>
+            </tr>
+            {currentRoundResponses.map((response, j) => {
+              return <CurrentQuestion key={j} response={response} />
+            })}
+          </tbody>
+        </TableStyle>
+      </>
+    )
+  }
+
   return (
     <>
       {roundData.type === 'multipleChoice' && (<MultipleChoice />)}
       {roundData.type === 'picture' && (<Picture />)}
       {roundData.type === 'lightning' && (<Lightning />)}
+      {roundNumber === 'tieBreaker' && (<TieBreaker />)}
     </>
   )
 }
