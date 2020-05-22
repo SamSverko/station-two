@@ -32,14 +32,22 @@ const RoundStyle = styled.div`
   }
 `
 
-const Player = ({ playerDisplayDataState, socket }) => {
+const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
   const Display = () => {
-    if (!playerDisplayDataState.roundData) {
+    if (mustPlayerWait === 'marking') {
       return (
-        <p className='mb-0 h5'>Please wait for Host <span aria-label='hourglass flowing sand emoji' role='img'>⏳</span></p>
+        <p className='mb-0 h5'>Host is marking, please wait <span aria-label='memo emoji' role='img'>📝</span></p>
+      )
+    } else if (mustPlayerWait === 'leaderboard') {
+      return (
+        <p className='mb-0 h5'>First place yet? <span aria-label='trophy emoji' role='img'>🏆</span></p>
       )
     } else if (playerDisplayDataState.roundData) {
       return <DisplayQuestion />
+    } else {
+      return (
+        <p className='mb-0 h5'>Please wait for Host <span aria-label='hourglass flowing sand emoji' role='img'>⏳</span></p>
+      )
     }
   }
 

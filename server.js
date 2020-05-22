@@ -59,6 +59,11 @@ io.on('connection', (socket) => {
     socket.to(roomCode).emit('player responded', data)
   })
 
+  socket.on('playerMustWait', (data) => {
+    console.log('[SOCKET - playerMustWait]')
+    io.to(roomCode).emit('player must wait', data)
+  })
+
   socket.on('disconnect', () => {
     if (playerName && roomCode) {
       console.log(`[SOCKET] ${playerName} left ${roomCode}`)

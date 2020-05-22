@@ -5,7 +5,6 @@ import styled from 'styled-components'
 // components
 import PlayRound from './HostDisplay/PlayRound'
 import MarkRound from './HostDisplay/MarkRound'
-import Leaderboard from './HostDisplay/Leaderboard'
 
 // styles
 const HostControlContainerStyle = styled.div`
@@ -44,6 +43,12 @@ const HostDisplay = ({ lobbyData, socket, triviaData }) => {
     setCurrentRoundDataState(round)
     window.localStorage.setItem('currentRoundNumberState', roundNumber)
     setCurrentRoundNumberState(roundNumber)
+
+    if (action === 'mark-round') {
+      socket.emit('playerMustWait', 'marking')
+    } else if (action === 'display-leaderboard') {
+      socket.emit('playerMustWait', 'leaderboard')
+    }
   }
 
   useEffect(() => {
@@ -77,7 +82,6 @@ const HostDisplay = ({ lobbyData, socket, triviaData }) => {
 
         {currentHostActionState === 'play-round' && (<PlayRound lobbyData={lobbyData} roundData={currentRoundDataState} roundNumber={currentRoundNumberState} socket={socket} />)}
         {currentHostActionState === 'mark-round' && (<MarkRound lobbyData={lobbyData} roundData={currentRoundDataState} roundNumber={currentRoundNumberState} socket={socket} />)}
-        {currentHostActionState === 'display-leaderboard' && (<Leaderboard />)}
       </Card.Body>
     </Card>
   )

@@ -1,6 +1,7 @@
 // dependencies
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { Card, Table } from 'react-bootstrap'
 import io from 'socket.io-client'
 
 // components
@@ -20,6 +21,7 @@ const Lobby = () => {
   const [triviaDataState, setTriviaDataState] = useState(false)
   const [playerDisplayDataState, setPlayerDisplayDataState] = useState(false)
   const [lobbyData, setLobbyData] = useState(false)
+  const [mustPlayerWait, setMustPlayerWait] = useState(false)
 
   const fetchLobbyData = useCallback(() => {
     window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}`)
@@ -134,12 +136,21 @@ const Lobby = () => {
 
     socket.on('display question', (data) => {
       console.log('[SOCKET - display question]')
+      setMustPlayerWait(false)
       setPlayerDisplayDataState(data)
     })
 
     socket.on('player responded', (data) => {
       if (role === 'host') {
         console.log('[SOCKET - player responded]')
+        fetchLobbyData()
+      }
+    })
+
+    socket.on('player must wait', (data) => {
+      console.log(`[SOCKET - player must wait] ${data}`)
+      setMustPlayerWait(data)
+      if (data === 'leaderboard') {
         fetchLobbyData()
       }
     })
@@ -154,8 +165,54 @@ const Lobby = () => {
     if (role === 'host' && triviaDataState && lobbyData) {
       return <HostDisplay lobbyData={lobbyData} socket={socket} triviaData={triviaDataState} />
     } else {
-      return <PlayerDisplay socket={socket} playerDisplayDataState={playerDisplayDataState} />
+      return <PlayerDisplay mustPlayerWait={mustPlayerWait} socket={socket} playerDisplayDataState={playerDisplayDataState} />
     }
+  }
+
+  const Leaderboard = ({ lobbyData }) => {
+    // group by player and sum all scores by round
+    const groupedPlayers = Object.values(lobbyData.responses.reduce((r, { name, uniqueId, roundNumber, score }) => {
+      r[uniqueId] = r[uniqueId] || { name, uniqueId, scores: [] }
+      r[uniqueId].scores[roundNumber] = (r[uniqueId].scores[roundNumber] || 0) + score
+      return r
+    }, {}))
+    // sum total score for each player
+    const arrSum = arr => arr.reduce((a, b) => a + b, 0)
+    groupedPlayers.forEach((player) => {
+      player.totalScore = arrSum(player.scores)
+    })
+    // sort players by rank
+    const sortedPlayers = groupedPlayers.sort((a, b) => {
+      return b.totalScore - a.totalScore
+    })
+
+    return (
+      <Card>
+        <Card.Body>
+          <Card.Title>Leaderboard</Card.Title>
+          <Table bordered>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedPlayers.map((player, i) => {
+                return (
+                  <tr key={i}>
+                    <td>{i + 1}</td>
+                    <td>{player.name}</td>
+                    <td>{player.totalScore}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </Table>
+        </Card.Body>
+      </Card>
+    )
   }
 
   const Footer = () => {
@@ -171,7 +228,8 @@ const Lobby = () => {
       <Header text='Lobby' emoji='🏟' emojiDescription='stadium' />
       <TriviaInfo code={triviaId} host={hostName} />
       {playersState && (<Players hostName={hostName} playerIdState={playerIdState} players={playersState} />)}
-      <Display />
+      <Display playersState={playersState} />
+      {mustPlayerWait === 'leaderboard' && lobbyData && (<Leaderboard lobbyData={lobbyData} />)}
       <Footer />
     </>
   )
