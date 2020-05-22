@@ -102,6 +102,7 @@ const Lobby = () => {
           socket.emit('joinRoom', { triviaId: triviaId, playerName: playerNameState, playerId: playerIdState })
         } else {
           console.warn('Error joining lobby.')
+          console.warn(this.response)
         }
       }
     }

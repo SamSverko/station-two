@@ -18,7 +18,7 @@ const BuilderStatus = ({ host, isRoundsComplete, isTieBreakerComplete, triviaId 
 
   useEffect(() => {
     if (window.localStorage.getItem('playerId') === null) {
-      window.localStorage.setItem('playerId', generateUUID)
+      window.localStorage.setItem('playerId', generateUUID())
     }
     setUuidState(window.localStorage.getItem('playerId'))
   }, [uuidState])

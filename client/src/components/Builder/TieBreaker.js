@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Form } from 'react-bootstrap'
+import { Alert, Button, Card, Form } from 'react-bootstrap'
 
 // components
 import ReadyBadge from './ReadyBadge'
@@ -8,6 +8,7 @@ const TieBreaker = ({ fetchTrivia, tieBreaker, triviaId }) => {
   const [validated, setValidated] = useState(false)
   const [question, setQuestion] = useState(false)
   const [answer, setAnswer] = useState(false)
+  const [postStatus, setPostStatus] = useState('pending')
 
   // update tie breaker form if data already exists
   useEffect(() => {
@@ -31,6 +32,7 @@ const TieBreaker = ({ fetchTrivia, tieBreaker, triviaId }) => {
         xhttp.onreadystatechange = function () {
           if (this.readyState === 4 && this.status === 200) {
             fetchTrivia()
+            setPostStatus(true)
           }
         }
         xhttp.open('POST', 'http://localhost:4000/api/v1/updateTieBreaker')
@@ -82,6 +84,8 @@ const TieBreaker = ({ fetchTrivia, tieBreaker, triviaId }) => {
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               <Form.Control.Feedback type='invalid'><b>Answer</b> must be a number.</Form.Control.Feedback>
             </Form.Group>
+
+            {postStatus === true && (<Alert className='mt-3' variant='success'>Tie breaker saved.</Alert>)}
 
             {!tieBreaker.question && (
               <Button type='submit' variant='primary'>Save Tie Breaker</Button>
