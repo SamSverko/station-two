@@ -12,8 +12,7 @@ const app = express()
 const helmet = require('helmet')
 const cors = require('cors')
 const http = require('http').createServer(app)
-const https = require('https').createServer(app)
-const io = require('socket.io')(https, { pingTimeout: 10000, pingInterval: 5000 })
+const io = require('socket.io')(http, { pingTimeout: 10000, pingInterval: 5000 })
 const compression = require('compression')
 const mongoSanitize = require('express-mongo-sanitize')
 const MongoClient = require('mongodb').MongoClient
@@ -34,6 +33,7 @@ app.use(bodyParser.json())
 // web socket
 // ROOMS: socket.to = send to all but not sender | io.to = send to all including sender
 // NO ROOMS: io.emit = send to all including sender | socket.emit = send to sender only | socket.broadcast.emit = send to all but not sender
+io.set('origins', 'stationtwo.app:*')
 io.on('connection', (socket) => {
   console.log('[SOCKET] - connection')
   let roomCode = false

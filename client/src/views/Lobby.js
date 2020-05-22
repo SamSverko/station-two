@@ -16,7 +16,7 @@ const Lobby = () => {
 
   console.log(process.env.REACT_APP_SOCKET_URL)
 
-  const [socket] = useState(io(process.env.REACT_APP_SOCKET_URL), { secure: true })
+  const [socket] = useState(io(process.env.REACT_APP_SOCKET_URL), { secure: true, rejectUnauthorized: false })
   const [playerNameState] = useState(window.localStorage.getItem('playerName'))
   const [playerIdState] = useState(window.localStorage.getItem('playerId'))
   const [playersState, setPlayersState] = useState([])
