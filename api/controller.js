@@ -1,5 +1,6 @@
 // dependencies
 require('dotenv').config()
+const API_URL = process.env.API_URL
 const DB_COLLECTION_TRIVIA = process.env.DB_COLLECTION_TRIVIA
 const DB_COLLECTION_LOBBIES = process.env.DB_COLLECTION_LOBBIES
 const fetch = require('fetch').fetchUrl
@@ -238,7 +239,7 @@ module.exports = {
       })
   },
   joinLobby: async (req, res, next) => {
-    fetch(`http://localhost:4000/api/v1/getDocument/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}?playersOnly=true`, (error, meta, body) => {
+    fetch(`${API_URL}/getDocument/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}?playersOnly=true`, (error, meta, body) => {
       if (error) {
         utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId} .`)
       }

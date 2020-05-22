@@ -49,7 +49,7 @@ const FormMultipleChoice = () => {
 
   // fetch round data (if editing existing round)
   const fetchRound = useCallback(() => {
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}?roundNumber=${roundNumber}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${triviaId}?roundNumber=${roundNumber}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -142,7 +142,7 @@ const FormMultipleChoice = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/addMultipleChoiceRound')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/addMultipleChoiceRound`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       } else {
@@ -162,7 +162,7 @@ const FormMultipleChoice = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/updateMultipleChoiceRound')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/updateMultipleChoiceRound`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       }

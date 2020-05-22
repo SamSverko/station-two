@@ -14,7 +14,7 @@ import PlayerDisplay from '../components/Lobby/PlayerDisplay'
 const Lobby = () => {
   const { hostName, triviaId, role } = useParams()
 
-  const [socket] = useState(io('http://localhost:4000'))
+  const [socket] = useState(io(process.env.REACT_APP_SOCKET_URL))
   const [playerNameState] = useState(window.localStorage.getItem('playerName'))
   const [playerIdState] = useState(window.localStorage.getItem('playerId'))
   const [playersState, setPlayersState] = useState([])
@@ -24,7 +24,7 @@ const Lobby = () => {
   const [mustPlayerWait, setMustPlayerWait] = useState(false)
 
   const fetchLobbyData = useCallback(() => {
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/lobbies/${triviaId}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -44,7 +44,7 @@ const Lobby = () => {
   }, [triviaId])
 
   const fetchTriviaData = useCallback(() => {
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${triviaId}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -64,7 +64,7 @@ const Lobby = () => {
   }, [triviaId])
 
   const fetchPlayers = useCallback(() => {
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}?playersOnly=true`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/lobbies/${triviaId}?playersOnly=true`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -106,7 +106,7 @@ const Lobby = () => {
         }
       }
     }
-    xhttp.open('POST', 'http://localhost:4000/api/v1/joinLobby')
+    xhttp.open('POST', `${process.env.REACT_APP_API_URL}/joinLobby`)
     xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
     xhttp.send(JSON.stringify(dataToSubmit))
   }, [playerIdState, playerNameState, triviaId])

@@ -63,9 +63,9 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
       const playerId = window.localStorage.getItem('playerId')
       let fetchUrl = ''
       if (playerDisplayDataState.roundData !== 'tieBreaker') {
-        fetchUrl = `http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}?roundNumber=${roundNumber}&questionNumber=${questionNumber}&name=${name}&uniqueId=${playerId}`
+        fetchUrl = `${process.env.REACT_APP_API_URL}/getDocument/lobbies/${triviaId}?roundNumber=${roundNumber}&questionNumber=${questionNumber}&name=${name}&uniqueId=${playerId}`
       } else {
-        fetchUrl = `http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}?tieBreaker=true`
+        fetchUrl = `${process.env.REACT_APP_API_URL}/getDocument/lobbies/${triviaId}?tieBreaker=true`
       }
       window.fetch(fetchUrl)
         .then((response) => {
@@ -139,7 +139,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/submitResponse')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/submitResponse`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       }
@@ -190,7 +190,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/submitResponse')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/submitResponse`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       }
@@ -262,7 +262,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/submitResponse')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/submitResponse`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       }
@@ -332,7 +332,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/submitResponse')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/submitResponse`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       }

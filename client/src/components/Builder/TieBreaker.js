@@ -35,7 +35,7 @@ const TieBreaker = ({ fetchTrivia, tieBreaker, triviaId }) => {
             setPostStatus(true)
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/updateTieBreaker')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/updateTieBreaker`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify({ triviaId: triviaId, tieBreakerQuestion: question, tieBreakerAnswer: answer }))
       }

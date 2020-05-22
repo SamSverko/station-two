@@ -48,7 +48,7 @@ const FormPicture = () => {
 
   // fetch round data (if editing existing round)
   const fetchRound = useCallback(() => {
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}?roundNumber=${roundNumber}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${triviaId}?roundNumber=${roundNumber}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -163,7 +163,7 @@ const FormPicture = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/addPictureRound')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/addPictureRound`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       } else {
@@ -183,7 +183,7 @@ const FormPicture = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/updatePictureRound')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/updatePictureRound`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       }

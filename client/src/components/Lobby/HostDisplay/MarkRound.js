@@ -37,7 +37,7 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
   const displayRound = parseInt(roundNumber) + 1
 
   const fetchLobbyData = useCallback(() => {
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/lobbies/${triviaId}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -96,7 +96,7 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
         }
       }
     }
-    xhttp.open('POST', 'http://localhost:4000/api/v1/markResponse')
+    xhttp.open('POST', `${process.env.REACT_APP_API_URL}/markResponse`)
     xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
     xhttp.send(JSON.stringify(dataToSubmit))
   }

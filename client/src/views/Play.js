@@ -32,7 +32,7 @@ const Play = () => {
 
   const fetchLobby = () => {
     setCheckLobbyState('pending')
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${code}?playersOnly=true`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/lobbies/${code}?playersOnly=true`)
       .then((response) => {
         if (response.ok) {
           return response.json()

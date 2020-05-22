@@ -64,7 +64,7 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
         }
       }
     }
-    xhttp.open('DELETE', 'http://localhost:4000/api/v1/deleteRound')
+    xhttp.open('DELETE', `${process.env.REACT_APP_API_URL}/deleteRound`)
     xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
     xhttp.send(JSON.stringify({ triviaId: triviaId, roundNumber: roundNumber }))
   }

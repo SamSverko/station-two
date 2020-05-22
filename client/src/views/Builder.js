@@ -19,7 +19,7 @@ const Builder = () => {
   const [isRoundsComplete, setIsRoundsComplete] = useState(false)
 
   const fetchTrivia = useCallback(() => {
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${triviaId}`)
       .then((response) => {
         if (response.ok) {
           return response.json()

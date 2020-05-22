@@ -48,7 +48,7 @@ const FormLightning = () => {
 
   // fetch round data (if editing existing round)
   const fetchRound = useCallback(() => {
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${triviaId}?roundNumber=${roundNumber}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${triviaId}?roundNumber=${roundNumber}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -131,7 +131,7 @@ const FormLightning = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/addLightningRound')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/addLightningRound`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       } else {
@@ -151,7 +151,7 @@ const FormLightning = () => {
             }
           }
         }
-        xhttp.open('POST', 'http://localhost:4000/api/v1/updateLightningRound')
+        xhttp.open('POST', `${process.env.REACT_APP_API_URL}/updateLightningRound`)
         xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
         xhttp.send(JSON.stringify(dataToSubmit))
       }

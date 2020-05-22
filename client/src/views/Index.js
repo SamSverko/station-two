@@ -7,6 +7,8 @@ import { Button } from 'react-bootstrap'
 import Header from '../components/Header'
 
 const Index = () => {
+  console.log(process.env.REACT_APP_API_URL)
+
   return (
     <>
       <Header text='Station Two Trivia' emoji='🚒' emojiDescription='firetruck' />

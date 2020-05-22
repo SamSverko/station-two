@@ -22,7 +22,7 @@ const HostExisting = () => {
   const [checkIfLobbyExists, setCheckIfLobbyExists] = useState(false)
 
   const fetchTrivia = () => {
-    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/trivia/${code}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${code}`)
       .then((response) => {
         if (response.ok) {
           return response.json()

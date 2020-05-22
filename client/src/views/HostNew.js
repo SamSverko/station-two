@@ -23,7 +23,7 @@ const HostNew = () => {
           history.push(`/builder/${data[0].triviaId}`)
         }
       }
-      xhttp.open('POST', 'http://localhost:4000/api/v1/createTrivia')
+      xhttp.open('POST', `${process.env.REACT_APP_API_URL}/createTrivia`)
       xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
       xhttp.send(JSON.stringify({ name: name }))
     } else {
