@@ -11,8 +11,9 @@ const express = require('express')
 const app = express()
 const helmet = require('helmet')
 const cors = require('cors')
-const http = require('http').createServer(app)
-const io = require('socket.io')(http, { pingTimeout: 10000, pingInterval: 5000 })
+// const http = require('http').createServer(app)
+const https = require('https').createServer(app)
+const io = require('socket.io')(https, { pingTimeout: 10000, pingInterval: 5000 })
 const compression = require('compression')
 const mongoSanitize = require('express-mongo-sanitize')
 const MongoClient = require('mongodb').MongoClient
@@ -130,6 +131,6 @@ process.on('SIGINT', function () {
 })
 
 // turn app listening on
-http.listen(PORT, () => {
+https.listen(PORT, () => {
   console.log(`Server successfully started app, listening at ${HOST}:${PORT}.`)
 })
