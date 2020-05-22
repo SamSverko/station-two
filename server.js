@@ -33,7 +33,7 @@ app.use(bodyParser.json())
 // web socket
 // ROOMS: socket.to = send to all but not sender | io.to = send to all including sender
 // NO ROOMS: io.emit = send to all including sender | socket.emit = send to sender only | socket.broadcast.emit = send to all but not sender
-io.set('origins', 'stationtwo.app:*')
+// io.set('origins', 'stationtwo.app:*')
 io.on('connection', (socket) => {
   console.log('[SOCKET] - connection')
   let roomCode = false
