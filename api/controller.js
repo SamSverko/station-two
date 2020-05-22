@@ -257,6 +257,7 @@ module.exports = {
           if (error) {
             utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() updateOne\' query failed.')
           } else {
+            console.log('OK JOIN LOBBY')
             res.sendStatus(200)
           }
         }
