@@ -14,7 +14,9 @@ import PlayerDisplay from '../components/Lobby/PlayerDisplay'
 const Lobby = () => {
   const { hostName, triviaId, role } = useParams()
 
-  const [socket] = useState(io(process.env.REACT_APP_SOCKET_URL))
+  console.log(process.env.REACT_APP_SOCKET_URL)
+
+  const [socket] = useState(io(process.env.REACT_APP_SOCKET_URL), { secure: true })
   const [playerNameState] = useState(window.localStorage.getItem('playerName'))
   const [playerIdState] = useState(window.localStorage.getItem('playerId'))
   const [playersState, setPlayersState] = useState([])
