@@ -76,7 +76,7 @@ const HostDisplay = ({ lobbyData, socket, triviaData }) => {
         </HostControlContainerStyle>
 
         {currentHostActionState === 'play-round' && (<PlayRound lobbyData={lobbyData} roundData={currentRoundDataState} roundNumber={currentRoundNumberState} socket={socket} />)}
-        {currentHostActionState === 'mark-round' && (<MarkRound roundNumber={currentRoundNumberState} />)}
+        {currentHostActionState === 'mark-round' && (<MarkRound lobbyData={lobbyData} roundData={currentRoundDataState} roundNumber={currentRoundNumberState} socket={socket} />)}
         {currentHostActionState === 'display-leaderboard' && (<Leaderboard />)}
       </Card.Body>
     </Card>

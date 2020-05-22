@@ -1,23 +1,144 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Button, Table } from 'react-bootstrap'
+import { useParams } from 'react-router-dom'
+import styled from 'styled-components'
 
-const MarkRound = ({ roundNumber }) => {
+const TableStyle = styled(Table)`
+  thead th, tbody td {
+    vertical-align: middle;
+    width: 50%;
+  }
+  button {
+    margin: 5px;
+  }
+  .striped {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  .opacity-marked {
+    opacity: 1
+  }
+  .opacity-unmarked {
+    opacity: 0.1
+  }
+`
+
+const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
+  const { triviaId } = useParams()
+
+  const [savedLobbyData, setSavedLobbyData] = useState(lobbyData)
+  const [currentRoundResponses, setCurrentRoundResponses] = useState([])
   const displayRound = parseInt(roundNumber) + 1
 
-  if (roundNumber !== 'tieBreaker') {
+  const fetchLobbyData = useCallback(() => {
+    window.fetch(`http://${window.location.hostname}:4000/api/v1/getDocument/lobbies/${triviaId}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          return Promise.reject(response)
+        }
+      }).then((data) => {
+        if (!data.statusCode) {
+          console.log('[OK] fetchLobbyData')
+          setSavedLobbyData(data)
+        } else {
+          console.error('Error fetching lobby document', data)
+        }
+      }).catch((error) => {
+        console.error('Error fetching lobby document', error)
+      })
+  }, [triviaId])
+
+  useEffect(() => {
+    const tempCurrentRound = []
+    savedLobbyData.responses.forEach((response) => {
+      if (parseInt(response.roundNumber) === parseInt(roundNumber)) {
+        tempCurrentRound.push(response)
+      }
+    })
+    setCurrentRoundResponses(tempCurrentRound)
+  }, [savedLobbyData, roundData, roundNumber])
+
+  const markResponse = (questionNumber, pointValue, name, uniqueId) => {
+    const dataToSubmit = {
+      triviaId: triviaId,
+      name: name,
+      uniqueId: uniqueId,
+      roundType: roundData.type,
+      score: parseFloat(pointValue),
+      roundNumber: parseInt(roundNumber),
+      questionNumber: parseInt(questionNumber)
+    }
+
+    const xhttp = new window.XMLHttpRequest()
+    xhttp.onreadystatechange = function () {
+      if (this.readyState === 4 && this.status === 200) {
+        if (this.response === 'OK') {
+          console.log('[OK] markResponse')
+          fetchLobbyData()
+        } else {
+          console.warn(this.response)
+          console.warn('Error marking response.')
+        }
+      }
+    }
+    xhttp.open('POST', 'http://localhost:4000/api/v1/markResponse')
+    xhttp.setRequestHeader('Content-type', 'application/json;charset=UTF-8')
+    xhttp.send(JSON.stringify(dataToSubmit))
+  }
+
+  const MultipleChoice = () => {
+    const CurrentQuestion = ({ response, questionNumber }) => {
+      if (response.questionNumber === questionNumber) {
+        return (
+          <tr>
+            <td>{String.fromCharCode(97 + response.response).toUpperCase()}</td>
+            <td>
+              <Button className={(parseFloat(response.score) === parseFloat(roundData.pointValue)) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, roundData.pointValue, response.name, response.uniqueId) }} variant='success'>{roundData.pointValue}</Button>
+              <Button className={(parseFloat(response.score) === parseFloat(roundData.pointValue) / 2) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, roundData.pointValue / 2, response.name, response.uniqueId) }} variant='warning'>{roundData.pointValue / 2}</Button>
+              <Button className={(parseFloat(response.score) === 0) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, 0, response.name, response.uniqueId) }} variant='danger'>0</Button>
+            </td>
+          </tr>
+        )
+      } else {
+        return null
+      }
+    }
+
     return (
       <>
         <hr />
         <p className='h5'>Mark Round {displayRound}</p>
-      </>
-    )
-  } else {
-    return (
-      <>
-        <hr />
-        <p className='h5'>Mark Tie Breaker</p>
+        <TableStyle bordered size='sm'>
+          <thead>
+            <tr className='striped'>
+              <th>Player Answer</th>
+              <th>Mark</th>
+            </tr>
+          </thead>
+          {roundData.questions.map((question, i) => {
+            return (
+              <tbody key={i}>
+                <tr className='striped'>
+                  <th>Q1: <span className='font-weight-normal'>{question.question}</span></th>
+                  <th>A1: <span className='font-weight-normal'>{String.fromCharCode(97 + question.answer).toUpperCase()}</span></th>
+                </tr>
+                {currentRoundResponses.map((response, j) => {
+                  return <CurrentQuestion key={j} questionNumber={i} response={response} />
+                })}
+              </tbody>
+            )
+          })}
+        </TableStyle>
       </>
     )
   }
+
+  return (
+    <>
+      {roundData.type === 'multipleChoice' && (<MultipleChoice />)}
+    </>
+  )
 }
 
 export default MarkRound

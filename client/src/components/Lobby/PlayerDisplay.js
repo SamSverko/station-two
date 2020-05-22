@@ -34,8 +34,6 @@ const RoundStyle = styled.div`
 
 const Player = ({ playerDisplayDataState, socket }) => {
   const Display = () => {
-    console.log(playerDisplayDataState)
-
     if (!playerDisplayDataState.roundData) {
       return (
         <p className='mb-0 h5'>Please wait for Host <span aria-label='hourglass flowing sand emoji' role='img'>⏳</span></p>
