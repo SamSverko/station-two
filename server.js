@@ -35,6 +35,7 @@ app.use(bodyParser.json())
 // ROOMS: socket.to = send to all but not sender | io.to = send to all including sender
 // NO ROOMS: io.emit = send to all including sender | socket.emit = send to sender only | socket.broadcast.emit = send to all but not sender
 io.on('connection', (socket) => {
+  console.log('[SOCKET] - connection')
   let roomCode = false
   let playerName = false
   let playerId = false
