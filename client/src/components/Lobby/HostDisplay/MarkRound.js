@@ -4,12 +4,19 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
 const TableStyle = styled(Table)`
+  button {
+    margin: 5px;
+  }
+  img {
+    height: auto;
+    width: 100%;
+  }
+  th {
+    vertical-align: middle;
+  }
   thead th, tbody td {
     vertical-align: middle;
     width: 50%;
-  }
-  button {
-    margin: 5px;
   }
   .striped {
     background-color: rgba(0, 0, 0, 0.05);
@@ -120,8 +127,102 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
             return (
               <tbody key={i}>
                 <tr className='striped'>
-                  <th>Q1: <span className='font-weight-normal'>{question.question}</span></th>
-                  <th>A1: <span className='font-weight-normal'>{String.fromCharCode(97 + question.answer).toUpperCase()}</span></th>
+                  <th>Q{i + 1}: <span className='font-weight-normal'>{question.question}</span></th>
+                  <th>A{i + 1}: <span className='font-weight-normal'>{String.fromCharCode(97 + question.answer).toUpperCase()}</span></th>
+                </tr>
+                {currentRoundResponses.map((response, j) => {
+                  return <CurrentQuestion key={j} questionNumber={i} response={response} />
+                })}
+              </tbody>
+            )
+          })}
+        </TableStyle>
+      </>
+    )
+  }
+
+  const Picture = () => {
+    const CurrentQuestion = ({ response, questionNumber }) => {
+      if (response.questionNumber === questionNumber) {
+        return (
+          <tr>
+            <td>{response.response}</td>
+            <td>
+              <Button className={(parseFloat(response.score) === parseFloat(roundData.pointValue)) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, roundData.pointValue, response.name, response.uniqueId) }} variant='success'>{roundData.pointValue}</Button>
+              <Button className={(parseFloat(response.score) === parseFloat(roundData.pointValue) / 2) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, roundData.pointValue / 2, response.name, response.uniqueId) }} variant='warning'>{roundData.pointValue / 2}</Button>
+              <Button className={(parseFloat(response.score) === 0) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, 0, response.name, response.uniqueId) }} variant='danger'>0</Button>
+            </td>
+          </tr>
+        )
+      } else {
+        return null
+      }
+    }
+
+    return (
+      <>
+        <hr />
+        <p className='h5'>Mark Round {displayRound}</p>
+        <TableStyle bordered size='sm'>
+          <thead>
+            <tr className='striped'>
+              <th>Player Answer</th>
+              <th>Mark</th>
+            </tr>
+          </thead>
+          {roundData.pictures.map((picture, i) => {
+            return (
+              <tbody key={i}>
+                <tr className='striped'>
+                  <th>Image {i + 1}: <img alt={picture.answer} src={picture.url} /></th>
+                  <th>A{i + 1}: <span className='font-weight-normal'>{picture.answer}</span></th>
+                </tr>
+                {currentRoundResponses.map((response, j) => {
+                  return <CurrentQuestion key={j} questionNumber={i} response={response} />
+                })}
+              </tbody>
+            )
+          })}
+        </TableStyle>
+      </>
+    )
+  }
+
+  const Lightning = () => {
+    const CurrentQuestion = ({ response, questionNumber }) => {
+      if (response.questionNumber === questionNumber) {
+        return (
+          <tr>
+            <td>{response.response}</td>
+            <td>
+              <Button className={(parseFloat(response.score) === parseFloat(roundData.pointValue)) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, roundData.pointValue, response.name, response.uniqueId) }} variant='success'>{roundData.pointValue}</Button>
+              <Button className={(parseFloat(response.score) === parseFloat(roundData.pointValue) / 2) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, roundData.pointValue / 2, response.name, response.uniqueId) }} variant='warning'>{roundData.pointValue / 2}</Button>
+              <Button className={(parseFloat(response.score) === 0) ? 'opacity-marked' : 'opacity-unmarked'} onClick={() => { markResponse(response.questionNumber, 0, response.name, response.uniqueId) }} variant='danger'>0</Button>
+            </td>
+          </tr>
+        )
+      } else {
+        return null
+      }
+    }
+
+    return (
+      <>
+        <hr />
+        <p className='h5'>Mark Round {displayRound}</p>
+        <TableStyle bordered size='sm'>
+          <thead>
+            <tr className='striped'>
+              <th>Player Answer</th>
+              <th>Mark</th>
+            </tr>
+          </thead>
+          {roundData.questions.map((question, i) => {
+            return (
+              <tbody key={i}>
+                <tr className='striped'>
+                  <th>Q{i + 1}: <span className='font-weight-normal'>{question.question}</span></th>
+                  <th>A{i + 1}: <span className='font-weight-normal'>{question.answer}</span></th>
                 </tr>
                 {currentRoundResponses.map((response, j) => {
                   return <CurrentQuestion key={j} questionNumber={i} response={response} />
@@ -137,6 +238,8 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
   return (
     <>
       {roundData.type === 'multipleChoice' && (<MultipleChoice />)}
+      {roundData.type === 'picture' && (<Picture />)}
+      {roundData.type === 'lightning' && (<Lightning />)}
     </>
   )
 }
