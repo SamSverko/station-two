@@ -16,6 +16,7 @@ const FormControlStyle = styled(Form.Control)`
 
 const HostExisting = () => {
   const history = useHistory()
+
   const [validated, setValidated] = useState(false)
   const [code, setCode] = useState(false)
   const [checkIfLobbyExists, setCheckIfLobbyExists] = useState(false)

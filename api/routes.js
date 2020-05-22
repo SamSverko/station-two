@@ -45,12 +45,6 @@ const validateData = {
 }
 
 // routes
-// router.get('/', (req, res) => {
-//   console.log(`${req.method} request for ${req.url}.`)
-
-//   res.send('Welcome to the API')
-// })
-
 router.get('/api', (req, res) => {
   console.log(`${req.method} request for ${req.url}.`)
 
