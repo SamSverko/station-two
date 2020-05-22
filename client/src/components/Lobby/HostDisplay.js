@@ -55,7 +55,7 @@ const HostDisplay = ({ lobbyData, socket, triviaData }) => {
 
   useEffect(() => {
     if (currentButtonSelected !== 'false' && currentButtonSelected !== false) {
-      document.getElementById(currentButtonSelected).classList.add('active')
+      // document.getElementById(currentButtonSelected).classList.add('active')
     }
   }, [currentButtonSelected, currentRoundNumberState])
 

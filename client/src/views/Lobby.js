@@ -101,6 +101,7 @@ const Lobby = () => {
       if (this.readyState === 4 && this.status === 200) {
         if (this.response === 'OK') {
           console.log('[OK] joinLobby')
+          console.log(socket)
           socket.emit('joinRoom', { triviaId: triviaId, playerName: playerNameState, playerId: playerIdState })
         } else {
           console.warn('Error joining lobby.')
