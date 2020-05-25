@@ -88,6 +88,7 @@ const PlayRound = ({ lobbyData, roundNumber, roundData, socket }) => {
     }
 
     socket.emit('displayQuestion', dataToSend)
+    console.log('SOCKET | EMIT | displayQuestion', dataToSend)
   }
 
   const PlayersLeftToRespond = ({ roundNumber, questionNumber }) => {

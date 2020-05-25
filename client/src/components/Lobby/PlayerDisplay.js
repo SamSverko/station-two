@@ -133,6 +133,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
                 raw: target.dataset.response
               })
               socket.emit('playerResponded', dataToSubmit)
+              console.log('SOCKET | EMIT | playerResponded', dataToSubmit)
             } else {
               console.warn(this.response)
               console.warn('Error posting response.')
@@ -184,6 +185,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
                 raw: response
               })
               socket.emit('playerResponded', dataToSubmit)
+              console.log('SOCKET | EMIT | playerResponded', dataToSubmit)
             } else {
               console.warn(this.response)
               console.warn('Error posting response.')
@@ -256,6 +258,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
                 raw: response
               })
               socket.emit('playerResponded', dataToSubmit)
+              console.log('SOCKET | EMIT | playerResponded', dataToSubmit)
             } else {
               console.warn(this.response)
               console.warn('Error posting response.')
@@ -326,6 +329,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
                 raw: response
               })
               socket.emit('playerResponded', dataToSubmit)
+              console.log('SOCKET | EMIT | playerResponded', dataToSubmit)
             } else {
               console.warn(this.response)
               console.warn('Error posting response.')

@@ -100,6 +100,7 @@ const Lobby = () => {
         if (this.response === 'OK') {
           console.log('DB | OK | joinLobby', socket)
           socket.emit('joinRoom', { triviaId: triviaId, playerName: playerNameState, playerId: playerIdState })
+          console.log('SOCKET | EMIT | joinRoom', { triviaId: triviaId, playerName: playerNameState, playerId: playerIdState })
         } else {
           console.warn('DB | WARN | joinLobby', this.respons)
         }

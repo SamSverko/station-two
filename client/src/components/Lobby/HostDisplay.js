@@ -46,10 +46,13 @@ const HostDisplay = ({ lobbyData, socket, triviaData }) => {
 
     if (action === 'mark-round') {
       socket.emit('playerMustWait', 'marking')
+      console.log('SOCKET | EMIT | playerMustWait', 'marking')
     } else if (action === 'display-leaderboard') {
       socket.emit('playerMustWait', 'leaderboard')
+      console.log('SOCKET | EMIT | playerMustWait', 'leaderboard')
     } else if (action === 'play-round') {
       socket.emit('playerMustWait', false)
+      console.log('SOCKET | EMIT | playerMustWait', false)
     }
   }
 
