@@ -34,7 +34,7 @@ const Builder = () => {
           history.push('/')
         }
       }).catch((error) => {
-        console.error('Error fetching trivia document', error)
+        console.error('DB | ERROR | fetchTrivia', error)
       })
   }, [history, triviaId])
 

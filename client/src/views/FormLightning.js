@@ -67,7 +67,7 @@ const FormLightning = () => {
           history.push(`/builder/${triviaId}`)
         }
       }).catch((error) => {
-        console.error('Error fetching trivia document', error)
+        console.error('DB | ERROR | fetchRound', error)
       })
   }, [history, roundNumber, triviaId])
 
@@ -126,7 +126,7 @@ const FormLightning = () => {
                 history.push(`/builder/${triviaId}`)
               }, 1500)
             } else {
-              console.log(JSON.parse(this.response))
+              console.error('DB | ERROR | handleSubmit new', this.response)
               setPostStatus(false)
             }
           }
@@ -146,7 +146,7 @@ const FormLightning = () => {
                 history.push(`/builder/${triviaId}`)
               }, 1500)
             } else {
-              console.log(JSON.parse(this.response))
+              console.error('DB | ERROR | handleSubmit existing', this.response)
               setPostStatus(false)
             }
           }

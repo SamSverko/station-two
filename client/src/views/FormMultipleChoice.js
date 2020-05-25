@@ -72,7 +72,7 @@ const FormMultipleChoice = () => {
           history.push(`/builder/${triviaId}`)
         }
       }).catch((error) => {
-        console.error('Error fetching trivia document', error)
+        console.error('DB | ERROR | fetchRound', error)
       })
   }, [history, roundNumber, triviaId])
 
@@ -137,7 +137,7 @@ const FormMultipleChoice = () => {
                 history.push(`/builder/${triviaId}`)
               }, 1500)
             } else {
-              console.log(JSON.parse(this.response))
+              console.error('DB | ERROR | handleSubmit new', this.response)
               setPostStatus(false)
             }
           }
@@ -157,7 +157,7 @@ const FormMultipleChoice = () => {
                 history.push(`/builder/${triviaId}`)
               }, 1500)
             } else {
-              console.log(JSON.parse(this.response))
+              console.error('DB | ERROR | handleSubmit exist', this.response)
               setPostStatus(false)
             }
           }

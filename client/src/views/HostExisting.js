@@ -36,7 +36,7 @@ const HostExisting = () => {
           setCheckIfLobbyExists('not-found')
         }
       }).catch((error) => {
-        console.error('Error fetching trivia document', error)
+        console.error('DB | ERROR | fetchLobby', error)
       })
   }
 

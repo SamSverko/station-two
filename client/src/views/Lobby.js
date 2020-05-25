@@ -14,8 +14,6 @@ import PlayerDisplay from '../components/Lobby/PlayerDisplay'
 const Lobby = () => {
   const { hostName, triviaId, role } = useParams()
 
-  console.log(process.env.REACT_APP_SOCKET_URL)
-
   const [socket] = useState(io(process.env.REACT_APP_SOCKET_URL), { secure: process.env.REACT_APP_IS_SECURE })
   const [playerNameState] = useState(window.localStorage.getItem('playerName'))
   const [playerIdState] = useState(window.localStorage.getItem('playerId'))
@@ -35,13 +33,13 @@ const Lobby = () => {
         }
       }).then((data) => {
         if (!data.statusCode) {
-          console.log('[OK] fetchLobbyData')
+          console.log('DB | OK | fetchLobbyData')
           setLobbyData(data)
         } else {
-          console.error('Error fetching lobby document', data)
+          console.warn('DB | WARN | fetchLobbyData', data)
         }
       }).catch((error) => {
-        console.error('Error fetching lobby document', error)
+        console.error('DB | ERROR | fetchLobbyData', error)
       })
   }, [triviaId])
 
@@ -55,13 +53,13 @@ const Lobby = () => {
         }
       }).then((data) => {
         if (!data.statusCode) {
-          console.log('[OK] fetchTriviaData')
+          console.log('DB | OK | fetchTriviaData')
           setTriviaDataState(data)
         } else {
-          console.error('Error fetching trivia document', data)
+          console.warn('DB | WARN | fetchTriviaData', data)
         }
       }).catch((error) => {
-        console.error('Error fetching trivia document', error)
+        console.error('DB | ERROR | fetchTriviaData', error)
       })
   }, [triviaId])
 
@@ -76,16 +74,16 @@ const Lobby = () => {
       }).then((data) => {
         if (!data.statusCode) {
           if (data.players.length > 0) {
-            console.log('[OK] fetchPlayers')
+            console.log('DB | OK | fetchPlayers')
             setPlayersState(data.players)
           } else if (data.players.length === 0) {
-            console.warn('Empty lobby retrieved.', data)
+            console.warn('DB | EMPTY | fetchPlayers', data)
           }
         } else {
-          console.error('Error fetching trivia document', data)
+          console.warn('DB | WARN | fetchPlayers', data)
         }
       }).catch((error) => {
-        console.error('Error fetching trivia document', error)
+        console.error('DB | ERROR | fetchPlayers', error)
       })
   }, [triviaId])
 
@@ -100,12 +98,10 @@ const Lobby = () => {
     xhttp.onreadystatechange = function () {
       if (this.readyState === 4 && this.status === 200) {
         if (this.response === 'OK') {
-          console.log('[OK] joinLobby')
-          console.log(socket)
+          console.log('DB | OK | joinLobby', socket)
           socket.emit('joinRoom', { triviaId: triviaId, playerName: playerNameState, playerId: playerIdState })
         } else {
-          console.warn('Error joining lobby.')
-          console.warn(this.response)
+          console.warn('DB | WARN | joinLobby', this.respons)
         }
       }
     }
@@ -123,7 +119,8 @@ const Lobby = () => {
     }
 
     socket.on('player joined', () => {
-      console.log('[SOCKET - player joined]')
+      console.log('SOCKET | RUN | player joined')
+
       fetchPlayers()
       if (role === 'host') {
         fetchLobbyData()
@@ -131,7 +128,8 @@ const Lobby = () => {
     })
 
     socket.on('player left', () => {
-      console.log('[SOCKET - player left]')
+      console.log('SOCKET | RUN | player left')
+
       fetchPlayers()
       if (role === 'host') {
         fetchLobbyData()
@@ -139,20 +137,23 @@ const Lobby = () => {
     })
 
     socket.on('display question', (data) => {
-      console.log('[SOCKET - display question]')
+      console.log('SOCKET | RUN | display question')
+
       setMustPlayerWait(false)
       setPlayerDisplayDataState(data)
     })
 
-    socket.on('player responded', (data) => {
+    socket.on('player responded', () => {
+      console.log('SOCKET | RUN | player responded')
+
       if (role === 'host') {
-        console.log('[SOCKET - player responded]')
         fetchLobbyData()
       }
     })
 
     socket.on('player must wait', (data) => {
-      console.log(`[SOCKET - player must wait] ${data}`)
+      console.log('SOCKET | RUN | player must wait', data)
+
       setMustPlayerWait(data)
       if (data === 'leaderboard') {
         fetchLobbyData()
@@ -160,6 +161,8 @@ const Lobby = () => {
     })
 
     return () => {
+      console.log('CLIENT | RUN | useEffect clean up')
+
       socket.close()
     }
   }, [fetchLobbyData, fetchPlayers, fetchTriviaData, joinLobby, role, socket])

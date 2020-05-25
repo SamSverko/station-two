@@ -46,13 +46,13 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
         }
       }).then((data) => {
         if (!data.statusCode) {
-          console.log('[OK] fetchLobbyData')
+          console.log('DB | OK | fetchLobbyData')
           setSavedLobbyData(data)
         } else {
-          console.error('Error fetching lobby document', data)
+          console.warn('DB | WARN | fetchLobbyData', data)
         }
       }).catch((error) => {
-        console.error('Error fetching lobby document', error)
+        console.error('DB | ERROR | fetchLobbyData', error)
       })
   }, [triviaId])
 
@@ -88,12 +88,13 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
     xhttp.onreadystatechange = function () {
       if (this.readyState === 4 && this.status === 200) {
         if (this.response === 'OK') {
-          console.log('[OK] markResponse')
+          console.log('DB | OK | markResponse')
           fetchLobbyData()
         } else {
-          console.warn(this.response)
-          console.warn('Error marking response.')
+          console.warn('DB | WARN | markResponse', this.response)
         }
+      } else {
+        console.error('DB | ERROR | markResponse', this.response)
       }
     }
     xhttp.open('POST', `${process.env.REACT_APP_API_URL}/markResponse`)

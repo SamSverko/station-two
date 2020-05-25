@@ -67,7 +67,7 @@ const FormPicture = () => {
           history.push(`/builder/${triviaId}`)
         }
       }).catch((error) => {
-        console.error('Error fetching trivia document', error)
+        console.error('DB | ERROR | fetchRound', error)
       })
   }, [history, roundNumber, triviaId])
 
@@ -114,7 +114,7 @@ const FormPicture = () => {
       img.onerror = img.onabort = () => {
         clearTimeout(timer)
         // Promise.reject(new Error('Error loading image source.'))
-        console.log('Error loading image source.')
+        console.error('IMAGE | ERROR | validateImageUrl')
         event.target.classList.remove('is-valid')
         event.target.classList.add('is-invalid')
         imageThumbnail.classList.add('d-none')
@@ -130,7 +130,7 @@ const FormPicture = () => {
       timer = setTimeout(() => {
         img.src = '//!!!!/noexist.jpg'
         // Promise.reject(new Error('Timeout loading image source.'))
-        console.log('Invalid URL.')
+        console.error('IMAGE | ERROR | validateImageUrl')
       }, timeout)
       img.src = event.target.value
     })
@@ -158,7 +158,7 @@ const FormPicture = () => {
                 history.push(`/builder/${triviaId}`)
               }, 1500)
             } else {
-              console.log(JSON.parse(this.response))
+              console.error('DB | ERROR | handleSubmit new', this.response)
               setPostStatus(false)
             }
           }
@@ -178,7 +178,7 @@ const FormPicture = () => {
                 history.push(`/builder/${triviaId}`)
               }, 1500)
             } else {
-              console.log(JSON.parse(this.response))
+              console.error('DB | ERROR | handleSubmit existing', this.response)
               setPostStatus(false)
             }
           }

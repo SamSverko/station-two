@@ -35,40 +35,45 @@ app.use(bodyParser.json())
 // NO ROOMS: io.emit = send to all including sender | socket.emit = send to sender only | socket.broadcast.emit = send to all but not sender
 // io.set('origins', 'stationtwo.app:*')
 io.on('connection', (socket) => {
-  console.log('[SOCKET] - connection')
+  console.log('SOCKET | RUN | connection')
   let roomCode = false
   let playerName = false
   let playerId = false
 
   socket.on('joinRoom', (data) => {
+    console.log('SOCKET | RUN | joinRoom')
+
     roomCode = data.triviaId
     playerName = data.playerName
     playerId = data.playerId
-
-    console.log(`[SOCKET] ${playerName} joined ${roomCode}`)
 
     socket.join(roomCode)
     io.to(roomCode).emit('player joined')
   })
 
   socket.on('displayQuestion', (data) => {
-    console.log('[SOCKET - displayQuestion]')
-    socket.to(roomCode).emit('display question', data)
+    console.log('SOCKET | RUN | displayQuestion')
+
+    socket.to(roomCode).emit('display question')
   })
 
   socket.on('playerResponded', (data) => {
-    console.log('[SOCKET - playerResponded]')
-    socket.to(roomCode).emit('player responded', data)
+    console.log('[SOCKET | RUN | playerResponded')
+
+    socket.to(roomCode).emit('player responded')
   })
 
   socket.on('playerMustWait', (data) => {
-    console.log('[SOCKET - playerMustWait]')
-    io.to(roomCode).emit('player must wait', data)
+    console.log('[SOCKET | RUN | playerMustWait')
+
+    io.to(roomCode).emit('player must wait')
   })
 
   socket.on('disconnect', () => {
+    console.log('SOCKET | RUN | disconnect')
+
     if (playerName && roomCode) {
-      console.log(`[SOCKET] ${playerName} left ${roomCode}`)
+      console.log('SOCKET | RUN | disconnect', playerName, roomCode)
 
       const postData = JSON.stringify({
         triviaId: roomCode,
