@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
   let playerId = false
 
   socket.on('joinRoom', (data) => {
-    console.log('SOCKET | RUN | joinRoom')
+    console.log('SOCKET | RUN | joinRoom', data.triviaId, data.playerName, data.playerId)
 
     roomCode = data.triviaId
     playerName = data.playerName
