@@ -40,6 +40,7 @@ const validateData = {
   tieBreakerAnswer: check('tieBreakerAnswer', 'Value must be an integer of any amount').trim().toInt().isInt(),
   tieBreakerQuestion: check('tieBreakerQuestion', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim(),
   triviaId: check('triviaId', 'Value must be 4 alphabetical characters [a-z]').isString().trim().isLength({ min: 4, max: 4 }),
+  triviaPin: check('triviaPin', 'Value must be 4 numerical characters [0-9]').trim().toInt().isInt({ min: 0, max: 9999 }),
   uniqueId: check('uniqueId', 'Value must be 36 alphabetical characters, including dashes [a-z-]').isString().not().isEmpty().trim().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }),
   uniqueIdOptional: check('uniqueId', 'Value must be 36 alphabetical characters, including dashes [a-z-]').isString().not().isEmpty().trim().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }).optional()
 }
@@ -104,7 +105,8 @@ router.post(`/api/v${API_VERSION}/leaveLobby`, [
 
 // create trivia & lobby
 router.post(`/api/v${API_VERSION}/createTrivia`, [
-  validateData.name
+  validateData.name,
+  validateData.triviaPin
 ], (req, res, next) => {
   console.log(`${req.method} request for CREATE TRIVIA & LOBBY.`)
 

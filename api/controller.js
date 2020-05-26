@@ -206,6 +206,7 @@ module.exports = {
             {
               createdAt: new Date().toISOString(),
               triviaId: newTriviaId.toLowerCase(),
+              triviaPin: req.body.triviaPin,
               host: req.body.name.toLowerCase(),
               rounds: [],
               tieBreaker: {}
