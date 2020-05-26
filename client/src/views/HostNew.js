@@ -27,13 +27,12 @@ const HostNew = () => {
 
     if (event.currentTarget.checkValidity() !== false) {
       if (name && pin) {
-        console.log(name, pin)
         const xhttp = new window.XMLHttpRequest()
         xhttp.onreadystatechange = function () {
           if (this.readyState === 4 && this.status === 200) {
             const data = JSON.parse(this.response)
             if (!data.statusCode) {
-              history.push(`/builder/${data[0].triviaId}`)
+              history.push(`/builder/${data[0].triviaId}/${pin}`)
             } else {
               setPostStatus('error')
               console.error('DB | WARN | handleSubmit', data)

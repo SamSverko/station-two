@@ -34,7 +34,7 @@ const HostExisting = () => {
         if (!data.statusCode) {
           console.log(data)
           if (data.error !== 'incorrect-pin') {
-            history.push(`/builder/${code}`)
+            history.push(`/builder/${code}/${pin}`)
           } else {
             setPostStatus('incorrect-pin')
           }

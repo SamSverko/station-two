@@ -225,7 +225,7 @@ const Lobby = () => {
 
   const Footer = () => {
     if (role === 'host') {
-      return <Link to={`/builder/${triviaId}`}>To Builder</Link>
+      return <Link to={`/builder/${triviaId}/${triviaDataState.triviaPin}`}>To Builder</Link>
     } else {
       return <Link to='/'>Home</Link>
     }

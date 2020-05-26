@@ -74,7 +74,7 @@ const routes = [
   },
   {
     title: 'Builder',
-    path: '/builder/:triviaId',
+    path: '/builder/:triviaId/:triviaPin',
     component: BuilderView,
     exact: true
   },

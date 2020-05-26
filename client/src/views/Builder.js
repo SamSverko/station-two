@@ -13,13 +13,13 @@ import TieBreaker from '../components/Builder/TieBreaker'
 
 const Builder = () => {
   const history = useHistory()
-  const { triviaId } = useParams()
+  const { triviaId, triviaPin } = useParams()
 
   const [trivia, setTrivia] = useState(false)
   const [isRoundsComplete, setIsRoundsComplete] = useState(false)
 
   const fetchTrivia = useCallback(() => {
-    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${triviaId}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${triviaId}?triviaPin=${triviaPin}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -28,15 +28,32 @@ const Builder = () => {
         }
       }).then((data) => {
         if (!data.statusCode) {
-          setTrivia(data)
-          setIsRoundsComplete((data.rounds.length > 0))
+          if (data.error !== 'incorrect-pin') {
+            setTrivia(data)
+            setIsRoundsComplete((data.rounds.length > 0))
+          } else {
+            history.push({
+              pathname: '/',
+              state: {
+                message: 'incorrect-pin',
+                triviaId: triviaId,
+                triviaPin: triviaPin
+              }
+            })
+          }
         } else {
-          history.push('/')
+          history.push({
+            pathname: '/',
+            state: {
+              message: 'trivia-not-found',
+              triviaId: triviaId
+            }
+          })
         }
       }).catch((error) => {
         console.error('DB | ERROR | fetchTrivia', error)
       })
-  }, [history, triviaId])
+  }, [history, triviaId, triviaPin])
 
   useEffect(() => {
     fetchTrivia()
