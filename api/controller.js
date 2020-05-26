@@ -277,7 +277,11 @@ module.exports = {
         } else {
           let document = result
           if (req.params.collection === DB_COLLECTION_TRIVIA) {
-            if (typeof req.query.roundNumber !== 'undefined' && typeof req.query.questionNumber !== 'undefined') {
+            if (req.query.triviaPin) {
+              if (req.query.triviaPin !== document.triviaPin) {
+                document = { error: 'incorrect-pin' }
+              }
+            } else if (typeof req.query.roundNumber !== 'undefined' && typeof req.query.questionNumber !== 'undefined') {
               if (document.rounds[req.query.roundNumber].type === 'picture') {
                 document = document.rounds[req.query.roundNumber].pictures[req.query.questionNumber]
               } else {

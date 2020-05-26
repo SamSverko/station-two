@@ -19,10 +19,11 @@ const HostExisting = () => {
 
   const [validated, setValidated] = useState(false)
   const [code, setCode] = useState(false)
-  const [checkIfLobbyExists, setCheckIfLobbyExists] = useState(false)
+  const [pin, setPin] = useState(false)
+  const [postStatus, setPostStatus] = useState(false)
 
   const fetchTrivia = () => {
-    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${code}`)
+    window.fetch(`${process.env.REACT_APP_API_URL}/getDocument/trivia/${code}?triviaPin=${pin}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -31,10 +32,15 @@ const HostExisting = () => {
         }
       }).then((data) => {
         if (!data.statusCode) {
-          history.push(`/builder/${code}`)
+          console.log(data)
+          if (data.error !== 'incorrect-pin') {
+            history.push(`/builder/${code}`)
+          } else {
+            setPostStatus('incorrect-pin')
+          }
         } else {
           console.error('DB | WARN | fetchTrivia', data)
-          setCheckIfLobbyExists('not-found')
+          setPostStatus('not-found')
         }
       }).catch((error) => {
         console.error('DB | ERROR | fetchTrivia', error)
@@ -46,7 +52,9 @@ const HostExisting = () => {
     event.stopPropagation()
 
     if (event.currentTarget.checkValidity() !== false) {
-      fetchTrivia()
+      if (code && pin) {
+        fetchTrivia()
+      }
     } else {
       setValidated(true)
     }
@@ -66,8 +74,8 @@ const HostExisting = () => {
                 maxLength='4'
                 name='code'
                 onChange={(event) => {
-                  setCheckIfLobbyExists(false)
                   setCode(event.target.value)
+                  setPostStatus(false)
                 }}
                 pattern='[A-Za-z]{4}'
                 placeholder='_ _ _ _'
@@ -78,10 +86,35 @@ const HostExisting = () => {
               <Form.Control.Feedback type='invalid'>Code must be 4 alphabetical characters [A-Z].</Form.Control.Feedback>
             </Form.Group>
 
-            {checkIfLobbyExists === 'not-found' && (
+            <Form.Group className='text-left' controlId='formPin'>
+              <Form.Label>Pin</Form.Label>
+              <FormControlStyle
+                maxLength='4'
+                minLength='4'
+                name='pin'
+                onChange={(event) => {
+                  setPin(event.target.value)
+                  setPostStatus(false)
+                }}
+                pattern='\d*'
+                placeholder='_ _ _ _'
+                required
+                type='text'
+              />
+              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'>Pin must be 4 numerical characters [0-9].</Form.Control.Feedback>
+            </Form.Group>
+
+            {postStatus === 'not-found' && (
               <Alert variant='danger'>
                 Lobby <span className='font-weight-bold text-uppercase'>{code}</span> not found.<br />
                 Please try with a different code.
+              </Alert>
+            )}
+            {postStatus === 'incorrect-pin' && (
+              <Alert variant='danger'>
+                Pin <span className='font-weight-bold text-uppercase'>{pin}</span> is not correct.<br />
+                Please try with a different pin.
               </Alert>
             )}
 
