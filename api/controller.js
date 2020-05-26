@@ -17,7 +17,7 @@ module.exports = {
       questions: req.body.roundQuestions
     }
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $push: {
           rounds: roundToInsert
@@ -41,7 +41,7 @@ module.exports = {
     }
 
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $set: {
           [`rounds.${req.body.roundNumber}`]: roundToInsert
@@ -64,7 +64,7 @@ module.exports = {
       questions: req.body.roundLightningQuestions
     }
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $push: {
           rounds: roundToInsert
@@ -88,7 +88,7 @@ module.exports = {
     }
 
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $set: {
           [`rounds.${req.body.roundNumber}`]: roundToInsert
@@ -111,7 +111,7 @@ module.exports = {
       pictures: req.body.roundPictures
     }
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $push: {
           rounds: roundToInsert
@@ -135,7 +135,7 @@ module.exports = {
     }
 
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $set: {
           [`rounds.${req.body.roundNumber}`]: roundToInsert
@@ -156,7 +156,7 @@ module.exports = {
       answer: req.body.tieBreakerAnswer
     }
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $set: {
           tieBreaker: tieBreakerToInsert
@@ -239,9 +239,9 @@ module.exports = {
       })
   },
   joinLobby: async (req, res, next) => {
-    fetch(`${API_URL}/getDocument/${DB_COLLECTION_LOBBIES}/${req.body.triviaId}?playersOnly=true`, (error, meta, body) => {
+    fetch(`${API_URL}/getDocument/${DB_COLLECTION_LOBBIES}/${req.body.triviaId.toLowerCase()}?playersOnly=true`, (error, meta, body) => {
       if (error) {
-        utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId} .`)
+        utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId.toLowerCase()} .`)
       }
       req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
         { triviaId: req.body.triviaId.toLowerCase() },
@@ -393,7 +393,7 @@ module.exports = {
   },
   deleteRound: async (req, res, next) => {
     req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $unset: {
           [`rounds.${req.body.roundNumber}`]: 1
@@ -404,7 +404,7 @@ module.exports = {
           utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'deleteRound() updateOne $unset\' query failed.')
         } else {
           req.app.db.collection(DB_COLLECTION_TRIVIA).updateOne(
-            { triviaId: req.body.triviaId },
+            { triviaId: req.body.triviaId.toLowerCase() },
             {
               $pull: {
                 rounds: null
@@ -436,7 +436,7 @@ module.exports = {
     }
     // delete existing response if exists
     req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
-      { triviaId: req.body.triviaId },
+      { triviaId: req.body.triviaId.toLowerCase() },
       {
         $pull: { responses: responseToPull }
       },
@@ -448,7 +448,7 @@ module.exports = {
           responseToAdd.response = req.body.playerResponse
           // insert response
           req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
-            { triviaId: req.body.triviaId },
+            { triviaId: req.body.triviaId.toLowerCase() },
             { $addToSet: { responses: responseToAdd } },
             (error, result) => {
               if (error) {

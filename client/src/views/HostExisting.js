@@ -33,10 +33,11 @@ const HostExisting = () => {
         if (!data.statusCode) {
           history.push(`/builder/${code}`)
         } else {
+          console.error('DB | WARN | fetchTrivia', data)
           setCheckIfLobbyExists('not-found')
         }
       }).catch((error) => {
-        console.error('DB | ERROR | fetchLobby', error)
+        console.error('DB | ERROR | fetchTrivia', error)
       })
   }
 

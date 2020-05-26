@@ -89,7 +89,7 @@ const Play = () => {
                 className='text-lowercase'
                 maxLength='10'
                 name='name'
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) => setName(event.target.value.toLowerCase())}
                 pattern='[A-Za-z0-9]{3,10}'
                 placeholder='Name'
                 required
@@ -106,7 +106,7 @@ const Play = () => {
                 name='code'
                 onChange={(event) => {
                   setCheckLobbyState(false)
-                  setCode(event.target.value)
+                  setCode(event.target.value.toLowerCase())
                 }}
                 pattern='[A-Za-z]{4}'
                 placeholder='_ _ _ _'

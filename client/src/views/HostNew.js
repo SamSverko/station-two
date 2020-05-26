@@ -45,7 +45,7 @@ const HostNew = () => {
                 className='text-lowercase'
                 maxLength='10'
                 name='name'
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) => setName(event.target.value.toLowerCase())}
                 pattern='[A-Za-z0-9]{3,10}'
                 placeholder='Name'
                 required
