@@ -34,19 +34,36 @@ const RoundStyle = styled.div`
 
 const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
   const Display = () => {
+    console.log(mustPlayerWait)
     if (mustPlayerWait === 'marking') {
       return (
-        <p className='mb-0 h5'>Host is marking, please wait <span aria-label='memo emoji' role='img'>📝</span></p>
+        <p className='mb-0 h5'>
+          Host is marking.<br />
+          <span aria-label='memo emoji' className='h1' role='img'>📝</span>
+        </p>
       )
     } else if (mustPlayerWait === 'leaderboard') {
       return (
-        <p className='mb-0 h5'>First place yet? <span aria-label='trophy emoji' role='img'>🏆</span></p>
+        <p className='mb-0 h5'>
+          First place yet?<br />
+          <span aria-label='trophy emoji' className='h1' role='img'>🏆</span>
+        </p>
       )
-    } else if (playerDisplayDataState.roundData) {
+    } else if (mustPlayerWait === 'play') {
+      return (
+        <p className='mb-0 h5'>
+          Host is selecting a round.<br />
+          <span aria-label='memo emoji' className='h1' role='img'>🔢</span>
+        </p>
+      )
+    } else if (playerDisplayDataState.roundData && !mustPlayerWait) {
       return <DisplayQuestion />
     } else {
       return (
-        <p className='mb-0 h5'>Please wait for Host <span aria-label='hourglass flowing sand emoji' role='img'>⏳</span></p>
+        <p className='mb-0 h5'>
+          Please wait for Host.<br />
+          <span aria-label='hourglass flowing sand emoji' className='h1' role='img'>⏳</span>
+        </p>
       )
     }
   }

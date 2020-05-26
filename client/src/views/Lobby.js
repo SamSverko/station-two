@@ -119,7 +119,7 @@ const Lobby = () => {
       fetchLobbyData()
     }
 
-    socket.on('player joined', () => {
+    socket.on('player joined', (data) => {
       console.log('SOCKET | RUN | player joined')
 
       fetchPlayers()
@@ -128,7 +128,7 @@ const Lobby = () => {
       }
     })
 
-    socket.on('player left', () => {
+    socket.on('player left', (data) => {
       console.log('SOCKET | RUN | player left')
 
       fetchPlayers()
@@ -144,7 +144,7 @@ const Lobby = () => {
       setPlayerDisplayDataState(data)
     })
 
-    socket.on('player responded', () => {
+    socket.on('player responded', (data) => {
       console.log('SOCKET | RUN | player responded')
 
       if (role === 'host') {

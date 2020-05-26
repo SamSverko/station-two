@@ -93,8 +93,6 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
         } else {
           console.warn('DB | WARN | markResponse', this.response)
         }
-      } else {
-        console.error('DB | ERROR | markResponse', this.response)
       }
     }
     xhttp.open('POST', `${process.env.REACT_APP_API_URL}/markResponse`)

@@ -53,13 +53,13 @@ io.on('connection', (socket) => {
   socket.on('displayQuestion', (data) => {
     console.log('SOCKET | RUN | displayQuestion')
 
-    socket.to(roomCode).emit('display question')
+    socket.to(roomCode).emit('display question', data)
   })
 
   socket.on('playerResponded', (data) => {
     console.log('[SOCKET | RUN | playerResponded')
 
-    socket.to(roomCode).emit('player responded')
+    socket.to(roomCode).emit('player responded', data)
   })
 
   socket.on('playerMustWait', (data) => {
