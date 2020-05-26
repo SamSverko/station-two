@@ -6,6 +6,7 @@ import { Card } from 'react-bootstrap'
 // components
 import Header from '../components/Header'
 import BuilderStatus from '../components/Builder/BuilderStatus'
+import Pin from '../components/Builder/Pin'
 import ExistingRounds from '../components/Builder/ExistingRounds'
 import TriviaInfo from '../components/TriviaInfo'
 import AddARound from '../components/Builder/AddARound'
@@ -75,6 +76,7 @@ const Builder = () => {
         <>
           <TriviaInfo code={trivia.triviaId} host={trivia.host} />
           <BuilderStatus host={trivia.host} isRoundsComplete={isRoundsComplete} isTieBreakerComplete={(trivia.tieBreaker.question)} triviaId={trivia.triviaId} />
+          <Pin fetchTrivia={fetchTrivia} triviaId={trivia.triviaId} triviaPin={trivia.triviaPin} />
           <ExistingRounds rounds={trivia.rounds} setIsRoundsComplete={setIsRoundsComplete} triviaId={trivia.triviaId} />
           <TieBreaker fetchTrivia={fetchTrivia} tieBreaker={trivia.tieBreaker} triviaId={trivia.triviaId} />
           <AddARound triviaId={triviaId} />

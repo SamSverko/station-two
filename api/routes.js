@@ -40,8 +40,8 @@ const validateData = {
   tieBreakerAnswer: check('tieBreakerAnswer', 'Value must be an integer of any amount').trim().toInt().isInt(),
   tieBreakerQuestion: check('tieBreakerQuestion', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim(),
   triviaId: check('triviaId', 'Value must be 4 alphabetical characters [a-z]').isString().trim().isLength({ min: 4, max: 4 }),
-  triviaPin: check('triviaPin', 'Value must be 4 numerical characters [0-9]').trim().toInt().isInt({ min: 0, max: 9999 }),
-  triviaPinOptional: check('triviaPin', 'Value must be 4 numerical characters [0-9]').trim().toInt().isInt({ min: 0, max: 9999 }).optional(),
+  triviaPin: check('triviaPin', 'Value must be 4 numerical characters [0-9]').isString().trim().isLength({ min: 4, max: 4 }),
+  triviaPinOptional: check('triviaPin', 'Value must be 4 numerical characters [0-9]').isString().trim().isLength({ min: 4, max: 4 }).optional(),
   uniqueId: check('uniqueId', 'Value must be 36 alphabetical characters, including dashes [a-z-]').isString().not().isEmpty().trim().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }),
   uniqueIdOptional: check('uniqueId', 'Value must be 36 alphabetical characters, including dashes [a-z-]').isString().not().isEmpty().trim().matches(/^[a-z0-9-]+$/, 'i').isLength({ min: 36, max: 36 }).optional()
 }
@@ -284,6 +284,20 @@ router.post(`/api/v${API_VERSION}/updateTieBreaker`, [
     validationResult(req).throw()
 
     apiController.updateTieBreaker(req, res, next)
+  } catch (validationError) {
+    utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
+  }
+})
+
+// update pin
+router.post(`/api/v${API_VERSION}/updatePin`, [
+  validateData.triviaId,
+  validateData.triviaPin
+], (req, res, next) => {
+  console.log(`${req.method} request for UPDATE PIN.`)
+  try {
+    validationResult(req).throw()
+    apiController.updatePin(req, res, next)
   } catch (validationError) {
     utils.handleServerError(next, 422, 'API parameter validation failed.', req.method, req.url, validationError.errors)
   }
