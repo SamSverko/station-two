@@ -32,7 +32,7 @@ jobs:
       run: aws s3 sync ./client/build/ s3://stationtwo.ca --delete
       
     - name: Clear Cloudfront cache
-    - uses: awact/cloudfront-action@master
+      uses: awact/cloudfront-action@master
       env:
         AWS_REGION: 'us-east-1'
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
