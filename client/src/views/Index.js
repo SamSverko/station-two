@@ -11,7 +11,7 @@ const Index = () => {
 
   return (
     <>
-      <Header text='Station Two Trivia' emoji='🚒' emojiDescription='firetruck' />
+      <Header text='Station Two Trivia!' emoji='🚒' emojiDescription='firetruck' />
 
       <Link to='/play'>
         <Button className='two-selection-buttons'>Play <span aria-label='tada emoji' role='img'>🎉</span></Button>
