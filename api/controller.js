@@ -3,7 +3,7 @@ require('dotenv').config()
 const API_URL = process.env.API_URL
 const DB_COLLECTION_TRIVIA = process.env.DB_COLLECTION_TRIVIA
 const DB_COLLECTION_LOBBIES = process.env.DB_COLLECTION_LOBBIES
-const fetch = require('fetch').fetchUrl
+const axios = require('axios')
 
 // local files
 const utils = require('./utils')
@@ -257,29 +257,35 @@ module.exports = {
       })
   },
   joinLobby: async (req, res, next) => {
-    fetch(`${API_URL}/getDocument/${DB_COLLECTION_LOBBIES}/${req.body.triviaId.toLowerCase()}?playersOnly=true`, (error, meta, body) => {
-      if (error) {
-        utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() fetch' query failed for triviaId: ${req.body.triviaId.toLowerCase()} .`)
-      }
-      req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
-        { triviaId: req.body.triviaId.toLowerCase() },
-        {
-          $addToSet: {
-            players: {
-              name: req.body.name.toLowerCase(),
-              uniqueId: req.body.uniqueId.toLowerCase()
+    axios.get(`${API_URL}/getDocument/${DB_COLLECTION_LOBBIES}/${req.body.triviaId.toLowerCase()}?playersOnly=true`)
+      .then(function (response) {
+        if (response.data.host) {
+          req.app.db.collection(DB_COLLECTION_LOBBIES).updateOne(
+            { triviaId: req.body.triviaId.toLowerCase() },
+            {
+              $addToSet: {
+                players: {
+                  name: req.body.name.toLowerCase(),
+                  uniqueId: req.body.uniqueId.toLowerCase()
+                }
+              }
+            },
+            (error, result) => {
+              if (error) {
+                utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() updateOne\' query failed.')
+              } else {
+                res.sendStatus(200)
+              }
             }
-          }
-        },
-        (error, result) => {
-          if (error) {
-            utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, '\'joinLobby() updateOne\' query failed.')
-          } else {
-            res.sendStatus(200)
-          }
+          )
+        } else {
+          utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() axios.get' query failed for triviaId: ${req.body.triviaId.toLowerCase()} .`)
         }
-      )
-    })
+      })
+      .catch(function (error) {
+        console.error(error)
+        utils.handleServerError(next, 502, 'Database query failed.', req.method, req.url, `'joinLobby() axios.get' query failed for triviaId: ${req.body.triviaId.toLowerCase()} .`)
+      })
   },
   getDocument: async (req, res, next) => {
     // we must return entire document from db here, then filter on the server because aggregate methods aren't available in MongoDB Atlas free tier

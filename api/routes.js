@@ -1,6 +1,5 @@
 // dependencies
 require('dotenv').config()
-const API_VERSION = process.env.API_VERSION || 1
 const DB_COLLECTION_TRIVIA = process.env.DB_COLLECTION_TRIVIA
 const DB_COLLECTION_LOBBIES = process.env.DB_COLLECTION_LOBBIES
 const express = require('express')
@@ -47,14 +46,14 @@ const validateData = {
 }
 
 // routes
-router.get('/api', (req, res) => {
+router.get('/', (req, res) => {
   console.log(`${req.method} request for ${req.url}.`)
 
   res.send('Welcome to the API')
 })
 
 // get (filtered) document
-router.get(`/api/v${API_VERSION}/getDocument/:collection/:triviaId`, [
+router.get('/getDocument/:collection/:triviaId', [
   validateData.collection,
   validateData.triviaId,
   validateData.triviaPinOptional,
@@ -76,7 +75,7 @@ router.get(`/api/v${API_VERSION}/getDocument/:collection/:triviaId`, [
 })
 
 // join lobby
-router.post(`/api/v${API_VERSION}/joinLobby`, [
+router.post('/joinLobby', [
   validateData.triviaId,
   validateData.name,
   validateData.uniqueId
@@ -91,7 +90,7 @@ router.post(`/api/v${API_VERSION}/joinLobby`, [
 })
 
 // leave lobby
-router.post(`/api/v${API_VERSION}/leaveLobby`, [
+router.post('/leaveLobby', [
   validateData.triviaId,
   validateData.name,
   validateData.uniqueId
@@ -106,7 +105,7 @@ router.post(`/api/v${API_VERSION}/leaveLobby`, [
 })
 
 // create trivia & lobby
-router.post(`/api/v${API_VERSION}/createTrivia`, [
+router.post('/createTrivia', [
   validateData.name,
   validateData.triviaPin
 ], (req, res, next) => {
@@ -121,7 +120,7 @@ router.post(`/api/v${API_VERSION}/createTrivia`, [
 })
 
 // add multiple choice round
-router.post(`/api/v${API_VERSION}/addMultipleChoiceRound`, [
+router.post('/addMultipleChoiceRound', [
   validateData.triviaId,
   validateData.roundThemeOptional,
   validateData.roundPointValueOptional,
@@ -152,7 +151,7 @@ router.post(`/api/v${API_VERSION}/addMultipleChoiceRound`, [
 })
 
 // update multiple choice round
-router.post(`/api/v${API_VERSION}/updateMultipleChoiceRound`, [
+router.post('/updateMultipleChoiceRound', [
   validateData.triviaId,
   validateData.roundNumber,
   validateData.roundThemeOptional,
@@ -184,7 +183,7 @@ router.post(`/api/v${API_VERSION}/updateMultipleChoiceRound`, [
 })
 
 // add lightning round
-router.post(`/api/v${API_VERSION}/addLightningRound`, [
+router.post('/addLightningRound', [
   validateData.triviaId,
   validateData.roundThemeOptional,
   validateData.roundPointValueOptional,
@@ -206,7 +205,7 @@ router.post(`/api/v${API_VERSION}/addLightningRound`, [
 })
 
 // add lightning round
-router.post(`/api/v${API_VERSION}/updateLightningRound`, [
+router.post('/updateLightningRound', [
   validateData.triviaId,
   validateData.roundNumber,
   validateData.roundThemeOptional,
@@ -229,7 +228,7 @@ router.post(`/api/v${API_VERSION}/updateLightningRound`, [
 })
 
 // add picture round
-router.post(`/api/v${API_VERSION}/addPictureRound`, [
+router.post('/addPictureRound', [
   validateData.triviaId,
   validateData.roundThemeOptional,
   validateData.roundPointValueOptional,
@@ -251,7 +250,7 @@ router.post(`/api/v${API_VERSION}/addPictureRound`, [
 })
 
 // update picture round
-router.post(`/api/v${API_VERSION}/updatePictureRound`, [
+router.post('/updatePictureRound', [
   validateData.triviaId,
   validateData.roundNumber,
   validateData.roundThemeOptional,
@@ -274,7 +273,7 @@ router.post(`/api/v${API_VERSION}/updatePictureRound`, [
 })
 
 // update tie breaker
-router.post(`/api/v${API_VERSION}/updateTieBreaker`, [
+router.post('/updateTieBreaker', [
   validateData.triviaId,
   validateData.tieBreakerQuestion,
   validateData.tieBreakerAnswer
@@ -290,7 +289,7 @@ router.post(`/api/v${API_VERSION}/updateTieBreaker`, [
 })
 
 // update pin
-router.post(`/api/v${API_VERSION}/updatePin`, [
+router.post('/updatePin', [
   validateData.triviaId,
   validateData.triviaPin
 ], (req, res, next) => {
@@ -304,7 +303,7 @@ router.post(`/api/v${API_VERSION}/updatePin`, [
 })
 
 // delete round
-router.delete(`/api/v${API_VERSION}/deleteRound`, [
+router.delete('/deleteRound', [
   validateData.triviaId,
   validateData.roundNumber
 ], (req, res, next) => {
@@ -318,7 +317,7 @@ router.delete(`/api/v${API_VERSION}/deleteRound`, [
 })
 
 // mark response
-router.post(`/api/v${API_VERSION}/markResponse`, [
+router.post('/markResponse', [
   validateData.triviaId,
   validateData.name,
   validateData.uniqueId,
@@ -345,7 +344,7 @@ router.post(`/api/v${API_VERSION}/markResponse`, [
 })
 
 // submit response
-router.post(`/api/v${API_VERSION}/submitResponse`, [
+router.post('/submitResponse', [
   validateData.triviaId,
   validateData.name,
   validateData.uniqueId,

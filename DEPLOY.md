@@ -91,14 +91,14 @@ Notes on deployment process.
     - **Type:** select A - IPv4 address.
     - **Alias:** select Yes.
     - **Alias Target:** select CloudFront distribution recently created.
-    - **Routing Policy:** select Simple.
+    - **Routing Policy:** select Simple and select **Save Record Set**.
   - **Create or edit CNAME (www) record:**
     - Select existing record set or select **Create Record Set**.
     - **Name:** `www.stationtwo.ca`.
     - **Type:** select A - IPv4 address.
     - **Alias:** select Yes.
     - **Alias Target:** select CloudFront distribution recently created.
-    - **Routing Policy:** select Simple.
+    - **Routing Policy:** select Simple and select **Save Record Set**.
 
 Now visit either `stationtwo.ca` or `www.stationtwo.ca` and it should display your React site!
 
@@ -233,3 +233,86 @@ Follow these steps to automate the deployment process of your build directory to
       4) Upload `/build` files to S3 bucket replacing old files with current ones.
       5) Authorize AWS actions on CloudFront.
       6) Invalidate CloudFront configuation to clear caches so next visit to app pulls the latest files.
+
+---
+
+## Back end
+
+### 1) Setup new AWS EC2 instance
+
+- **EC2 AMI:** Ubuntu Server 18.04 LTS (HVM), SSD Volume Type - ami-085925f297f89fce1 (64-bit x86) / ami-05d7ab19b28efa213 (64-bit Arm)
+- **Instance type:**
+  - **Family: General purpose.
+  - **Type:** t2.micro.
+  - **vCPUs:** 1.
+  - **Memory (GiB):** 1.
+  - **Instance storage (GB):** EBS only.
+- **Instance details:**
+  - All default.
+- **Storage:**
+  - **Size:** 8 (GiB).
+  - **Volume type:** General purpose SSD (gp2).
+- **Security groups:**
+  - Type  | Protocol | Port Range | Source
+  - SSH   | TCP      | 22         | Local development IP
+  - HTTP  | TCP      | 80         | Anywhere [0.0.0.0/0, ::/0]
+  - HTTPS | TCP      | 443        | Anywhere [0.0.0.0/0, ::/0]
+
+---
+
+### 2) First SSH to server
+
+- Update ownership of `ssh-key.pem`, run `chmod 600 ssh-key.pem`.
+- SSH to server, run `ssh ubuntu@IP -i ssh-key.pem`.
+- Update server packages, run `sudo apt update`.
+- Upgrade server packages, run `sudo apt upgrade`
+- **Install Git:**
+  - Navigate to home directory, run `cd ~`.
+  - Install, run `sudo apt install git`.
+  - Verify version, run `git --version`.
+  - **Update user information:**
+    - Update username, run `git config --global user.name "[username]"`.
+    - Update email, run `git config --global user.email "[name@domain.com]"`.
+    - Verify user information, run `cat ~/.gitconfig`.
+
+---
+
+### [3) How To Install Nginx on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-18-04)
+
+- If `sudo ufw status` returns `disabled`, you can enable it by running `sudo ufw enable`.
+- If you are missing `OpenSSH` on `sudo ufw status`, you can add it by running `sudo ufw allow 'OpenSSH'`.
+
+Now that you have your web server up and running, let’s review some basic management commands:
+- Check nginx status, type: `systemctl status nginx`
+- To stop your web server, type: `sudo systemctl stop nginx`
+- To start the web server when it is stopped, type: `sudo systemctl start nginx`
+- To stop and then start the service again, type: `sudo systemctl restart nginx`
+- If you are simply making configuration changes, Nginx can often reload without dropping connections. To do this, type: `sudo systemctl reload nginx`
+- By default, Nginx is configured to start automatically when the server boots. If this is not what you want, you can disable this behavior by typing: `sudo systemctl disable nginx`
+- To re-enable the service to start up at boot, you can type: `sudo systemctl enable nginx`
+
+---
+
+### 4) 
+- **Add CloudFront distribution to Route 53 DNS:**
+  - Navigate to **Route 53** service.
+  - **Create an A record:**
+    - Select **Create Record Set**.
+    - **Name:** `api`.
+    - **Type:** select A - IPv4 address.
+    - **Alias:** select No.
+    - **Value:** `[EC2 IP]`
+    - **Routing Policy:** select Simple and select **Save Record Set**.
+
+---
+
+### [5) How To Secure Nginx with Let's Encrypt on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
+
+- To test renewal process, run `sudo certbot renew --dry-run`.
+- To renew expired certificates, run `sudo certbot renew`.
+
+---
+
+### [6) How To Set Up a Node.js Application for Production on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04)
+
+- Change `curl -sL https://deb.nodesource.com/setup_8.x -o nodesource_setup.sh` to `curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh` for later version of Node.

@@ -44,13 +44,13 @@ Data is provided through REST API endpoints. View the [API Documentation](https:
 
 #### Local
 
+- [axios](https://www.npmjs.com/package/axios) - Promise based HTTP client for the browser and node.js.
 - [compression](https://www.npmjs.com/package/compression) - Node.js compression middleware.
 - [cors](https://www.npmjs.com/package/cors) - Node.js CORS middleware.
 - [dotenv](https://www.npmjs.com/package/dotenv) - Loads environment variables from .env file.
 - [express](https://www.npmjs.com/package/express) - Fast, unopinionated, minimalist web framework.
 - [express-mongo-sanitize](https://www.npmjs.com/package/express-mongo-sanitize) - Sanitize your express payload to prevent MongoDB operator injection..
 - [express-validator](https://www.npmjs.com/package/express-validator) - Express middleware for the validator module.
-- [fetch](https://www.npmjs.com/package/fetch) - Fetch URL contents.
 - [helmet](https://www.npmjs.com/package/helmet) - Help secure Express/Connect apps with various HTTP headers.
 - [mongodb](https://www.npmjs.com/package/mongodb) - The official MongoDB driver for Node.js.
 - [pm2](https://www.npmjs.com/package/pm2) - Production process manager for Node.JS applications with a built-in load balancer.
