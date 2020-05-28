@@ -52,7 +52,7 @@ jobs:
         username: ${{ secrets.API_USERNAME }}
         port: ${{ secrets.API_PORT }}
         key: ${{ secrets.APY_KEY }}
-        source: "./*, !client, !logs, !node_modules"
+        source: "./*, !.git, !.github, !.gitignore, !*.md, !sample.env, !client, !logs, !node_modules"
         target: "station-two"
     - name: Install Node Modules and Restart pm2 Process
       uses: appleboy/ssh-action@master
