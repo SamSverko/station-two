@@ -62,5 +62,6 @@ jobs:
         PORT: ${{ secrets.API_PORT }}
         KEY: ${{ secrets.APY_KEY }}
         script: |
+          cd ${{ secrets.API_PATH }}
           npm i --production
           npm run restart
