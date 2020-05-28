@@ -38,7 +38,7 @@ const RoundStyle = styled.div`
   }
 `
 
-const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
+const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId, triviaPin }) => {
   // history & params
   const history = useHistory()
 
@@ -47,7 +47,7 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId }) => {
   const [deleteRoundError, setDeleteRoundError] = useState(false)
 
   const editRound = (roundType, roundNumber) => {
-    history.push(`/builder/${triviaId}/${roundType}/${roundNumber}`)
+    history.push(`/builder/${triviaId}/${triviaPin}/${roundType}/${roundNumber}`)
   }
 
   const deleteRound = (roundNumber) => {

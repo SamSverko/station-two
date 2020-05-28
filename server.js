@@ -83,7 +83,7 @@ io.on('connection', (socket) => {
       const options = {
         hostname: filteredHost,
         port: 4000,
-        path: '/api/v1/leaveLobby',
+        path: '/leaveLobby',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

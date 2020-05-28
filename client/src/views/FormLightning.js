@@ -24,7 +24,7 @@ const FormLightning = () => {
 
   // history & params
   const history = useHistory()
-  const { triviaId } = useParams()
+  const { triviaId, triviaPin } = useParams()
   const { roundNumber } = useParams()
 
   // state
@@ -64,12 +64,12 @@ const FormLightning = () => {
           })
           setQuestionState(data.questions)
         } else {
-          history.push(`/builder/${triviaId}`)
+          history.push(`/builder/${triviaId}/${triviaPin}`)
         }
       }).catch((error) => {
         console.error('DB | ERROR | fetchRound', error)
       })
-  }, [history, roundNumber, triviaId])
+  }, [history, roundNumber, triviaId, triviaPin])
 
   useEffect(() => {
     if (roundNumber !== 'new') {
@@ -123,7 +123,7 @@ const FormLightning = () => {
             if (this.response === 'OK') {
               setPostStatus(true)
               window.setTimeout(() => {
-                history.push(`/builder/${triviaId}`)
+                history.push(`/builder/${triviaId}/${triviaPin}`)
               }, 1500)
             } else {
               console.error('DB | ERROR | handleSubmit new', this.response)
@@ -143,7 +143,7 @@ const FormLightning = () => {
             if (this.response === 'OK') {
               setPostStatus(true)
               window.setTimeout(() => {
-                history.push(`/builder/${triviaId}`)
+                history.push(`/builder/${triviaId}/${triviaPin}`)
               }, 1500)
             } else {
               console.error('DB | ERROR | handleSubmit existing', this.response)
@@ -258,7 +258,7 @@ const FormLightning = () => {
 
             <RoundActionButtons>
               <Button className='item' type='submit' variant='primary'>Save</Button>
-              <Link className='item' to={`/builder/${triviaId}`}>
+              <Link className='item' to={`/builder/${triviaId}/${triviaPin}`}>
                 <Button className='w-100' variant='danger'>{(roundNumber === 'new' ? 'Discard' : 'Cancel')}</Button>
               </Link>
             </RoundActionButtons>

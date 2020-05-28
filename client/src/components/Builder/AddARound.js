@@ -26,7 +26,7 @@ const ButtonStyle = styled(Button)`
   text-decoration: none;
 `
 
-const AddARoundSelection = ({ triviaId }) => {
+const AddARoundSelection = ({ triviaId, triviaPin }) => {
   return (
     <Card>
       <Card.Body>
@@ -34,21 +34,21 @@ const AddARoundSelection = ({ triviaId }) => {
         <hr />
         <AddARoundSelectionRowStyle>
           <div>
-            <Link className='text-decoration-none' to={`/builder/${triviaId}/multipleChoice/new`}>
+            <Link className='text-decoration-none' to={`/builder/${triviaId}/${triviaPin}/multipleChoice/new`}>
               <ButtonStyle variant='primary'>Multiple Choice <span aria-label='question emoji' role='img'>❓</span></ButtonStyle>
             </Link>
             <p className='text-muted'>Players guess A, B, C, or D.</p>
           </div>
           <hr />
           <div>
-            <Link className='text-decoration-none' to={`/builder/${triviaId}/picture/new`}>
+            <Link className='text-decoration-none' to={`/builder/${triviaId}/${triviaPin}/picture/new`}>
               <ButtonStyle variant='primary'>Picture <span aria-label='framed picture emoji' role='img'>🖼</span></ButtonStyle>
             </Link>
             <p className='text-muted'>Players guess the picture.</p>
           </div>
           <hr />
           <div>
-            <Link className='text-decoration-none' to={`/builder/${triviaId}/lightning/new`}>
+            <Link className='text-decoration-none' to={`/builder/${triviaId}/${triviaPin}/lightning/new`}>
               <ButtonStyle variant='primary'>Lightning <span aria-label='zap emoji' role='img'>⚡️</span></ButtonStyle>
             </Link>
             <p className='text-muted'>Players provide exact answer.</p>

@@ -80,19 +80,19 @@ const routes = [
   },
   {
     title: 'Host - Multiple Choice',
-    path: '/builder/:triviaId/multipleChoice/:roundNumber',
+    path: '/builder/:triviaId/:triviaPin/multipleChoice/:roundNumber',
     component: FormMultipleChoiceView,
     exact: true
   },
   {
     title: 'Host - Picture',
-    path: '/builder/:triviaId/picture/:roundNumber',
+    path: '/builder/:triviaId/:triviaPin/picture/:roundNumber',
     component: FormPictureView,
     exact: true
   },
   {
     title: 'Host - Lightning',
-    path: '/builder/:triviaId/lightning/:roundNumber',
+    path: '/builder/:triviaId/:triviaPin/lightning/:roundNumber',
     component: FormLightningView,
     exact: true
   },
