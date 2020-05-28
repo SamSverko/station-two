@@ -52,7 +52,7 @@ jobs:
         username: ${{ secrets.API_USERNAME }}
         port: ${{ secrets.API_PORT }}
         key: ${{ secrets.APY_KEY }}
-        source: "README.md"
+        source: "./*, !client, !logs, !node_modules"
         target: "scp-test"
       
       
