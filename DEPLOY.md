@@ -4,7 +4,7 @@ Notes on deployment process.
 
 ---
 
-## Front end
+## Front End
 
 1) **AWS Route 53** - Domain registration and DNS configuration.
 2) **AWS S3 bucket** - Hosting `/build` directory as a static website.
@@ -13,7 +13,7 @@ Notes on deployment process.
 
 ---
 
-### AWS Route 53 setup
+### AWS Route 53 Setup
 
 - **Register domain:**
   - Navigate to **AWS Route 53** service.
@@ -22,7 +22,7 @@ Notes on deployment process.
 
 ---
 
-### AWS S3 bucket setup
+### AWS S3 Bucket Setup
 
 - **Create bucket:**
   - Navigate to **AWS S3** service.
@@ -65,7 +65,7 @@ Notes on deployment process.
 
 ---
 
-### AWS CloudFront & Certificate Manager setup
+### AWS CloudFront & Certificate Manager Setup
 
 - **Create distribution:**
   - Navigate to **AWS CloudFront** service.
@@ -236,9 +236,9 @@ Follow these steps to automate the deployment process of your build directory to
 
 ---
 
-## Back end
+## Back End
 
-### 1) Setup new AWS EC2 instance
+### 1) Setup New AWS EC2 Instance
 
 - **EC2 AMI:** Ubuntu Server 18.04 LTS (HVM), SSD Volume Type - ami-085925f297f89fce1 (64-bit x86) / ami-05d7ab19b28efa213 (64-bit Arm)
 - **Instance type:**
@@ -260,7 +260,7 @@ Follow these steps to automate the deployment process of your build directory to
 
 ---
 
-### 2) First SSH to server
+### 2) First SSH to Server
 
 - Update ownership of `ssh-key.pem`, run `chmod 600 ssh-key.pem`.
 - SSH to server, run `ssh ubuntu@IP -i ssh-key.pem`.
