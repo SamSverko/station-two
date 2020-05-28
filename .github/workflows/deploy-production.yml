@@ -53,6 +53,6 @@ jobs:
         port: ${{ secrets.API_PORT }}
         key: ${{ secrets.APY_KEY }}
         source: "./*, !client, !logs, !node_modules"
-        target: "scp-test"
+        target: "station-two"
       
       
