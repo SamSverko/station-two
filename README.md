@@ -53,7 +53,6 @@ Data is provided through REST API endpoints. View the [API Documentation](https:
 - [express-validator](https://www.npmjs.com/package/express-validator) - Express middleware for the validator module.
 - [helmet](https://www.npmjs.com/package/helmet) - Help secure Express/Connect apps with various HTTP headers.
 - [mongodb](https://www.npmjs.com/package/mongodb) - The official MongoDB driver for Node.js.
-- [pm2](https://www.npmjs.com/package/pm2) - Production process manager for Node.JS applications with a built-in load balancer.
 - [socket.io](https://www.npmjs.com/package/socket.io) - Node.js realtime framework server.
 
 #### Development
