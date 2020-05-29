@@ -180,7 +180,6 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
                   data-response={i}
                   key={i}
                   onClick={(event) => {
-                    event.preventDefault()
                     submitResponse(event.target)
                   }}
                   variant={(parseInt(currentResponse.raw) === parseInt(i)) ? 'primary' : 'outline-primary'}

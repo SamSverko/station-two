@@ -23,6 +23,12 @@ import Error404 from './views/Error404'
 
 // styles
 const GlobalStyle = createGlobalStyle`
+  .btn-outline-primary, .btn-outline-primary:focus, .btn-outline-primary:active, .btn-outline-primary.active {
+    color: #007BFF !important;
+    background-color: #FFFFFF !important;
+    border-color: #007BFF !important;
+    outline: none;
+  }
   .card {
     margin: 0 0 15px 0;
   }
