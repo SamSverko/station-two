@@ -442,7 +442,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
           <hr />
           <div>
             <p className='h5'>
-              Your response: {!currentResponse.display && (<Badge variant='danger'>Not Yet Recorded</Badge>)}{currentResponse.display && (<Badge variant='success'>{currentResponse.display}</Badge>)}
+              Your response: {!currentResponse.display && (<Badge variant='danger'>Not Yet Recorded</Badge>)}{currentResponse.display && (<Badge variant='info'>{currentResponse.display}</Badge>)}
             </p>
           </div>
         </div>

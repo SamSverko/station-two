@@ -189,20 +189,18 @@ const Lobby = () => {
   }
 
   const Leaderboard = ({ lobbyData }) => {
-    // group by player and sum all scores by round
-    const groupedPlayers = Object.values(lobbyData.responses.reduce((r, { name, uniqueId, roundNumber, score }) => {
-      r[uniqueId] = r[uniqueId] || { name, uniqueId, scores: [] }
-      r[uniqueId].scores[roundNumber] = (r[uniqueId].scores[roundNumber] || 0) + (score || 0)
-      return r
-    }, {}))
-    // sum total score for each player
-    const arrSum = arr => arr.reduce((a, b) => a + b, 0)
-    groupedPlayers.forEach((player) => {
-      player.totalScore = arrSum(player.scores)
-    })
-    // sort players by rank
-    const sortedPlayers = groupedPlayers.sort((a, b) => {
-      return b.totalScore - a.totalScore
+    var groupedPlayersByScore = []
+    lobbyData.responses.reduce(function (res, value) {
+      if (!res[value.uniqueId]) {
+        res[value.uniqueId] = { name: value.name, uniqueId: value.uniqueId, score: 0 }
+        groupedPlayersByScore.push(res[value.uniqueId])
+      }
+      res[value.uniqueId].score += (value.score || 0)
+      return res
+    }, {})
+
+    const sortedPlayers = groupedPlayersByScore.sort((a, b) => {
+      return b.score - a.score
     })
 
     return (
@@ -223,7 +221,7 @@ const Lobby = () => {
                   <tr key={i}>
                     <td>{i + 1}</td>
                     <td>{player.name}</td>
-                    <td>{player.totalScore}</td>
+                    <td>{player.score}</td>
                   </tr>
                 )
               })}
