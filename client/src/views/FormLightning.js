@@ -1,13 +1,18 @@
 // dependencies
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
-import { Alert, Badge, Button, Card, Form } from 'react-bootstrap'
+import { Alert, Button, Card, Form } from 'react-bootstrap'
 import styled from 'styled-components'
 
 // components
 import Header from '../components/Header'
 
 // styles
+const RemoveQuestionDivStyle = styled.div`
+  margin: 10px 0 0 0;
+  text-align: left;
+`
+
 const RoundActionButtons = styled.div`
   align-items: center;
   display: flex;
@@ -168,6 +173,8 @@ const FormLightning = () => {
         <Card.Body>
           <Form noValidate onSubmit={handleSubmit} validated={validated}>
 
+            <p className='h3'>Round Settings</p>
+
             <Form.Group className='text-left' controlId='formTheme'>
               <Form.Label>Theme</Form.Label>
               <Form.Control
@@ -177,7 +184,7 @@ const FormLightning = () => {
                 type='text'
                 value={roundInfoState.theme}
               />
-              <Form.Text className='text-muted'>Default if left blank: 'none'</Form.Text>
+              <Form.Text className='text-muted'>Default if left blank: none</Form.Text>
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               <Form.Control.Feedback type='invalid'>Code must be 4 alphabetical characters [A-Z].</Form.Control.Feedback>
             </Form.Group>
@@ -196,18 +203,24 @@ const FormLightning = () => {
               <Form.Control.Feedback type='invalid'><b>Question point value</b> must be a number.</Form.Control.Feedback>
             </Form.Group>
 
+            <hr />
+
             {
               questionState.map((item, idx) => {
                 return (
                   <div key={`question-container-${idx}`}>
+
+                    <p className='h3'>Question {idx + 1}</p>
+
                     {/* question */}
                     <Form.Group className='text-left' controlId={`question-${idx}`}>
-                      <Form.Label>Question {idx + 1} {idx > 0 && (<Badge onClick={() => { removeQuestion(idx) }} variant='danger'>Remove</Badge>)}</Form.Label>
+                      <Form.Label>Question {idx + 1}</Form.Label>
                       <Form.Control
                         data-field='question'
                         data-idx={idx}
                         name={`question-${idx}-question`}
                         onChange={handleQuestionChange}
+                        placeholder='Question'
                         required
                         type='text'
                         value={questionState[idx].question}
@@ -224,6 +237,7 @@ const FormLightning = () => {
                         data-idx={idx}
                         name={`question-${idx}-answer`}
                         onChange={handleQuestionChange}
+                        placeholder='Answer'
                         required
                         type='text'
                         value={questionState[idx].answer}
@@ -232,13 +246,19 @@ const FormLightning = () => {
                       <Form.Control.Feedback type='invalid'><b>Answer {idx + 1}</b> must be filled out.</Form.Control.Feedback>
                     </Form.Group>
 
+                    {idx > 0 && (
+                      <RemoveQuestionDivStyle>
+                        <Button onClick={() => { removeQuestion(idx) }} variant='danger'>Remove Question {idx + 1}</Button>
+                      </RemoveQuestionDivStyle>
+                    )}
+
                     <hr />
                   </div>
                 )
               })
             }
 
-            <div className='text-left'>
+            <div>
               {!isMaxQuestionsReached && (
                 <Button disabled={isMaxQuestionsReached} onClick={addQuestion} variant='outline-primary'>Add a Question</Button>
               )}
@@ -257,10 +277,10 @@ const FormLightning = () => {
             )}
 
             <RoundActionButtons>
-              <Button className='item' type='submit' variant='primary'>Save</Button>
               <Link className='item' to={`/builder/${triviaId}/${triviaPin}`}>
                 <Button className='w-100' variant='danger'>{(roundNumber === 'new' ? 'Discard' : 'Cancel')}</Button>
               </Link>
+              <Button className='item' type='submit' variant='primary'>Save</Button>
             </RoundActionButtons>
 
           </Form>

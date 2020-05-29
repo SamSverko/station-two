@@ -29,6 +29,9 @@ const TieBreaker = ({ fetchTrivia, triviaId, triviaPin }) => {
             if (this.response === 'OK') {
               history.push(`/builder/${triviaId}/${pin}`)
               setPostStatus('success')
+              window.setTimeout(() => {
+                setPostStatus(false)
+              }, 1500)
             } else {
               console.warn('DB | WARN | handleSubmit', this.response)
               setPostStatus('error')
@@ -47,8 +50,8 @@ const TieBreaker = ({ fetchTrivia, triviaId, triviaPin }) => {
   return (
     <Card>
       <Card.Body>
-        <details>
-          <summary className='h5 mb-0'>Pin <Badge variant='success'>{triviaPin}</Badge></summary>
+        <details open={postStatus}>
+          <summary className='h5 mb-0'>Pin <Badge variant='info'>{triviaPin}</Badge></summary>
 
           <hr />
 

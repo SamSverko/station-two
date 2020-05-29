@@ -31,6 +31,10 @@ const GlobalStyle = createGlobalStyle`
     margin: 0 0 15px 0;
     min-height: 25vh;
     width: 100%;
+    .bottom {
+      font-size: 0.33em;
+      padding: 20px 0 0 0;
+    }
   }
 `
 

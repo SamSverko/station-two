@@ -45,9 +45,9 @@ const Players = ({ hostName, players, playerIdState }) => {
           {players.map((player, counter) => {
             // display player
             if (player.name === hostName) {
-              return <Badge key={counter} variant='info'><span aria-label='crown emoji' role='img'>👑</span> {player.name}</Badge>
+              return <Badge key={counter} variant='info'>{player.name} <span aria-label='crown emoji' role='img'>👑</span></Badge>
             } else if (player.uniqueId === playerIdState) {
-              return <Badge key={counter} variant='info'><span aria-label='hand wave emoji' role='img'>👋</span> {player.name}</Badge>
+              return <Badge key={counter} variant='info'>{player.name} <span aria-label='hand wave emoji' role='img'>👋</span></Badge>
             } else {
               return <Badge key={counter} variant='info'>{player.name}</Badge>
             }

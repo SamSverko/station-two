@@ -35,7 +35,7 @@ const BuilderStatus = ({ host, isRoundsComplete, isTieBreakerComplete, triviaId 
         </ol>
       </div>
       <Link onClick={() => { window.localStorage.setItem('playerName', host) }} to={`/lobby/${triviaId}/host/${host}`}>
-        <Button disabled={!isTriviaReady}>Host Trivia</Button>
+        <Button disabled={!isTriviaReady} variant={(isTriviaReady ? 'primary' : 'secondary')}>Host Trivia</Button>
       </Link>
     </Alert>
   )

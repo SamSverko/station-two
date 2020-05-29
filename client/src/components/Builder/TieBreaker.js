@@ -31,7 +31,10 @@ const TieBreaker = ({ fetchTrivia, tieBreaker, triviaId }) => {
         const xhttp = new window.XMLHttpRequest()
         xhttp.onreadystatechange = function () {
           if (this.readyState === 4 && this.status === 200) {
-            fetchTrivia()
+            window.setTimeout(() => {
+              fetchTrivia()
+              setPostStatus(false)
+            }, 1500)
             setPostStatus(true)
           }
         }

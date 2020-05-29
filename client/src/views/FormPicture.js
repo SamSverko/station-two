@@ -1,13 +1,18 @@
 // dependencies
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
-import { Alert, Badge, Button, Card, Form } from 'react-bootstrap'
+import { Alert, Button, Card, Form } from 'react-bootstrap'
 import styled from 'styled-components'
 
 // components
 import Header from '../components/Header'
 
 // styles
+const RemoveQuestionDivStyle = styled.div`
+  margin: 10px 0 0 0;
+  text-align: left;
+`
+
 const RoundActionButtons = styled.div`
   align-items: center;
   display: flex;
@@ -200,6 +205,8 @@ const FormPicture = () => {
         <Card.Body>
           <Form noValidate onSubmit={handleSubmit} validated={validated}>
 
+            <p className='h3'>Round Settings</p>
+
             <Form.Group className='text-left' controlId='formTheme'>
               <Form.Label>Theme</Form.Label>
               <Form.Control
@@ -209,7 +216,7 @@ const FormPicture = () => {
                 type='text'
                 value={roundInfoState.theme}
               />
-              <Form.Text className='text-muted'>Default if left blank: 'none'</Form.Text>
+              <Form.Text className='text-muted'>Default if left blank: none</Form.Text>
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               <Form.Control.Feedback type='invalid'>Code must be 4 alphabetical characters [A-Z].</Form.Control.Feedback>
             </Form.Group>
@@ -228,36 +235,43 @@ const FormPicture = () => {
               <Form.Control.Feedback type='invalid'><b>Picture point value</b> must be a number.</Form.Control.Feedback>
             </Form.Group>
 
+            <hr />
+
             {
               pictureState.map((item, idx) => {
                 return (
                   <div key={`picture-container-${idx}`}>
+
+                    <p className='h3'>Picture {idx + 1}</p>
+
                     {/* url */}
                     <Form.Group className='text-left' controlId={`url-${idx}`}>
-                      <Form.Label>Picture {idx + 1} URL {idx > 0 && (<Badge onClick={() => { removePicture(idx) }} variant='danger'>Remove</Badge>)}</Form.Label>
+                      <Form.Label>Picture {idx + 1} URL</Form.Label>
                       <Form.Control
                         data-field='url'
                         data-idx={idx}
                         name={`picture-${idx}-url`}
                         onBlur={(event) => { validateImageUrl(event, idx) }}
                         onChange={handlePictureChange}
+                        placeholder='URL'
                         required
                         type='text'
                         value={pictureState[idx].url}
                       />
                       <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                      <Form.Control.Feedback type='invalid'><b>Picture {idx + 1} URL</b> must link to an image (hint: 'https://image.png').</Form.Control.Feedback>
+                      <Form.Control.Feedback type='invalid'><b>Picture {idx + 1} URL</b> must link to an image (hint: 'https://www.website.com/image.png').</Form.Control.Feedback>
                       <img alt='Url thumbnail preview.' className='d-none mt-3 w-25' id={`picture-${idx}-thumbnail`} />
                     </Form.Group>
 
                     {/* answer */}
                     <Form.Group className='text-left' controlId={`answer-${idx}`}>
-                      <Form.Label>Answer</Form.Label>
+                      <Form.Label>Picture {idx + 1} Answer</Form.Label>
                       <Form.Control
                         data-field='answer'
                         data-idx={idx}
                         name={`picture-${idx}-answer`}
                         onChange={handlePictureChange}
+                        placeholder='Answer'
                         required
                         type='text'
                         value={pictureState[idx].answer}
@@ -266,13 +280,19 @@ const FormPicture = () => {
                       <Form.Control.Feedback type='invalid'><b>Answer {idx + 1}</b> must be filled out.</Form.Control.Feedback>
                     </Form.Group>
 
+                    {idx > 0 && (
+                      <RemoveQuestionDivStyle>
+                        <Button onClick={() => { removePicture(idx) }} variant='danger'>Remove Picture {idx + 1}</Button>
+                      </RemoveQuestionDivStyle>
+                    )}
+
                     <hr />
                   </div>
                 )
               })
             }
 
-            <div className='text-left'>
+            <div>
               {!isMaxPicturesReached && (
                 <Button disabled={isMaxPicturesReached} onClick={addPicture} variant='outline-primary'>Add a Picture</Button>
               )}
@@ -291,10 +311,10 @@ const FormPicture = () => {
             )}
 
             <RoundActionButtons>
-              <Button className='item' type='submit' variant='primary'>Save</Button>
               <Link className='item' to={`/builder/${triviaId}/${triviaPin}`}>
                 <Button className='w-100' variant='danger'>{(roundNumber === 'new' ? 'Discard' : 'Cancel')}</Button>
               </Link>
+              <Button className='item' type='submit' variant='primary'>Save</Button>
             </RoundActionButtons>
 
           </Form>
