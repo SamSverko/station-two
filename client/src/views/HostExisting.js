@@ -69,7 +69,7 @@ const HostExisting = () => {
           <Form noValidate onSubmit={handleSubmit} validated={validated}>
 
             <Form.Group className='text-left' controlId='formCode'>
-              <Form.Label>Code</Form.Label>
+              <Form.Label>Trivia ID</Form.Label>
               <FormControlStyle
                 maxLength='4'
                 name='code'
@@ -83,11 +83,11 @@ const HostExisting = () => {
                 type='text'
               />
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              <Form.Control.Feedback type='invalid'>Code must be 4 alphabetical characters [A-Z].</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><span className='font-weight-bold'>Trivia ID</span> must be 4 alphabetical characters [A-Z].</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className='text-left' controlId='formPin'>
-              <Form.Label>Pin</Form.Label>
+              <Form.Label>Access PIN</Form.Label>
               <FormControlStyle
                 maxLength='4'
                 minLength='4'
@@ -102,7 +102,7 @@ const HostExisting = () => {
                 type='text'
               />
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              <Form.Control.Feedback type='invalid'>Pin must be 4 numerical characters [0-9].</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><span className='font-weight-bold'>Access PIN</span> must be 4 numerical characters [0-9].</Form.Control.Feedback>
             </Form.Group>
 
             {postStatus === 'not-found' && (

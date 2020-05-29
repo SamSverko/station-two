@@ -57,7 +57,7 @@ const HostNew = () => {
           <Form noValidate onSubmit={handleSubmit} validated={validated}>
 
             <Form.Group className='text-left' controlId='formName'>
-              <Form.Label>Name</Form.Label>
+              <Form.Label>Host name</Form.Label>
               <Form.Control
                 className='text-lowercase'
                 maxLength='10'
@@ -72,11 +72,11 @@ const HostNew = () => {
                 type='text'
               />
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              <Form.Control.Feedback type='invalid'>Name must be between 3 and 10 alphanumeric characters (inclusive) [A-Z || 0-9].</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><span className='font-weight-bold'>Host name</span> must be between 3 and 10 alphanumeric characters (inclusive) [A-Z || 0-9].</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className='text-left' controlId='formPin'>
-              <Form.Label>Pin</Form.Label>
+              <Form.Label>Access PIN</Form.Label>
               <FormControlStyle
                 maxLength='4'
                 minLength='4'
@@ -92,7 +92,7 @@ const HostNew = () => {
               />
               <Form.Text className='text-muted'>Remember this pin to access this trivia as a host at a later time.</Form.Text>
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              <Form.Control.Feedback type='invalid'>Pin must be 4 numerical characters [0-9].</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><span className='font-weight-bold'>Access PIN</span> must be 4 numerical characters [0-9].</Form.Control.Feedback>
             </Form.Group>
 
             {postStatus === 'error' && (

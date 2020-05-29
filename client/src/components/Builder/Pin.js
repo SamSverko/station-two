@@ -51,14 +51,14 @@ const TieBreaker = ({ fetchTrivia, triviaId, triviaPin }) => {
     <Card>
       <Card.Body>
         <details open={postStatus}>
-          <summary className='h5 mb-0'>Pin <Badge variant='info'>{triviaPin}</Badge></summary>
+          <summary className='h5 mb-0'>Access PIN <Badge variant='info'>{triviaPin}</Badge></summary>
 
           <hr />
 
           <Form noValidate onSubmit={handleSubmit} validated={validated}>
 
             <Form.Group className='text-left' controlId='formPin'>
-              <Form.Label>Change Pin</Form.Label>
+              <Form.Label>Change Access PIN</Form.Label>
               <FormControlStyle
                 maxLength='4'
                 minLength='4'

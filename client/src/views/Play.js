@@ -100,7 +100,7 @@ const Play = () => {
             </Form.Group>
 
             <Form.Group className='text-left' controlId='formCode'>
-              <Form.Label>Trivia code</Form.Label>
+              <Form.Label>Trivia ID</Form.Label>
               <FormControlStyle
                 maxLength='4'
                 name='code'
@@ -114,7 +114,7 @@ const Play = () => {
                 type='text'
               />
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              <Form.Control.Feedback type='invalid'><b>Trivia code</b> must be 4 alphabetical characters [A-Z].</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><b>Trivia ID</b> must be 4 alphabetical characters [A-Z].</Form.Control.Feedback>
             </Form.Group>
 
             {checkLobbyState === 'pending' && (
