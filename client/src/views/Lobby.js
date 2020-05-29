@@ -181,7 +181,7 @@ const Lobby = () => {
     // group by player and sum all scores by round
     const groupedPlayers = Object.values(lobbyData.responses.reduce((r, { name, uniqueId, roundNumber, score }) => {
       r[uniqueId] = r[uniqueId] || { name, uniqueId, scores: [] }
-      r[uniqueId].scores[roundNumber] = (r[uniqueId].scores[roundNumber] || 0) + score
+      r[uniqueId].scores[roundNumber] = (r[uniqueId].scores[roundNumber] || 0) + (score || 0)
       return r
     }, {}))
     // sum total score for each player

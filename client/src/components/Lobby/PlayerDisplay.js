@@ -169,7 +169,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
           <div className='options'>
             {playerDisplayDataState.options.map((option, i) => {
               return (
-                <Button data-response={i} key={i} onClick={(event) => { submitResponse(event.target) }} variant={(parseInt(currentResponse.raw) === parseInt(i)) ? 'success' : 'primary'}><span className='font-weight-bold'>{String.fromCharCode(97 + i).toUpperCase()})</span> {option}</Button>
+                <Button data-response={i} key={i} onClick={(event) => { submitResponse(event.target) }} variant={(parseInt(currentResponse.raw) === parseInt(i)) ? 'primary' : 'outline-primary'}><span className='font-weight-bold'>{String.fromCharCode(97 + i).toUpperCase()})</span> {option}</Button>
               )
             })}
           </div>
@@ -423,7 +423,7 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
           <hr />
           <div>
             <p className='h5'>
-              Your response: {!currentResponse.display && (<Badge variant='danger'>Not Yet Recorded</Badge>)}{currentResponse.display && (<Badge variant='success'>{currentResponse.display}</Badge>)}
+              Your response: {!currentResponse.display && (<Badge variant='danger'>Not Yet Recorded</Badge>)}{currentResponse.display && (<Badge variant='info'>{currentResponse.display}</Badge>)}
             </p>
           </div>
         </RoundStyle>
