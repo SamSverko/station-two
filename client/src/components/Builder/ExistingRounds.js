@@ -105,8 +105,8 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId, triviaPin }) =>
         <hr />
         <p className='title'>Round {roundNumber + 1}</p>
         <div className='buttons'>
-          <Button onClick={() => { editRound('multipleChoice', roundNumber) }} variant='primary'>Edit</Button>
           <Button onClick={() => { deleteRound(roundNumber) }} variant='danger'>Delete</Button>
+          <Button onClick={() => { editRound('multipleChoice', roundNumber) }} variant='primary'>Edit</Button>
         </div>
         <div className='info'>
           <p>
@@ -157,8 +157,8 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId, triviaPin }) =>
         <hr />
         <p className='title'>Round {roundNumber + 1}</p>
         <div className='buttons'>
-          <Button onClick={() => { editRound('picture', roundNumber) }} variant='primary'>Edit</Button>
           <Button onClick={() => { deleteRound(roundNumber) }} variant='danger'>Delete</Button>
+          <Button onClick={() => { editRound('picture', roundNumber) }} variant='primary'>Edit</Button>
         </div>
         <div className='info'>
           <p>
@@ -203,8 +203,8 @@ const ExistingRounds = ({ rounds, setIsRoundsComplete, triviaId, triviaPin }) =>
         <hr />
         <p className='title'>Round {roundNumber + 1}</p>
         <div className='buttons'>
-          <Button onClick={() => { editRound('lightning', roundNumber) }} variant='primary'>Edit</Button>
           <Button onClick={() => { deleteRound(roundNumber) }} variant='danger'>Delete</Button>
+          <Button onClick={() => { editRound('lightning', roundNumber) }} variant='primary'>Edit</Button>
         </div>
         <div className='info'>
           <p>
