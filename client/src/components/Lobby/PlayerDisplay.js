@@ -56,6 +56,13 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
           <span aria-label='memo emoji' className='h1' role='img'>🔢</span>
         </p>
       )
+    } else if (mustPlayerWait === 'host-left') {
+      return (
+        <p className='mb-0 h5'>
+          Host left the lobby!<br />
+          <span aria-label='scream emoji' className='h1' role='img'>😱</span>
+        </p>
+      )
     } else if (playerDisplayDataState.roundData && !mustPlayerWait) {
       return <DisplayQuestion />
     } else {

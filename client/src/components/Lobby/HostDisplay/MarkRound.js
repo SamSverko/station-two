@@ -134,7 +134,7 @@ const MarkRound = ({ lobbyData, roundData, roundNumber }) => {
               <tbody key={i}>
                 <tr className='striped'>
                   <th>Q{i + 1}: <span className='font-weight-normal'>{question.question}</span></th>
-                  <th>A{i + 1}: <span className='font-weight-normal'>{String.fromCharCode(97 + question.answer).toUpperCase()}</span></th>
+                  <th>A{i + 1}: <span className='font-weight-normal'>{String.fromCharCode(97 + question.answer).toUpperCase()}) {question.options[question.answer]}</span></th>
                 </tr>
                 {currentRoundResponses.map((response, j) => {
                   return <CurrentQuestion key={j} questionNumber={i} response={response} />

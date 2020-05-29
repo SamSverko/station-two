@@ -62,7 +62,7 @@ const HostExisting = () => {
 
   return (
     <>
-      <Header text='Edit Existing Trivia' emoji='🏗' emojiDescription='building construction' />
+      <Header text='Edit Existing' emoji='🏗' emojiDescription='building construction' />
 
       <Card>
         <Card.Body>

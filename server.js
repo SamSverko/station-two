@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('playerMustWait', (data) => {
-    console.log('[SOCKET | RUN | playerMustWait')
+    console.log('SOCKET | RUN | playerMustWait')
 
     io.to(roomCode).emit('player must wait', data)
   })

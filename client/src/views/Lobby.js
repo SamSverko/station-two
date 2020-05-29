@@ -101,6 +101,8 @@ const Lobby = () => {
           console.log('DB | OK | joinLobby', socket)
           socket.emit('joinRoom', { triviaId: triviaId, playerName: playerNameState, playerId: playerIdState })
           console.log('SOCKET | EMIT | joinRoom', { triviaId: triviaId, playerName: playerNameState, playerId: playerIdState })
+          socket.emit('playerMustWait', 'wait')
+          console.log('SOCKET | EMIT | playerMustWait', 'wait')
         } else {
           console.warn('DB | WARN | joinLobby', this.respons)
         }
@@ -115,6 +117,12 @@ const Lobby = () => {
     joinLobby(socket)
 
     if (role === 'host') {
+      // reset localStorage to reset host view on page leave/refresh
+      window.localStorage.setItem('currentButtonSelected', false)
+      window.localStorage.setItem('currentHostActionState', false)
+      window.localStorage.setItem('currentRoundDataState', false)
+      window.localStorage.setItem('currentRoundNumberState', false)
+
       fetchTriviaData()
       fetchLobbyData()
     }
@@ -163,6 +171,9 @@ const Lobby = () => {
 
     return () => {
       console.log('CLIENT | RUN | useEffect clean up')
+
+      socket.emit('playerMustWait', 'host-left')
+      console.log('SOCKET | EMIT | playerMustWait', 'host-left')
 
       socket.close()
     }

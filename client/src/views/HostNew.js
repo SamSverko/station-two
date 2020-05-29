@@ -50,7 +50,7 @@ const HostNew = () => {
 
   return (
     <>
-      <Header text='Host New Trivia' emoji='✨' emojiDescription='sparkles' />
+      <Header text='Create New' emoji='✨' emojiDescription='sparkles' />
 
       <Card>
         <Card.Body>
