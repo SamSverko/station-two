@@ -1,4 +1,4 @@
-name: Pull Request Checks
+name: Check JS Syntax
 on:
   pull_request:
     types: [assigned, opened, synchronize, reopened]
