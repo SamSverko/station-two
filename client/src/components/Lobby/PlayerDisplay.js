@@ -176,7 +176,17 @@ const Player = ({ mustPlayerWait, playerDisplayDataState, socket }) => {
           <div className='options'>
             {playerDisplayDataState.options.map((option, i) => {
               return (
-                <Button data-response={i} key={i} onClick={(event) => { submitResponse(event.target) }} variant={(parseInt(currentResponse.raw) === parseInt(i)) ? 'primary' : 'outline-primary'}><span className='font-weight-bold'>{String.fromCharCode(97 + i).toUpperCase()})</span> {option}</Button>
+                <Button
+                  data-response={i}
+                  key={i}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    submitResponse(event.target)
+                  }}
+                  variant={(parseInt(currentResponse.raw) === parseInt(i)) ? 'primary' : 'outline-primary'}
+                >
+                  <span className='font-weight-bold'>{String.fromCharCode(97 + i).toUpperCase()})</span> {option}
+                </Button>
               )
             })}
           </div>
