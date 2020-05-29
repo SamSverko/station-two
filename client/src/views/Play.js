@@ -87,16 +87,16 @@ const Play = () => {
               <Form.Label>Player name</Form.Label>
               <Form.Control
                 className='text-lowercase'
-                maxLength='10'
+                maxLength='15'
                 name='name'
                 onChange={(event) => setName(event.target.value.toLowerCase())}
-                pattern='[A-Za-z0-9]{3,10}'
+                pattern='[A-Za-z0-9]{3,15}'
                 placeholder='Name'
                 required
                 type='text'
               />
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              <Form.Control.Feedback type='invalid'><b>Player name</b> must be between 3 and 10 alphanumeric characters (inclusive) [A-Z || 0-9].</Form.Control.Feedback>
+              <Form.Control.Feedback type='invalid'><b>Player name</b> must be between 3 and 15 alphanumeric characters (inclusive) [A-Z || 0-9].</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className='text-left' controlId='formCode'>

@@ -13,8 +13,8 @@ const utils = require('./utils')
 // express-validator parameters
 const validateData = {
   collection: check('collection', 'Value must be [trivia] or [lobbies]').isString().isIn([DB_COLLECTION_TRIVIA, DB_COLLECTION_LOBBIES]),
-  name: body('name', 'Value must be between 3 and 10 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().isLength({ min: 3, max: 10 }),
-  nameOptional: body('name', 'Value must be between 3 and 10 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().isLength({ min: 3, max: 10 }).optional(),
+  name: body('name', 'Value must be between 3 and 15 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().isLength({ min: 3, max: 15 }),
+  nameOptional: body('name', 'Value must be between 3 and 15 alphanumeric characters (inclusive) [a-z0-9]').isString().trim().isLength({ min: 3, max: 15 }).optional(),
   playerResponse: check('playerResponse', 'Value can be any length greater than 1 of all characters').isString().notEmpty().trim(),
   playersOnlyOptional: check('playersOnly', 'Value must be [true]').trim().isIn([true]).optional(),
   questionNumberOptional: check('questionNumber', 'Value must be between [0] and [19] (inclusive)').trim().toInt().isInt({ min: 0, max: 19 }).optional(),
