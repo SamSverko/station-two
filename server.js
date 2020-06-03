@@ -11,12 +11,10 @@ const app = express()
 const helmet = require('helmet')
 const cors = require('cors')
 const compression = require('compression')
-const { MongoClient } = require('mongodb')
+const { MongoClient, ObjectId } = require('mongodb')
 const mongoSanitize = require('express-mongo-sanitize')
 const graphqlHTTP = require('express-graphql')
 const { addResolversToSchema, GraphQLFileLoader, loadSchemaSync } = require('graphql-tools')
-
-const { person } = require('./graphql/resolvers/queries/Person')
 
 // local files
 // const router = require(path.join(__dirname, './api/routes'))
@@ -45,22 +43,23 @@ MongoClient.connect(process.env.DB_URL, {
     app.set('db', client.db(process.env.DB_NAME))
 
     const schema = loadSchemaSync(path.join(__dirname, '/graphql/schema/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
+    const { lobby } = require('./graphql/resolvers/queries/lobby')
+    const { person } = require('./graphql/resolvers/queries/person')
+    const { trivia } = require('./graphql/resolvers/queries/trivia')
 
     const resolvers = {
       Query: {
-        // person: async (root, { _id }) => {
-        //   console.log('Query | person')
-        //   return app.db.collection(process.env.DB_COLLECTION_GRAPHQL).findOne(ObjectId(_id))
-        // },
-        person: person,
+        lobby: lobby(app),
+        person: person(app),
         persons: async () => {
           console.log('Query | persons')
-          return app.db.collection(process.env.DB_COLLECTION_GRAPHQL).find({}).toArray()
-        }
+          return app.get('db').collection(process.env.DB_COLLECTION_GRAPHQL).find({}).toArray()
+        },
+        trivia: trivia(app)
       },
       Mutation: {
         createPerson: async (root, args, context, info) => {
-          const res = await app.db.collection(process.env.DB_COLLECTION_GRAPHQL).insertOne(args)
+          const res = await app.get('db').collection(process.env.DB_COLLECTION_GRAPHQL).insertOne(args)
           return res.ops[0]
         }
       }

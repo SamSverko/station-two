@@ -1,18 +1,128 @@
+# ROOT TYPES ==================================================
+type Mutation {
+  createPerson(name: String!): Person
+}
+
 type Query {
-  person(_id: String): Person
+  lobby(_id: String!): Lobby 
+  person(_id: String!): Person
   persons: [Person]
+  trivia(_id: String!): Trivia
+}
+
+
+# INTERFACES ==================================================
+interface Response {
+  name: String!
+  uniqueId: String!
+}
+
+type MultipleChoiceResponse implements Response {
+  name: String!
+  uniqueId: String!
+  roundNumber: Int!
+  questionNumber: Int!
+  response: Int!
+}
+
+type LightningResponse implements Response {
+  name: String!
+  uniqueId: String!
+  roundNumber: Int!
+  questionNumber: Int!
+  response: String!
+}
+
+type PictureResponse implements Response {
+  name: String!
+  uniqueId: String!
+  roundNumber: Int!
+  questionNumber: String!
+  response: String!
+}
+
+type TieBreakerResponse implements Response {
+  name: String!
+  uniqueId: String!
+  roundType: String!
+  response: Int!
+}
+
+interface Round {
+  type: String!
+  theme: String!
+  pointValue: Int!
+}
+
+type LightningRound implements Round {
+  type: String!
+  theme: String!
+  pointValue: Int!
+  questions: [LightningRoundQuestion]
+}
+
+type MultipleChoiceRound implements Round {
+  type: String!
+  theme: String!
+  pointValue: Int!
+  questions: [MultipleChoiceRoundQuestion]
+}
+
+type PictureRound implements Round {
+  type: String!
+  theme: String!
+  pointValue: Int!
+  pictures: [PictureRoundPicture]
+}
+
+
+# QUERY TYPES =================================================
+type LightningRoundQuestion {
+  question: String!
+  answer: String!
+}
+
+type Lobby {
+  _id: String!
+  createdAt: String!
+  triviaId: String!
+  host: String!
+  players: [Player]!
+  responses: [Response]!
+}
+
+type MultipleChoiceRoundQuestion {
+  question: String!
+  options: [String!]!
+  answer: Int!
 }
 
 type Person {
-  _id: String
-  name: String
+  _id: String!
+  name: String!
 }
 
-type Mutation {
-  createPerson(name: String): Person
+type PictureRoundPicture {
+  url: String!
+  answer: String!
 }
 
-type schema {
-  query: Query,
-  mutation: Mutation
+type Player {
+  name: String!
+  uniqueId: String!
+}
+
+type Trivia {
+  _id: String!
+  createdAt: String!
+  triviaId: String!
+  triviaPin: String!
+  host: String!
+  rounds: [Round]!
+  tieBreaker: TieBreaker!
+}
+
+type TieBreaker {
+  question: String
+  answer: Int
 }
