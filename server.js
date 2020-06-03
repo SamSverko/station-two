@@ -11,7 +11,7 @@ const app = express()
 const helmet = require('helmet')
 const cors = require('cors')
 const compression = require('compression')
-const { MongoClient, ObjectId } = require('mongodb')
+const { MongoClient } = require('mongodb')
 const mongoSanitize = require('express-mongo-sanitize')
 const graphqlHTTP = require('express-graphql')
 const { addResolversToSchema, GraphQLFileLoader, loadSchemaSync } = require('graphql-tools')
@@ -43,7 +43,6 @@ MongoClient.connect(process.env.DB_URL, {
     console.log(`Connected to database: ${process.env.DB_NAME}`)
 
     app.set('db', client.db(process.env.DB_NAME))
-
 
     const schema = loadSchemaSync(path.join(__dirname, '/graphql/schema/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
 
