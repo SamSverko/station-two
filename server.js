@@ -1,6 +1,5 @@
 // node
 const path = require('path')
-const httpPost = require('http')
 const bodyParser = require('body-parser')
 
 // dependencies
@@ -11,99 +10,24 @@ const express = require('express')
 const app = express()
 const helmet = require('helmet')
 const cors = require('cors')
-const http = require('http').createServer(app)
-const io = require('socket.io')(http, { pingTimeout: 10000, pingInterval: 5000 })
 const compression = require('compression')
+const { MongoClient, ObjectId } = require('mongodb')
 const mongoSanitize = require('express-mongo-sanitize')
-const MongoClient = require('mongodb').MongoClient
+const graphqlHTTP = require('express-graphql')
+const { addResolversToSchema, GraphQLFileLoader, loadSchemaSync } = require('graphql-tools')
+
+const { person } = require('./graphql/resolvers/queries/Person')
 
 // local files
-const router = require(path.join(__dirname, './api/routes'))
+// const router = require(path.join(__dirname, './api/routes'))
 
-// helmet, cors, and mongoSanitize
+// helmet, cors, gzip compression, urlencoded (for form submits), bodyParser for JSON posts, and mongoSanitize
 app.use(helmet())
 app.use(cors())
-app.use(mongoSanitize())
-
-// enable gzip compression, urlencoded (for form submits), and bodyParser for JSON posts
 app.use(compression())
 app.use(express.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-
-// web socket
-// ROOMS: socket.to = send to all but not sender | io.to = send to all including sender
-// NO ROOMS: io.emit = send to all including sender | socket.emit = send to sender only | socket.broadcast.emit = send to all but not sender
-io.on('connection', (socket) => {
-  console.log('SOCKET | RUN | connection')
-  let roomCode = false
-  let playerName = false
-  let playerId = false
-
-  socket.on('joinRoom', (data) => {
-    console.log('SOCKET | RUN | joinRoom', data.triviaId, data.playerName, data.playerId)
-
-    roomCode = data.triviaId
-    playerName = data.playerName
-    playerId = data.playerId
-
-    socket.join(roomCode)
-    io.to(roomCode).emit('player joined')
-  })
-
-  socket.on('displayQuestion', (data) => {
-    console.log('SOCKET | RUN | displayQuestion')
-
-    socket.to(roomCode).emit('display question', data)
-  })
-
-  socket.on('playerResponded', (data) => {
-    console.log('[SOCKET | RUN | playerResponded')
-
-    socket.to(roomCode).emit('player responded', data)
-  })
-
-  socket.on('playerMustWait', (data) => {
-    console.log('SOCKET | RUN | playerMustWait')
-
-    io.to(roomCode).emit('player must wait', data)
-  })
-
-  socket.on('disconnect', () => {
-    console.log('SOCKET | RUN | disconnect')
-
-    if (playerName && roomCode) {
-      console.log('SOCKET | RUN | disconnect', playerName, roomCode)
-
-      const postData = JSON.stringify({
-        triviaId: roomCode,
-        name: playerName,
-        uniqueId: playerId
-      })
-      const filteredHost = socket.handshake.headers.host.substring(0, socket.handshake.headers.host.indexOf(':'))
-      const options = {
-        hostname: filteredHost,
-        port: 4000,
-        path: '/leaveLobby',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': postData.length
-        }
-      }
-      const req = httpPost.request(options, (res) => {
-        res.on('data', (data) => {
-          process.stdout.write(data)
-          io.to(roomCode).emit('player left')
-        })
-        req.on('error', (error) => {
-          console.error(error)
-        })
-      })
-      req.write(postData)
-      req.end()
-    }
-  })
-})
+app.use(mongoSanitize())
 
 // database connection
 MongoClient.connect(process.env.DB_URL, {
@@ -116,11 +40,43 @@ MongoClient.connect(process.env.DB_URL, {
     process.exit(1)
   })
   .then(async client => {
-    app.db = client.db(process.env.DB_NAME)
-  })
+    console.log(`Connected to database: ${process.env.DB_NAME}`)
 
-// routes
-app.use('/', router)
+    app.set('db', client.db(process.env.DB_NAME))
+
+
+    const schema = loadSchemaSync(path.join(__dirname, '/graphql/schema/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
+
+    const resolvers = {
+      Query: {
+        // person: async (root, { _id }) => {
+        //   console.log('Query | person')
+        //   return app.db.collection(process.env.DB_COLLECTION_GRAPHQL).findOne(ObjectId(_id))
+        // },
+        person: person,
+        persons: async () => {
+          console.log('Query | persons')
+          return app.db.collection(process.env.DB_COLLECTION_GRAPHQL).find({}).toArray()
+        }
+      },
+      Mutation: {
+        createPerson: async (root, args, context, info) => {
+          const res = await app.db.collection(process.env.DB_COLLECTION_GRAPHQL).insertOne(args)
+          return res.ops[0]
+        }
+      }
+    }
+
+    const schemaWithResolvers = addResolversToSchema({
+      schema,
+      resolvers
+    })
+
+    app.use('/graphql', graphqlHTTP({
+      schema: schemaWithResolvers,
+      graphiql: true
+    }))
+  })
 
 // server error handler
 app.use((error, req, res, next) => {
@@ -136,6 +92,6 @@ process.on('SIGINT', function () {
 })
 
 // turn app listening on
-http.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server successfully started app, listening at ${HOST}:${PORT}.`)
 })

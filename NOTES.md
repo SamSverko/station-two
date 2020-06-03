@@ -51,3 +51,31 @@ req.app.db.collection(req.params.collection).aggregate([
 - trivias are limited to 10 rounds.
 - rounds are limited to 20 questions.
 - scores can be floats between 0.0 and 10.0.
+
+## GraphQL Queries
+
+```
+// returns one person
+query {
+  person(_id: "5ed7942cf0c9292ddbc48718") {
+    _id
+    name
+  }
+}
+
+// returns all persons
+query {
+  persons {
+    _id
+    name
+  }
+}
+
+// create a new person
+mutation {
+  createPerson(name: "sam") {
+    _id
+    name
+  }
+}
+```

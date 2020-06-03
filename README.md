@@ -51,6 +51,7 @@ Data is provided through REST API endpoints. View the [API Documentation](https:
 - [express](https://www.npmjs.com/package/express) - Fast, unopinionated, minimalist web framework.
 - [express-mongo-sanitize](https://www.npmjs.com/package/express-mongo-sanitize) - Sanitize your express payload to prevent MongoDB operator injection..
 - [express-validator](https://www.npmjs.com/package/express-validator) - Express middleware for the validator module.
+- [graphql](https://www.npmjs.com/package/graphql) - A Query Language and Runtime which can target any service.
 - [helmet](https://www.npmjs.com/package/helmet) - Help secure Express/Connect apps with various HTTP headers.
 - [mongodb](https://www.npmjs.com/package/mongodb) - The official MongoDB driver for Node.js.
 - [socket.io](https://www.npmjs.com/package/socket.io) - Node.js realtime framework server.

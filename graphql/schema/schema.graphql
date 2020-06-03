@@ -1,0 +1,18 @@
+type Query {
+  person(_id: String): Person
+  persons: [Person]
+}
+
+type Person {
+  _id: String
+  name: String
+}
+
+type Mutation {
+  createPerson(name: String): Person
+}
+
+type schema {
+  query: Query,
+  mutation: Mutation
+}
