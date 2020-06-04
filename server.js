@@ -34,15 +34,54 @@ MongoClient.connect(process.env.DB_URL, {
     console.log(`Connected to database: ${process.env.DB_NAME}`)
 
     app.set('db', client.db(process.env.DB_NAME))
+    const lobbyCollection = app.get('db').collection(process.env.DB_COLLECTION_LOBBIES)
     const triviaCollection = app.get('db').collection(process.env.DB_COLLECTION_TRIVIA)
 
     const typeDefs = gql`
       # ROOT TYPES ==================================================
       type Query {
-        trivia(_id: String!): Trivia
+        lobby(_id: String!): Lobby
+        # multipleChoiceQuestions(round: Round): Round
+        trivia(triviaId: String!): Trivia
       }
 
       # INTERFACES ==================================================
+      interface Response {
+        name: String!
+        uniqueId: String!
+      }
+
+      type MultipleChoiceResponse implements Response {
+        name: String!
+        uniqueId: String!
+        roundNumber: Int!
+        questionNumber: Int!
+        response: Int!
+      }
+
+      type LightningResponse implements Response {
+        name: String!
+        uniqueId: String!
+        roundNumber: Int!
+        questionNumber: Int!
+        response: String!
+      }
+
+      type PictureResponse implements Response {
+        name: String!
+        uniqueId: String!
+        roundNumber: Int!
+        questionNumber: String!
+        response: String!
+      }
+
+      type TieBreakerResponse implements Response {
+        name: String!
+        uniqueId: String!
+        roundType: String!
+        response: Int!
+      }
+
       interface Round {
         type: String!
         theme: String!
@@ -76,6 +115,15 @@ MongoClient.connect(process.env.DB_URL, {
         answer: String!
       }
 
+      type Lobby {
+        _id: String!
+        createdAt: String!
+        triviaId: String!
+        host: String!
+        players: [Player]!
+        responses: [Response]!
+      }
+
       type MultipleChoiceRoundQuestion {
         question: String!
         options: [String!]!
@@ -85,6 +133,11 @@ MongoClient.connect(process.env.DB_URL, {
       type PictureRoundPicture {
         url: String!
         answer: String!
+      }
+
+      type Player {
+        name: String!
+        uniqueId: String!
       }
 
       type Trivia {
@@ -105,8 +158,11 @@ MongoClient.connect(process.env.DB_URL, {
 
     const resolvers = {
       Query: {
-        trivia: async (root, { _id }) => {
-          return triviaCollection.findOne(ObjectId(_id))
+        lobby: async (root, { _id }) => {
+          return lobbyCollection.findOne(ObjectId(_id))
+        },
+        trivia: async (root, { triviaId }) => {
+          return triviaCollection.findOne({ triviaId: triviaId })
         }
       },
       Round: {
