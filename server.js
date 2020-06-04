@@ -1,22 +1,16 @@
 // node
-const path = require('path')
 const bodyParser = require('body-parser')
 
 // dependencies
 require('dotenv').config()
-const HOST = process.env.APP_HOST || 'localhost'
-const PORT = process.env.APP_PORT || 4000
 const express = require('express')
 const app = express()
 const helmet = require('helmet')
 const cors = require('cors')
 const compression = require('compression')
-const { MongoClient } = require('mongodb')
+const { MongoClient, ObjectId } = require('mongodb')
 const mongoSanitize = require('express-mongo-sanitize')
 const { ApolloServer, gql } = require('apollo-server')
-
-// local files
-// const router = require(path.join(__dirname, './api/routes'))
 
 // helmet, cors, gzip compression, urlencoded (for form submits), bodyParser for JSON posts, and mongoSanitize
 app.use(helmet())
@@ -40,23 +34,79 @@ MongoClient.connect(process.env.DB_URL, {
     console.log(`Connected to database: ${process.env.DB_NAME}`)
 
     app.set('db', client.db(process.env.DB_NAME))
-    const graphqlCollection = app.get('db').collection(process.env.DB_COLLECTION_GRAPHQL)
+    const triviaCollection = app.get('db').collection(process.env.DB_COLLECTION_TRIVIA)
 
     const typeDefs = gql`
-      type Person {
-        _id: String!
-        name: String!
+      # ROOT TYPES ==================================================
+      type Query {
+        trivia(_id: String!): Trivia
       }
 
-      type Query {
-        persons: [Person]!
+      # INTERFACES ==================================================
+      interface Round {
+        type: String!
+        theme: String!
+        pointValue: Int!
+      }
+
+      type LightningRound implements Round {
+        type: String!
+        theme: String!
+        pointValue: Int!
+        questions: [LightningRoundQuestion]
+      }
+
+      type MultipleChoiceRound implements Round {
+        type: String!
+        theme: String!
+        pointValue: Int!
+        questions: [MultipleChoiceRoundQuestion]
+      }
+
+      type PictureRound implements Round {
+        type: String!
+        theme: String!
+        pointValue: Int!
+        pictures: [PictureRoundPicture]
+      }
+
+      # QUERY TYPES =================================================
+      type LightningRoundQuestion {
+        question: String!
+        answer: String!
+      }
+
+      type MultipleChoiceRoundQuestion {
+        question: String!
+        options: [String!]!
+        answer: Int!
+      }
+
+      type PictureRoundPicture {
+        url: String!
+        answer: String!
+      }
+
+      type Trivia {
+        _id: String!
+        createdAt: String!
+        triviaId: String!
+        triviaPin: String!
+        host: String!
+        rounds: [Round]!
+        tieBreaker: TieBreaker!
+      }
+
+      type TieBreaker {
+        question: String
+        answer: Int
       }
     `
 
     const resolvers = {
       Query: {
-        persons: async () => {
-          return graphqlCollection.find({}).toArray()
+        trivia: async (root, { _id }) => {
+          return triviaCollection.findOne(ObjectId(_id))
         }
       }
     }
@@ -80,8 +130,3 @@ process.on('SIGINT', function () {
   console.log('SIGINT')
   process.exit(0)
 })
-
-// turn app listening on
-// app.listen(PORT, () => {
-//   console.log(`Server successfully started app, listening at ${HOST}:${PORT}.`)
-// })
