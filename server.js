@@ -13,8 +13,7 @@ const cors = require('cors')
 const compression = require('compression')
 const { MongoClient } = require('mongodb')
 const mongoSanitize = require('express-mongo-sanitize')
-const graphqlHTTP = require('express-graphql')
-const { addResolversToSchema, GraphQLFileLoader, loadSchemaSync } = require('graphql-tools')
+const { ApolloServer, gql } = require('apollo-server')
 
 // local files
 // const router = require(path.join(__dirname, './api/routes'))
@@ -41,39 +40,32 @@ MongoClient.connect(process.env.DB_URL, {
     console.log(`Connected to database: ${process.env.DB_NAME}`)
 
     app.set('db', client.db(process.env.DB_NAME))
+    const graphqlCollection = app.get('db').collection(process.env.DB_COLLECTION_GRAPHQL)
 
-    const schema = loadSchemaSync(path.join(__dirname, '/graphql/schema/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
-    const { lobby } = require('./graphql/resolvers/queries/lobby')
-    const { person } = require('./graphql/resolvers/queries/person')
-    const { trivia } = require('./graphql/resolvers/queries/trivia')
+    const typeDefs = gql`
+      type Person {
+        _id: String!
+        name: String!
+      }
+
+      type Query {
+        persons: [Person]!
+      }
+    `
 
     const resolvers = {
       Query: {
-        lobby: lobby(app),
-        person: person(app),
         persons: async () => {
-          console.log('Query | persons')
-          return app.get('db').collection(process.env.DB_COLLECTION_GRAPHQL).find({}).toArray()
-        },
-        trivia: trivia(app)
-      },
-      Mutation: {
-        createPerson: async (root, args, context, info) => {
-          const res = await app.get('db').collection(process.env.DB_COLLECTION_GRAPHQL).insertOne(args)
-          return res.ops[0]
+          return graphqlCollection.find({}).toArray()
         }
       }
     }
 
-    const schemaWithResolvers = addResolversToSchema({
-      schema,
-      resolvers
-    })
+    const server = new ApolloServer({ typeDefs, resolvers })
 
-    app.use('/graphql', graphqlHTTP({
-      schema: schemaWithResolvers,
-      graphiql: true
-    }))
+    server.listen().then(({ url }) => {
+      console.log(`🚀 Server ready at ${url}`)
+    })
   })
 
 // server error handler
@@ -90,6 +82,6 @@ process.on('SIGINT', function () {
 })
 
 // turn app listening on
-app.listen(PORT, () => {
-  console.log(`Server successfully started app, listening at ${HOST}:${PORT}.`)
-})
+// app.listen(PORT, () => {
+//   console.log(`Server successfully started app, listening at ${HOST}:${PORT}.`)
+// })
