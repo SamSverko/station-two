@@ -108,6 +108,17 @@ MongoClient.connect(process.env.DB_URL, {
         trivia: async (root, { _id }) => {
           return triviaCollection.findOne(ObjectId(_id))
         }
+      },
+      Round: {
+        __resolveType (obj) {
+          if (obj.type === 'multipleChoice') {
+            return 'MultipleChoiceRound'
+          } else if (obj.type === 'lightning') {
+            return 'LightningRound'
+          } else if (obj.type === 'picture') {
+            return 'PictureRound'
+          }
+        }
       }
     }
 

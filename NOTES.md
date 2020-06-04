@@ -55,27 +55,39 @@ req.app.db.collection(req.params.collection).aggregate([
 ## GraphQL Queries
 
 ```
-// returns one person
+// returns one trivia
 query {
-  person(_id: "5ed7942cf0c9292ddbc48718") {
+  trivia(_id: "5e827a4e1c9d4400009fea32") {
     _id
-    name
-  }
-}
-
-// returns all persons
-query {
-  persons {
-    _id
-    name
-  }
-}
-
-// create a new person
-mutation {
-  createPerson(name: "sam") {
-    _id
-    name
+    createdAt
+    triviaId
+    triviaPin
+    host
+    rounds {
+      ... on LightningRound {
+        questions {
+          question
+          answer
+        }
+      }
+      ... on MultipleChoiceRound {
+        questions {
+          question
+          options
+          answerInt: answer
+        }
+      }
+      ... on PictureRound {
+        pictures {
+          url
+          answer
+        }
+      }
+    }
+    tieBreaker {
+      question
+      answer
+    }
   }
 }
 ```
