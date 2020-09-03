@@ -41,7 +41,6 @@ MongoClient.connect(process.env.DB_URL, {
       # ROOT TYPES ==================================================
       type Query {
         lobby(_id: String!): Lobby
-        # multipleChoiceQuestions(round: Round): Round
         trivia(triviaId: String!): Trivia
       }
 
@@ -92,14 +91,14 @@ MongoClient.connect(process.env.DB_URL, {
         type: String!
         theme: String!
         pointValue: Int!
-        questions: [LightningRoundQuestion]
+        lightningQuestions: [LightningRoundQuestion]
       }
 
       type MultipleChoiceRound implements Round {
         type: String!
         theme: String!
         pointValue: Int!
-        questions: [MultipleChoiceRoundQuestion]
+        multipleChoiceQuestions: [MultipleChoiceRoundQuestion]
       }
 
       type PictureRound implements Round {
@@ -175,7 +174,9 @@ MongoClient.connect(process.env.DB_URL, {
             return 'PictureRound'
           }
         }
-      }
+      },
+      MultipleChoiceRound: { multipleChoiceQuestions: (round) => round.questions },
+      LightningRound: { lightningQuestions: (round) => round.questions }
     }
 
     const server = new ApolloServer({ typeDefs, resolvers })
