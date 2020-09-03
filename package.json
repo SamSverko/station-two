@@ -36,6 +36,7 @@
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
+    "bl": "^2.2.1",
     "standard": "^14.3.3"
   }
 }
