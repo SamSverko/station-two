@@ -33,7 +33,7 @@
     "express-validator": "^6.6.1",
     "helmet": "^4.1.1",
     "mongodb": "^3.6.2",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.5.0"
   },
   "devDependencies": {
     "bl": "^4.0.3",
